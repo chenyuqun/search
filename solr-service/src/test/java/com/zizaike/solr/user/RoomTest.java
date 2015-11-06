@@ -16,6 +16,7 @@ import org.springframework.data.solr.core.query.result.GroupPage;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.solr.Place;
 import com.zizaike.entity.solr.Room;
 import com.zizaike.is.solr.PlaceSolrService;
@@ -37,7 +38,7 @@ public class RoomTest extends AbstractSolrIntegrationTest{
     @Autowired
     RoomSolrService roomService;
     @Test
-    public void testQueryRoomByWords() {
+    public void testQueryRoomByWords() throws ZZKServiceException {
        List<Room> room =  roomService.queryRoomByWords("西门町",2685);
        Assert.assertNotNull(room, "room is null");
     }

@@ -18,15 +18,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
-import org.springframework.data.solr.core.query.result.ScoredPage;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.zizaike.core.framework.exception.IllegalParamterException;
-import com.zizaike.core.framework.exception.ServiceException;
+import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.solr.Room;
 import com.zizaike.entity.solr.model.SolrSearchableRoomFields;
 import com.zizaike.is.solr.RoomSolrService;
-import com.zizaike.solr.place.impl.PlaceSolrServiceImpl;
 
 /**  
  * ClassName: RoomSolrServiceImpl <br/>  
@@ -42,7 +40,7 @@ import com.zizaike.solr.place.impl.PlaceSolrServiceImpl;
 public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  implements RoomSolrService {
     protected final Logger LOG = LoggerFactory.getLogger(RoomSolrServiceImpl.class);
     @Override
-    public List<Room> queryRoomByWords(String words,int locTypeid) throws ServiceException {
+    public List<Room> queryRoomByWords(String words,int locTypeid) throws ZZKServiceException {
         long start = System.currentTimeMillis();
         if (words == null) {
             throw new IllegalParamterException("words is null");
