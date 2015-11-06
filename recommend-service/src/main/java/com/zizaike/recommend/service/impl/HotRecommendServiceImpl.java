@@ -14,17 +14,17 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.zizaike.core.framework.exception.ServiceException;
+import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.hot.Recommend;
 import com.zizaike.is.recommend.HotRecommendService;
 import com.zizaike.recommend.dao.HotRecommendDao;
 
 /**  
  * ClassName:HotRecommendServiceImpl <br/>  
- * Function: TODO ADD FUNCTION. <br/>  
- * Reason:   TODO ADD REASON. <br/>  
+ * Function: 热门推荐impl. <br/>  
+ * Reason:   service. <br/>
  * Date:     2015年11月5日 下午3:22:05 <br/>  
- * @author   zeuskingzb  
+ * @author   snow.zhang  
  * @version    
  * @since    JDK 1.7  
  * @see        
@@ -35,7 +35,7 @@ public class HotRecommendServiceImpl implements HotRecommendService {
    private HotRecommendDao hotRecommendDao;
 
     @Override
-    public List<Recommend> quryHotRecommend() throws ServiceException {
+    public List<Recommend> quryHotRecommend() throws ZZKServiceException {
           
         return hotRecommendDao.quryHotRecommend();
     }

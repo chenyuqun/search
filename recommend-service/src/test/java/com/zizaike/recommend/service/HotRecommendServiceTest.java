@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.hot.Recommend;
 import com.zizaike.is.recommend.HotRecommendService;
 import com.zizaike.recommend.basetest.BaseTest;
@@ -31,7 +32,7 @@ public class HotRecommendServiceTest extends BaseTest {
   private HotRecommendService hotRecommendService;
 
   @Test(description = "查询热推")
-  public void quryHotRecommend() {
+  public void quryHotRecommend() throws ZZKServiceException {
       List<Recommend> list = hotRecommendService.quryHotRecommend();
      Assert.assertNotEquals(0, list.size());
   }

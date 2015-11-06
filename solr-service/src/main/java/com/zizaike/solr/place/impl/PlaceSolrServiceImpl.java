@@ -23,7 +23,7 @@ import org.springframework.data.solr.core.query.result.GroupPage;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.zizaike.core.framework.exception.IllegalParamterException;
-import com.zizaike.core.framework.exception.ServiceException;
+import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.solr.Place;
 import com.zizaike.entity.solr.model.SolrSearchablePlaceFields;
 import com.zizaike.is.solr.PlaceSolrService;
@@ -32,7 +32,7 @@ import com.zizaike.is.solr.PlaceSolrService;
 public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  implements PlaceSolrService {
     protected final Logger LOG = LoggerFactory.getLogger(PlaceSolrServiceImpl.class);
     @Override
-    public List<Place> queryPlaceByWords(String words) throws ServiceException {
+    public List<Place> queryPlaceByWords(String words) throws ZZKServiceException {
         long start = System.currentTimeMillis();
         if (words == null) {
             throw new IllegalParamterException("words is null");
@@ -61,7 +61,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
     }
     
     @Override
-    public List<Place> queryPlaceByWordsAndLoc(String words,Integer locid) throws ServiceException {
+    public List<Place> queryPlaceByWordsAndLoc(String words,Integer locid) throws ZZKServiceException {
         long start = System.currentTimeMillis();
         if (words == null) {
             throw new IllegalParamterException("words is null");

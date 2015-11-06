@@ -15,7 +15,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.zizaike.core.framework.exception.IllegalParamterException;
-import com.zizaike.core.framework.exception.ServiceException;
+import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.solr.User;
 import com.zizaike.is.solr.UserSolrService;
 
@@ -34,7 +34,7 @@ import com.zizaike.is.solr.UserSolrService;
 public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  implements UserSolrService {
     protected final Logger LOG = LoggerFactory.getLogger(UserSolrServiceImpl.class);
     @Override
-    public User queryUserById(Integer id) throws ServiceException {
+    public User queryUserById(Integer id) throws ZZKServiceException {
         long start = System.currentTimeMillis();
         if (id == null) {
             throw new IllegalParamterException("id is null");
