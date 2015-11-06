@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:solr="http://www.springframework.org/schema/data/solr" xmlns:util="http://www.springframework.org/schema/util" xmlns:cache="http://www.springframework.org/schema/cache" xmlns:security="http://www.springframework.org/schema/security"
+  xsi:schemaLocation="http://www.springframework.org/schema/data/solr http://www.springframework.org/schema/data/solr/spring-solr-1.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+  <solr:solr-server id="userSolrServer" url="${user.solr.host}" />
+  <bean id="userSolrTemplate" class="org.springframework.data.solr.core.SolrTemplate" scope="singleton">
+    <constructor-arg ref="userSolrServer" />
+  </bean>
+  <bean id="userSolrService" class="com.zizaike.solr.user.impl.UserSolrServiceImpl">
+    <property name="solrOperations" ref="userSolrTemplate" />
+  </bean>
+  <solr:solr-server id="placeSolrServer" url="${place.solr.host}" />
+  <bean id="placeSolrTemplate" class="org.springframework.data.solr.core.SolrTemplate" scope="singleton">
+    <constructor-arg ref="placeSolrServer" />
+  </bean>
+  <bean id="placeSolrService" class="com.zizaike.solr.place.impl.PlaceSolrServiceImpl">
+    <property name="solrOperations" ref="placeSolrTemplate" />
+  </bean>
+</beans>

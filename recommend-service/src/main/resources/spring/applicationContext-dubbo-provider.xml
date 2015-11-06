@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+   
+   <dubbo:application name="${dubbo.applicationName}"  />
+   <dubbo:registry address="${dubbo.address}"  file="${dubbo.applicationName}/dubbo.cache"/>  
+   <dubbo:protocol host="${dubbo.host}" name="dubbo" port="${dubbo.port}" />
+    <!-- 配置超时时间 -->
+   <dubbo:consumer timeout="${dubbo.timeout}"/>
+   <dubbo:monitor protocol="registry"/>
+    
+    <!-- 声明需要暴露的服务接口 -->     
+   <dubbo:service interface="com.zizaike.is.recommend.HotRecommendService" version="1.0.0" ref="hotRecommendService"  group="${dubbo.group}" />  
+	<bean id="hotRecommendService" class="com.zizaike.recommend.service.impl.HotRecommendServiceImpl" />
+</beans>

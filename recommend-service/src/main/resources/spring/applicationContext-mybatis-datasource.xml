@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+            http://www.springframework.org/schema/beans 
+            http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+			http://www.springframework.org/schema/aop 
+			http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+			http://www.springframework.org/schema/context 
+			http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	
+	 <!-- bean config for database and c3p0 -->
+  <bean id="zizaikeParentDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+    <property name="driverClass" value="${db.default.driver}" />
+    <property name="idleConnectionTestPeriod" value="${pool.c3p0.idle_connection_test_period}" />
+    <property name="preferredTestQuery" value="${pool.c3p0.preferred_test_query}" />
+    <property name="maxIdleTime" value="${pool.c3p0.max_idle_time}" />
+    <!-- 当连接池里面的链接用完的时候, c3p0一次性获取的连接数 -->
+    <property name="acquireIncrement" value="${pool.c3p0.acquire_increment}" />
+    <!-- 最大连接数 -->
+    <property name="maxPoolSize" value="${pool.c3p0.max_size}" />
+    <!-- 最小连接数 -->
+    <property name="minPoolSize" value="${pool.c3p0.min_size}" />
+  </bean>
+   <!-- zizaike 主数据源 -->
+  <bean id="master" parent="zizaikeParentDataSource">
+    <property name="jdbcUrl" value="${db.master.url}" />
+    <property name="user" value="${db.master.user}" />
+    <property name="password" value="${db.master.password}" />
+  </bean>
+  <!-- zizaike 从数据源 -->
+  <bean id="slave" parent="zizaikeParentDataSource">
+    <property name="jdbcUrl" value="${db.slave.url}" />
+    <property name="user" value="${db.slave.user}" />
+    <property name="password" value="${db.slave.password}" />
+  </bean>
+    <bean id="dataSource" class="com.zizaike.core.framework.springext.database.DynamicDataSource">
+    <property name="targetDataSources">
+      <map key-type="java.lang.String">
+        <entry key="slave" value-ref="slave"/>
+        <entry key="master" value-ref="master"/>
+      </map>
+    </property>
+    <!-- 默认数据源为主库 -->
+    <property name="defaultTargetDataSource" ref="master" />
+  </bean>
+  <bean id="dataSourceAdvice" class="com.zizaike.core.framework.springext.database.DataSourceAdvice" />
+  <aop:config>
+    <aop:advisor advice-ref="dataSourceAdvice" pointcut="execution(* com.zizaike.recommend.dao..*Dao.*(..))"/>
+  </aop:config>
+</beans>
