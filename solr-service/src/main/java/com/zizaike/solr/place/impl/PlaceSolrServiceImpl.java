@@ -19,25 +19,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
-import org.springframework.data.solr.core.query.result.GroupPage;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.zizaike.core.framework.exception.IllegalParamterException;
-import com.zizaike.core.framework.exception.ServiceException;
+import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.solr.Place;
 import com.zizaike.entity.solr.model.SolrSearchablePlaceFields;
 import com.zizaike.is.solr.PlaceSolrService;
 
 @NoRepositoryBean
 public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  implements PlaceSolrService {
-    protected final Logger LOG = LoggerFactory.getLogger(PlaceSolrServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PlaceSolrServiceImpl.class);
     @Override
-    public List<Place> queryPlaceByWords(String words) throws ServiceException {
+    public List<Place> queryPlaceByWords(String words) throws ZZKServiceException {
         long start = System.currentTimeMillis();
         if (words == null) {
             throw new IllegalParamterException("words is null");
         }
-        ArrayList<Place> place=new ArrayList<Place>();
+        List<Place> place=new ArrayList<Place>();
         SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));       
         //1为商圈
         query.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));
@@ -61,7 +60,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
     }
     
     @Override
-    public List<Place> queryPlaceByWordsAndLoc(String words,Integer locid) throws ServiceException {
+    public List<Place> queryPlaceByWordsAndLoc(String words,Integer locid) throws ZZKServiceException {
         long start = System.currentTimeMillis();
         if (words == null) {
             throw new IllegalParamterException("words is null");
@@ -69,7 +68,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         if (locid == null) {
             throw new IllegalParamterException("locid is null");
         }
-        ArrayList<Place> place=new ArrayList<Place>();
+        List<Place> place=new ArrayList<Place>();
         SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));       
         //1为商圈
         query.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));

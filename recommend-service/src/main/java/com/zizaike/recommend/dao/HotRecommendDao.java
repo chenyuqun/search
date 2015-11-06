@@ -12,13 +12,13 @@ package com.zizaike.recommend.dao;
 
 import java.util.List;
 
-import com.zizaike.core.framework.exception.ServiceException;
+import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.core.framework.springext.database.Slave;
 import com.zizaike.entity.recommend.hot.Recommend;
 
 /**  
  * ClassName:IRecommendDao <br/>  
- * Function: TODO ADD FUNCTION. <br/>  
+ * Function: 推荐dao. <br/>  
  * Reason:  推荐. <br/>  
  * Date:     2015年11月4日 下午2:48:57 <br/>  
  * @author   snow.zhang  
@@ -35,9 +35,9 @@ public interface HotRecommendDao {
      * @author snow.zhang  
      * @param destId
      * @return
-     * @throws ServiceException  
+     * @throws ZZKServiceException  
      * @since JDK 1.7
      */
-       List<Recommend> quryHotRecommend ()throws ServiceException;
+       List<Recommend> quryHotRecommend ()throws ZZKServiceException;
 }
   
