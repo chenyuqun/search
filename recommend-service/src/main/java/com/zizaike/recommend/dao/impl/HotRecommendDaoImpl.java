@@ -2,6 +2,8 @@ package com.zizaike.recommend.dao.impl;
 
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import com.zizaike.core.framework.exception.ServiceException;
 import com.zizaike.core.framework.mybatis.impl.GenericMyIbatisDao;
 import com.zizaike.entity.recommend.hot.Recommend;
@@ -17,11 +19,12 @@ import com.zizaike.recommend.dao.HotRecommendDao;
  * @since    JDK 1.7  
  * @see        
  */
+@Repository
 public class HotRecommendDaoImpl extends GenericMyIbatisDao<Recommend, Integer>implements HotRecommendDao {
     /**
      * 命名空间
      */
-    private static final String NAMESPACE = "com.zizaike.recommend.RecommendMapper." ;
+    private static final String NAMESPACE = "com.zizaike.recommend.dao.RecommendMapper." ;
     @Override
     public List<Recommend> quryHotRecommend() throws ServiceException {
         return this.getSqlSession().selectList(NAMESPACE+"quryHotRecommend");
