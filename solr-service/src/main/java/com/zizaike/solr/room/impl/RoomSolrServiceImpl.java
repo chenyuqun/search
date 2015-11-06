@@ -45,7 +45,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
         if (words == null) {
             throw new IllegalParamterException("words is null");
         }
-        ArrayList<Room> room=new ArrayList<Room>();
+        List<Room> room=new ArrayList<Room>();
         SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchableRoomFields.USERNAME).contains(words));
         query.addCriteria(new Criteria(SolrSearchableRoomFields.LOC_TYPEID).is(locTypeid));
         query.setRows(2);
