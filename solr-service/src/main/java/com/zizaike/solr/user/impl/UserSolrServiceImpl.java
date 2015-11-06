@@ -21,8 +21,8 @@ import com.zizaike.is.solr.UserSolrService;
 
 /**
  * ClassName:UserServiceImpl <br/>
- * Function: TODO ADD FUNCTION. <br/>
- * Reason: TODO ADD REASON. <br/>
+ * Function: 用户查询实现. <br/>
+ * Reason:用户查询. <br/>
  * Date: 2015年10月28日 下午5:01:35 <br/>
  * 
  * @author snow.zhang
@@ -32,7 +32,7 @@ import com.zizaike.is.solr.UserSolrService;
  */
 @NoRepositoryBean
 public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  implements UserSolrService {
-    protected final Logger LOG = LoggerFactory.getLogger(UserSolrServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserSolrServiceImpl.class);
     @Override
     public User queryUserById(Integer id) throws ZZKServiceException {
         long start = System.currentTimeMillis();

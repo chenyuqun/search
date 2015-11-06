@@ -10,7 +10,11 @@ package com.zizaike.recommend.dao;
  * @version
  * @since JDK 1.7
  */
-public final class DataSource {
+public class DataSource {
     public static final String MASTER = "master";
     public static final String SLAVE = "slave";
+
+    private DataSource() {
+
+    }
 }
