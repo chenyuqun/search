@@ -22,4 +22,11 @@
   <bean id="placeSolrService" class="com.zizaike.solr.place.impl.PlaceSolrServiceImpl">
     <property name="solrOperations" ref="placeSolrTemplate" />
   </bean>
+  <solr:solr-server id="roomSolrServer" url="${room.solr.host}" />
+  <bean id="roomSolrTemplate" class="org.springframework.data.solr.core.SolrTemplate" scope="singleton">
+    <constructor-arg ref="roomSolrServer" />
+  </bean>
+  <bean id="roomSolrService" class="com.zizaike.solr.room.impl.RoomSolrServiceImpl">
+    <property name="solrOperations" ref="roomSolrTemplate" />
+  </bean>
 </beans>
