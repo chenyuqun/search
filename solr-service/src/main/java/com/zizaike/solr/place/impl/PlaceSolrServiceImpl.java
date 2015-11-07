@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
@@ -24,12 +25,17 @@ import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.solr.Place;
+import com.zizaike.entity.solr.User;
+import com.zizaike.entity.solr.dto.AssociateWordsDTO;
 import com.zizaike.entity.solr.model.SolrSearchablePlaceFields;
 import com.zizaike.is.solr.PlaceSolrService;
+import com.zizaike.is.solr.UserSolrService;
 
 @NoRepositoryBean
 public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  implements PlaceSolrService {
     private static final Logger LOG = LoggerFactory.getLogger(PlaceSolrServiceImpl.class);
+    @Autowired
+    public UserSolrService userSolrService;   
     @Override
     public List<Place> queryPlaceByWords(String words) throws ZZKServiceException {
         long start = System.currentTimeMillis();
@@ -55,12 +61,13 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         while(spot.hasNext()){
             place.add(spot.next());
              }
+        //if(place.isEmpty());
         LOG.info("when call queryPlaceByWords, use: {}ms", System.currentTimeMillis() - start);
         return place;
     }
     
     @Override
-    public List<Place> queryPlaceByWordsAndLoc(String words,Integer locid) throws ZZKServiceException {
+    public List<AssociateWordsDTO> queryPlaceByWordsAndLoc(String words,Integer destId,Integer locid) throws ZZKServiceException {
         long start = System.currentTimeMillis();
         if (words == null) {
             throw new IllegalParamterException("words is null");
@@ -68,7 +75,13 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         if (locid == null) {
             throw new IllegalParamterException("locid is null");
         }
-        List<Place> place=new ArrayList<Place>();
+        if (destId == null) {
+            throw new IllegalParamterException("destId is null");
+        }
+        
+        List<AssociateWordsDTO> associateWords=new ArrayList<AssociateWordsDTO>();
+        
+        //List<Place> place=new ArrayList<Place>();
         SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));       
         //1为商圈
         query.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));
@@ -77,22 +90,112 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         //最多2条记录
         query.setRows(2);
         Iterator<Place> shangquan=getSolrOperations().queryForPage(query, Place.class).iterator();            
-        while(shangquan.hasNext()){
-            place.add(shangquan.next());
+                while(shangquan.hasNext()){
+            //place.add(shangquan.next());
+            Place place=shangquan.next();
+            AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
+            if(place.getId()!=null){
+            associateWordsDTO.setUid(place.getId());
+            }
+            associateWordsDTO.setAssociateType(2);
+            if(place.getDestId()!=null){
+            associateWordsDTO.setDestId(place.getDestId());
+            }
+            associateWordsDTO.setName(place.getPoiName()==null?"":place.getPoiName());
+            associateWordsDTO.setAddress(place.getGoogleMapAddress()==null?"":place.getGoogleMapAddress());
+            if(place.getLocid()!=null){
+            associateWordsDTO.setLocId(place.getLocid());
+            }
+            associateWords.add(associateWordsDTO);
            }
         SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));       
         //2为景点
         query2.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(2));
         query2.addCriteria(new Criteria(SolrSearchablePlaceFields.LOCID).is(locid));
         //最多2条记录
-        query2.setRows(2);
-        
+        query2.setRows(2); 
         Iterator<Place> spot=getSolrOperations().queryForPage(query2, Place.class).iterator();
         while(spot.hasNext()){
-            place.add(spot.next());
+            //place.add(spot.next());
+            Place place=spot.next();
+            AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
+            if(place.getId()!=null){
+            associateWordsDTO.setUid(place.getId());
+            }
+            associateWordsDTO.setAssociateType(3);
+            if(place.getDestId()!=null){
+            associateWordsDTO.setDestId(place.getDestId());
+            }
+            associateWordsDTO.setName(place.getPoiName()==null?"":place.getPoiName());
+            associateWordsDTO.setAddress(place.getGoogleMapAddress()==null?"":place.getGoogleMapAddress());
+            if(place.getLocid()!=null){
+            associateWordsDTO.setLocId(place.getLocid());
+            }
+            associateWords.add(associateWordsDTO);
              }
+        //查询民宿名称和地址关联结果
+        List<AssociateWordsDTO> user=userSolrService.queryUserByWordsAndLoc(words, destId, locid);
+        associateWords.addAll(user);
+        if(associateWords.size()>10){
+            List<AssociateWordsDTO> newAssociateWords=new ArrayList<AssociateWordsDTO>();
+            for(int i=0;i<10;i++){
+                newAssociateWords.add(associateWords.get(i));
+            }
+           return newAssociateWords;
+        }
+        //如果没有结果则查询全站
+        if(associateWords.size()==0){
+            //全站商圈
+            SimpleQuery query3 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));
+            query3.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));
+            query3.setRows(1); 
+            shangquan=getSolrOperations().queryForPage(query3, Place.class).iterator(); 
+            while(shangquan.hasNext()){
+                Place place=shangquan.next();
+                AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
+                if(place.getId()!=null){
+                associateWordsDTO.setUid(place.getId());
+                }
+                associateWordsDTO.setAssociateType(2);
+                if(place.getDestId()!=null){
+                associateWordsDTO.setDestId(place.getDestId());
+                }
+                associateWordsDTO.setName(place.getPoiName()==null?"":place.getPoiName());
+                associateWordsDTO.setAddress(place.getGoogleMapAddress()==null?"":place.getGoogleMapAddress());
+                if(place.getLocid()!=null){
+                associateWordsDTO.setLocId(place.getLocid());
+                }
+                associateWords.add(associateWordsDTO);
+            }
+            //全站景点
+            SimpleQuery query4 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));
+            query4.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(2));
+            query4.setRows(1); 
+            spot=getSolrOperations().queryForPage(query4, Place.class).iterator();
+            while(shangquan.hasNext()){
+                Place place=spot.next();
+                AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
+                if(place.getId()!=null){
+                associateWordsDTO.setUid(place.getId());
+                }
+                associateWordsDTO.setAssociateType(3);
+                if(place.getDestId()!=null){
+                associateWordsDTO.setDestId(place.getDestId());
+                }
+                associateWordsDTO.setName(place.getPoiName()==null?"":place.getPoiName());
+                associateWordsDTO.setAddress(place.getGoogleMapAddress()==null?"":place.getGoogleMapAddress());
+                if(place.getLocid()!=null){
+                associateWordsDTO.setLocId(place.getLocid());
+                }
+                associateWords.add(associateWordsDTO);
+            }
+            //全站民宿 TO DO
+            //List<AssociateWordsDTO> user=userSolrService.queryUserByWordsAndLoc(words, destId, locid);
+        }
         LOG.info("when call queryPlaceByWordsAndLoc, use: {}ms", System.currentTimeMillis() - start);
-        return place;
+        return associateWords;
     }
+    
+    
 }
   
