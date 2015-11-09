@@ -106,6 +106,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             if(place.getLocid()!=null){
             associateWordsDTO.setLocId(place.getLocid());
             }
+            associateWordsDTO.setIsAllDest(0);
             associateWords.add(associateWordsDTO);
            }
         SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));       
@@ -131,6 +132,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             if(place.getLocid()!=null){
             associateWordsDTO.setLocId(place.getLocid());
             }
+            associateWordsDTO.setIsAllDest(0);
             associateWords.add(associateWordsDTO);
              }
         //查询民宿名称和地址关联结果
@@ -165,6 +167,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
                 if(place.getLocid()!=null){
                 associateWordsDTO.setLocId(place.getLocid());
                 }
+                associateWordsDTO.setIsAllDest(1);
                 associateWords.add(associateWordsDTO);
             }
             //全站景点
@@ -187,10 +190,20 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
                 if(place.getLocid()!=null){
                 associateWordsDTO.setLocId(place.getLocid());
                 }
+                associateWordsDTO.setIsAllDest(1);
                 associateWords.add(associateWordsDTO);
             }
-            //全站民宿 TO DO
-            //List<AssociateWordsDTO> user=userSolrService.queryUserByWordsAndLoc(words, destId, locid);
+            //全站民宿 
+            List<AssociateWordsDTO> user2=userSolrService.queryUserByWordsAndDest(words, destId);
+            associateWords.addAll(user2);
+            //最多5条
+            if(associateWords.size()>5){
+                List<AssociateWordsDTO> newAssociateWords=new ArrayList<AssociateWordsDTO>();
+                for(int i=0;i<5;i++){
+                    newAssociateWords.add(associateWords.get(i));
+                }
+               return newAssociateWords;
+            }
         }
         LOG.info("when call queryPlaceByWordsAndLoc, use: {}ms", System.currentTimeMillis() - start);
         return associateWords;
