@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean name="genericObjectPoolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
+		<property name="maxIdle" value="${redis.maxIdle}" />
+		<property name="maxTotal" value="${redis.maxTotal}" />
+		<property name="minIdle" value="${redis.minIdle}" />
+	</bean>
+
+	<bean id="jedisCluster" class="com.zizaike.redis.JedisClusterFactory">
+		<property name="addressKeyPrefix" value="${jedisCluster.addressKeyPrefix}" />   <!-- 属性文件里 key的前缀 -->
+		<property name="timeout" value="${jedisCluster.timeout}" />
+		<property name="maxRedirections" value="${jedisCluster.maxRedirections}" />
+		<property name="genericObjectPoolConfig" ref="genericObjectPoolConfig" />
+	</bean>
+</beans>
