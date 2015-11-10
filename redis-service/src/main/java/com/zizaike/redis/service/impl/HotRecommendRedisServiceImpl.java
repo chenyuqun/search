@@ -5,15 +5,14 @@
  * Date:2015年11月10日下午4:07:03  <br/>
  * Copyright (c) 2015, zizaike.com All Rights Reserved.  
  *  
-*/  
-  
-package com.zizaike.redis.service.impl;  
+ */
+
+package com.zizaike.redis.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.TypeReference;
 import com.zizaike.core.framework.cache.support.redis.RedisCacheDao;
@@ -21,33 +20,38 @@ import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.hot.Recommend;
 import com.zizaike.is.redis.HotRecommendRedisService;
 import com.zizaike.redis.constents.TimeType;
-import com.zizaike.redis.constents.Prefix.SearchRedisCacheKey;
-import com.zizaike.redis.constents.Prefix.SearchRedisCacheKeyPrefix;
+import com.zizaike.redis.constents.prefix.SearchRedisCacheKey;
+import com.zizaike.redis.constents.prefix.SearchRedisCacheKeyPrefix;
 
-/**  
- * ClassName:HotRecommendRedisServiceImpl <br/>  
- * Function: 用户热推缓存服务 <br/>  
- * Date:     2015年11月10日 下午4:07:03 <br/>  
- * @author   snow.zhang  
- * @version    
- * @since    JDK 1.7  
- * @see        
+/**
+ * ClassName:HotRecommendRedisServiceImpl <br/>
+ * Function: 用户热推缓存服务 <br/>
+ * Date: 2015年11月10日 下午4:07:03 <br/>
+ * 
+ * @author snow.zhang
+ * @version
+ * @since JDK 1.7
+ * @see
  */
-public class HotRecommendRedisServiceImpl  implements HotRecommendRedisService {
+public class HotRecommendRedisServiceImpl implements HotRecommendRedisService {
     @Autowired
     private RedisCacheDao redisCacheDao;
+
     @Override
     public List<Recommend> qury() throws ZZKServiceException {
-        return redisCacheDao.get(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.HOT.getKey(), new TypeReference<ArrayList<Recommend>>(){});
+        return redisCacheDao.get(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.HOT.getKey(),
+                new TypeReference<ArrayList<Recommend>>() {
+                });
     }
+
     /**
      * 
-     * 缓存一天.  
+     * 缓存一天.
      */
     @Override
     public void save(List<Recommend> value) throws ZZKServiceException {
-        redisCacheDao.setEx(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.HOT.getKey(), value, TimeType.DAY.getValue());
+        redisCacheDao.setEx(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.HOT.getKey(), value,
+                TimeType.DAY.getValue());
     }
 
 }
-  

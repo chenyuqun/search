@@ -13,7 +13,7 @@ import com.zizaike.core.framework.cache.support.redis.RedisCacheDao;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.hot.Recommend;
 import com.zizaike.redis.basetest.BaseTest;
-import com.zizaike.redis.constents.Prefix.SearchRedisCacheKeyPrefix;
+import com.zizaike.redis.constents.prefix.SearchRedisCacheKeyPrefix;
 
 /**
  * ClassName:RedisService <br/>

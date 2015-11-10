@@ -45,15 +45,23 @@ public class JedisClusterFactory implements FactoryBean<JedisCluster>, Initializ
 
     @Override
     public Class<? extends JedisCluster> getObjectType() {
-        return (this.jedisCluster != null ? this.jedisCluster.getClass() : JedisCluster.class);
+        return this.jedisCluster != null ? this.jedisCluster.getClass() : JedisCluster.class;
     }
 
     @Override
     public boolean isSingleton() {
         return true;
     }
-
-    private Set<HostAndPort> parseHostAndPort() throws Exception {
+    /**
+     * 
+     * parseHostAndPort:解析port. <br/>  
+     *  
+     * @author snow.zhang  
+     * @return
+     * @throws Exception  
+     * @since JDK 1.7
+     */
+    private Set<HostAndPort> parseHostAndPort() {
         try {
             Set<HostAndPort> haps = new HashSet<HostAndPort>();
             for (Object key : propertyConfigurer.getPropertyKeySet()) {
@@ -75,8 +83,6 @@ public class JedisClusterFactory implements FactoryBean<JedisCluster>, Initializ
             return haps;
         } catch (IllegalArgumentException ex) {
             throw ex;
-        } catch (Exception ex) {
-            throw new Exception("解析 jedis 配置文件失败", ex);
         }
     }
 
