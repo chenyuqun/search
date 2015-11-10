@@ -24,10 +24,12 @@ import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
+import com.zizaike.entity.loctype.Loctype;
 import com.zizaike.entity.solr.Place;
 import com.zizaike.entity.solr.User;
 import com.zizaike.entity.solr.dto.AssociateWordsDTO;
 import com.zizaike.entity.solr.model.SolrSearchablePlaceFields;
+import com.zizaike.is.loctype.LoctypeService;
 import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.UserSolrService;
 
@@ -35,7 +37,9 @@ import com.zizaike.is.solr.UserSolrService;
 public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  implements PlaceSolrService {
     private static final Logger LOG = LoggerFactory.getLogger(PlaceSolrServiceImpl.class);
     @Autowired
-    public UserSolrService userSolrService;   
+    public UserSolrService userSolrService; 
+    @Autowired
+    public LoctypeService loctypeService;
     @Override
     public List<Place> queryPlaceByWords(String words) throws ZZKServiceException {
         long start = System.currentTimeMillis();
@@ -80,7 +84,21 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         }
         
         List<AssociateWordsDTO> associateWords=new ArrayList<AssociateWordsDTO>();
-        
+        //查询城市 走database
+        Loctype loctype=new Loctype();
+        loctype.setDestId(destId);
+        loctype.setTypeName(words);
+        List<Loctype> loc=loctypeService.queryLoctype(loctype);
+        for(int i=0;i<loc.size();i++){
+            AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
+            associateWordsDTO.setIsAllDest(0);
+            associateWordsDTO.setAssociateType(1);
+            if(loc.get(i).getLocid()!=null){
+            associateWordsDTO.setLocId(loc.get(i).getLocid());
+            }
+            associateWordsDTO.setName(loc.get(i).getTypeName()==null?"":loc.get(i).getTypeName());
+            associateWords.add(associateWordsDTO);
+        }
         //List<Place> place=new ArrayList<Place>();
         SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));       
         //1为商圈
@@ -147,6 +165,20 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         }
         //如果没有结果则查询全站
         if(associateWords.size()==0){
+            //城市 走database
+            Loctype loctype2=new Loctype();
+            loctype2.setTypeName(words);
+            List<Loctype> locall=loctypeService.queryLoctype(loctype);
+            for(int i=0;i<locall.size();i++){
+                AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
+                associateWordsDTO.setIsAllDest(0);
+                associateWordsDTO.setAssociateType(1);
+                if(loc.get(i).getLocid()!=null){
+                associateWordsDTO.setLocId(locall.get(i).getLocid());
+                }
+                associateWordsDTO.setName(locall.get(i).getTypeName()==null?"":loc.get(i).getTypeName());
+                associateWords.add(associateWordsDTO);
+            }
             //全站商圈
             SimpleQuery query3 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));
             query3.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));
