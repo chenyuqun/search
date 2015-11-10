@@ -9,4 +9,5 @@
 	<context:property-placeholder location="classpath:test.properties"/>
 	<import resource="applicationContext-base.xml"/>
 	<import resource="applicationContext-solr.xml"/>
+	<import resource="applicationContext-dubbo-consumer.xml"/>
 </beans>

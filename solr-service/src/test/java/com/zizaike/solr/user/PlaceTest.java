@@ -12,7 +12,6 @@ package com.zizaike.solr.user;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.solr.core.query.result.GroupPage;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

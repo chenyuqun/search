@@ -26,7 +26,6 @@ import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.loctype.Loctype;
 import com.zizaike.entity.solr.Place;
-import com.zizaike.entity.solr.User;
 import com.zizaike.entity.solr.dto.AssociateWordsDTO;
 import com.zizaike.entity.solr.model.SolrSearchablePlaceFields;
 import com.zizaike.is.loctype.LoctypeService;
