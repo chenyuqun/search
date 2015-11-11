@@ -13,11 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.TypeReference;
 import com.zizaike.core.framework.cache.support.redis.RedisCacheDao;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.hot.Recommend;
+import com.zizaike.is.recommend.HotRecommendService;
 import com.zizaike.is.redis.HotRecommendRedisService;
 import com.zizaike.redis.constents.TimeType;
 import com.zizaike.redis.constents.prefix.SearchRedisCacheKey;
@@ -33,15 +35,23 @@ import com.zizaike.redis.constents.prefix.SearchRedisCacheKeyPrefix;
  * @since JDK 1.7
  * @see
  */
+@Service
 public class HotRecommendRedisServiceImpl implements HotRecommendRedisService {
     @Autowired
     private RedisCacheDao redisCacheDao;
+    @Autowired
+    private HotRecommendService hotRecommendService;
 
     @Override
     public List<Recommend> qury() throws ZZKServiceException {
-        return redisCacheDao.get(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.HOT.getKey(),
+        List<Recommend> list =  redisCacheDao.get(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.HOT.getKey(),
                 new TypeReference<ArrayList<Recommend>>() {
                 });
+        if(list == null){
+            list = hotRecommendService.quryHotRecommend();
+            save(list);
+        }
+        return list;
     }
 
     /**
