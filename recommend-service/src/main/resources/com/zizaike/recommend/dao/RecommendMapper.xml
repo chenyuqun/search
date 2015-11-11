@@ -6,7 +6,7 @@
     <result column="dest_id" property="destId" jdbcType="INTEGER" />
     <result column="recommend_type" property="recommendType" jdbcType="INTEGER"  typeHandler="com.zizaike.recommend.dao.handler.RecommendTypeHandler"/>
     <result column="recommend_name" property="recommendName" jdbcType="VARCHAR" />
-    <result column="e_name" property="eName" jdbcType="VARCHAR" />
+    <result column="e_name" property="engName" jdbcType="VARCHAR" />
     <result column="rank" property="rank" jdbcType="INTEGER" />
     <result column="active" property="active" jdbcType="INTEGER" />
     <result column="relation_id" property="relationId" jdbcType="INTEGER" />
@@ -49,7 +49,7 @@
       <if test="recommendName != null" >
         recommend_name,
       </if>
-      <if test="eName != neull" >
+      <if test="engName != neull" >
         e_name,
       </if>
       <if test="rank != null" >
@@ -81,8 +81,8 @@
       <if test="recommendName != null" >
         #{recommendName,jdbcType=VARCHAR},
       </if>
-      <if test="eName != null" >
-        #{eName,jdbcType=VARCHAR},
+      <if test="engName != null" >
+        #{engName,jdbcType=VARCHAR},
       </if>
       <if test="rank != null" >
         #{rank,jdbcType=INTEGER},
@@ -113,8 +113,8 @@
       <if test="recommendName != null" >
         recommend_name = #{recommendName,jdbcType=VARCHAR},
       </if>
-      <if test="eName != null" >
-       e_name =  #{eName,jdbcType=VARCHAR},
+      <if test="engName != null" >
+       e_name =  #{engName,jdbcType=VARCHAR},
       </if>
       <if test="rank != null" >
         rank = #{rank,jdbcType=INTEGER},
@@ -139,7 +139,7 @@
     set dest_id = #{destId,jdbcType=INTEGER},
       recommend_type = #{recommendType,typeHandler=com.zizaike.recommend.dao.handler.RecommendTypeHandler,javaType=com.zizaike.entity.recommend.hot.RecommendType},
       recommend_name = #{recommendName,jdbcType=VARCHAR},
-      e_name =  #{eName,jdbcType=VARCHAR},
+      e_name =  #{engName,jdbcType=VARCHAR},
       rank = #{rank,jdbcType=INTEGER},
       active = #{active,jdbcType=INTEGER},
       relation_id = #{relationId,jdbcType=INTEGER},

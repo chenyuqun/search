@@ -49,10 +49,10 @@ public class RedisServiceTest extends BaseTest {
     public void set() throws ZZKServiceException {
         Recommend recommend = new Recommend();
         recommend.setRecommendName("测试setRecommendName");
-        recommend.seteName("测试name");
+        recommend.setEngName("测试name");
         Recommend recommend2 = new Recommend();
         recommend2.setRecommendName("测试setRecommendName2");
-        recommend2.seteName("测试name2");
+        recommend2.setEngName("测试name2");
         dao.set(SearchRedisCacheKeyPrefix.RECOMMEND, "hot1", recommend);
         dao.set(SearchRedisCacheKeyPrefix.RECOMMEND, "hot2", recommend2);
     }

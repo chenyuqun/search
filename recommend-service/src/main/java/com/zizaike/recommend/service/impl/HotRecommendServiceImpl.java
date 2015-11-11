@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.hot.Recommend;
 import com.zizaike.is.recommend.HotRecommendService;
-import com.zizaike.is.redis.HotRecommendRedisService;
 import com.zizaike.recommend.dao.HotRecommendDao;
 
 /**  
@@ -34,17 +33,10 @@ import com.zizaike.recommend.dao.HotRecommendDao;
 public class HotRecommendServiceImpl implements HotRecommendService {
     @Autowired
    private HotRecommendDao hotRecommendDao;
-    @Autowired
-   private HotRecommendRedisService HotRecommendRedisService;
 
     @Override
     public List<Recommend> quryHotRecommend() throws ZZKServiceException {
-        List<Recommend> list = HotRecommendRedisService.qury();
-        if(list==null){
-            list = hotRecommendDao.quryHotRecommend();
-            //保存缓存
-            HotRecommendRedisService.save(list);
-        }
+        List<Recommend> list = hotRecommendDao.quryHotRecommend();
         return list;
     }
 
