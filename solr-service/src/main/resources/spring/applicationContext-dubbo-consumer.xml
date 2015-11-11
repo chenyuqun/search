@@ -6,5 +6,5 @@
     http://www.springframework.org/schema/beans/spring-beans.xsd          
     http://code.alibabatech.com/schema/dubbo          
     http://code.alibabatech.com/schema/dubbo/dubbo.xsd">  
-    <dubbo:reference id="loctypeService" interface="com.zizaike.is.loctype.LoctypeService" version="1.0.0" group="${dubbo.group}"  check="false"/>
+    <dubbo:reference id="loctypeService" interface="com.zizaike.is.recommend.LoctypeService" version="1.0.0" group="${dubbo.group}"  check="false"/>
 </beans>

@@ -18,10 +18,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.loctype.Loctype;
-import com.zizaike.entity.recommend.hot.Recommend;
-import com.zizaike.is.loctype.LoctypeService;
-import com.zizaike.is.recommend.HotRecommendService;
+import com.zizaike.entity.recommend.hot.Loctype;
+import com.zizaike.is.recommend.LoctypeService;
 import com.zizaike.recommend.basetest.BaseTest;
 
 /**  

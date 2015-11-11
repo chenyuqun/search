@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.zizaike.recommend.dao.LoctypeMapper" >
-  <resultMap id="BaseResultMap" type="com.zizaike.entity.loctype.Loctype" >
+  <resultMap id="BaseResultMap" type="com.zizaike.entity.recommend.hot.Loctype" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="dest_id" property="destId" jdbcType="INTEGER" />
     <result column="type_name" property="typeName" jdbcType="VARCHAR" />
@@ -33,7 +33,7 @@
     delete from t_loc_type
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.zizaike.entity.loctype.Loctype" >
+  <insert id="insert" parameterType="com.zizaike.entity.recommend.hot.Loctype" >
     insert into t_loc_type (id, dest_id, type_name, 
       parent_id, type_code, type_desc, 
       status, rank, name_code, 
@@ -47,7 +47,7 @@
       #{roomNum,jdbcType=INTEGER}, #{homeNum,jdbcType=INTEGER}, #{vhomeNum,jdbcType=INTEGER}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.zizaike.entity.loctype.Loctype" >
+  <insert id="insertSelective" parameterType="com.zizaike.entity.recommend.hot.Loctype" >
     insert into t_loc_type
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -150,7 +150,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zizaike.entity.loctype.Loctype" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.zizaike.entity.recommend.hot.Loctype" >
     update t_loc_type
     <set >
       <if test="destId != null" >
@@ -201,7 +201,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zizaike.entity.loctype.Loctype" >
+  <update id="updateByPrimaryKey" parameterType="com.zizaike.entity.recommend.hot.Loctype" >
     update t_loc_type
     set dest_id = #{destId,jdbcType=INTEGER},
       type_name = #{typeName,jdbcType=VARCHAR},
@@ -221,7 +221,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   
-   <select id="queryLoctype" resultMap="BaseResultMap" parameterType="com.zizaike.entity.loctype.Loctype">
+   <select id="queryLoctype" resultMap="BaseResultMap" parameterType="com.zizaike.entity.recommend.hot.Loctype">
     select 
     <include refid="Base_Column_List" />
     from t_loc_type

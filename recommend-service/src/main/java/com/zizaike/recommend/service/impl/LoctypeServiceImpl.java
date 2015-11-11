@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.loctype.Loctype;
-import com.zizaike.is.loctype.LoctypeService;
+import com.zizaike.entity.recommend.hot.Loctype;
+import com.zizaike.is.recommend.LoctypeService;
 import com.zizaike.recommend.dao.LoctypeDao;
 
 /**  

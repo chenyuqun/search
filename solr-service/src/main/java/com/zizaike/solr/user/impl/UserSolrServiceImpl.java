@@ -23,6 +23,7 @@ import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.solr.User;
+import com.zizaike.entity.solr.dto.AssociateType;
 import com.zizaike.entity.solr.dto.AssociateWordsDTO;
 import com.zizaike.entity.solr.model.SolrSearchableUserFields;
 import com.zizaike.is.solr.UserSolrService;
@@ -83,7 +84,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             if(user.getId()!=null){
             associateWordsDTO.setUid(user.getId());
             }
-            associateWordsDTO.setAssociateType(4);
+            associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_NAME);
             if(user.getDestId()!=null){
             associateWordsDTO.setDestId(user.getDestId());
             }
@@ -112,7 +113,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             if(user.getId()!=null){
             associateWordsDTO.setUid(user.getId());
             }
-            associateWordsDTO.setAssociateType(5);
+            associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_ADDRESS);
             if(user.getDestId()!=null){
             associateWordsDTO.setDestId(user.getDestId());
             }
@@ -149,7 +150,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             if(user.getId()!=null){
             associateWordsDTO.setUid(user.getId());
             }
-            associateWordsDTO.setAssociateType(4);
+            associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_NAME);
             if(user.getDestId()!=null){
             associateWordsDTO.setDestId(user.getDestId());
             }
@@ -174,7 +175,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             if(user.getId()!=null){
             associateWordsDTO.setUid(user.getId());
             }
-            associateWordsDTO.setAssociateType(5);
+            associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_ADDRESS);
             if(user.getDestId()!=null){
             associateWordsDTO.setDestId(user.getDestId());
             }

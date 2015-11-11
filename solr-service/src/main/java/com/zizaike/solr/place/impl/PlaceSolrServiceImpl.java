@@ -24,11 +24,12 @@ import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.loctype.Loctype;
+import com.zizaike.entity.recommend.hot.Loctype;
 import com.zizaike.entity.solr.Place;
+import com.zizaike.entity.solr.dto.AssociateType;
 import com.zizaike.entity.solr.dto.AssociateWordsDTO;
 import com.zizaike.entity.solr.model.SolrSearchablePlaceFields;
-import com.zizaike.is.loctype.LoctypeService;
+import com.zizaike.is.recommend.LoctypeService;
 import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.UserSolrService;
 
@@ -91,7 +92,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         for(int i=0;i<loc.size();i++){
             AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
             associateWordsDTO.setIsAllDest(0);
-            associateWordsDTO.setAssociateType(1);
+            associateWordsDTO.setAssociateType(AssociateType.CITY);
             if(loc.get(i).getLocid()!=null){
             associateWordsDTO.setLocId(loc.get(i).getLocid());
             }
@@ -117,7 +118,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             if(place.getId()!=null){
             associateWordsDTO.setUid(place.getId());
             }
-            associateWordsDTO.setAssociateType(2);
+            associateWordsDTO.setAssociateType(AssociateType.BUSINESS_AREA);
             if(place.getDestId()!=null){
             associateWordsDTO.setDestId(place.getDestId());
             }
@@ -146,7 +147,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             if(place.getId()!=null){
             associateWordsDTO.setUid(place.getId());
             }
-            associateWordsDTO.setAssociateType(3);
+            associateWordsDTO.setAssociateType(AssociateType.SCENIC_SPOTS);
             if(place.getDestId()!=null){
             associateWordsDTO.setDestId(place.getDestId());
             }
@@ -177,7 +178,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             for(int i=0;i<locall.size();i++){
                 AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
                 associateWordsDTO.setIsAllDest(0);
-                associateWordsDTO.setAssociateType(1);
+                associateWordsDTO.setAssociateType(AssociateType.CITY);
                 if(loc.get(i).getLocid()!=null){
                 associateWordsDTO.setLocId(locall.get(i).getLocid());
                 }
@@ -195,7 +196,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
                 if(place.getId()!=null){
                 associateWordsDTO.setUid(place.getId());
                 }
-                associateWordsDTO.setAssociateType(2);
+                associateWordsDTO.setAssociateType(AssociateType.BUSINESS_AREA);
                 if(place.getDestId()!=null){
                 associateWordsDTO.setDestId(place.getDestId());
                 }
@@ -218,7 +219,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
                 if(place.getId()!=null){
                 associateWordsDTO.setUid(place.getId());
                 }
-                associateWordsDTO.setAssociateType(3);
+                associateWordsDTO.setAssociateType(AssociateType.SCENIC_SPOTS);
                 if(place.getDestId()!=null){
                 associateWordsDTO.setDestId(place.getDestId());
                 }
