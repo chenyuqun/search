@@ -101,9 +101,12 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         //List<Place> place=new ArrayList<Place>();
         SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));       
         //1为商圈
-        query.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));
+        query.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));    
+        query.addCriteria(new Criteria(SolrSearchablePlaceFields.DEST_ID).is(destId));      
         //加上locId限制
-        query.addCriteria(new Criteria(SolrSearchablePlaceFields.LOCID).is(locid));
+        if(locid!=0){
+            query.addCriteria(new Criteria(SolrSearchablePlaceFields.LOCID).is(locid));
+        }
         //最多2条记录
         query.setRows(2);
         Iterator<Place> shangquan=getSolrOperations().queryForPage(query, Place.class).iterator();            
@@ -129,7 +132,10 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));       
         //2为景点
         query2.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(2));
-        query2.addCriteria(new Criteria(SolrSearchablePlaceFields.LOCID).is(locid));
+        query2.addCriteria(new Criteria(SolrSearchablePlaceFields.DEST_ID).is(destId));
+        if(locid!=0){
+            query2.addCriteria(new Criteria(SolrSearchablePlaceFields.LOCID).is(locid));
+        }
         //最多2条记录
         query2.setRows(2); 
         Iterator<Place> spot=getSolrOperations().queryForPage(query2, Place.class).iterator();

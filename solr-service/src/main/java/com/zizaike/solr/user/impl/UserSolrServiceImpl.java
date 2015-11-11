@@ -68,7 +68,9 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         //List<User> user=new ArrayList<User>();
         SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchableUserFields.USERNAME).contains(words));       
         //1为商圈
-        query.addCriteria(new Criteria(SolrSearchableUserFields.LOC_TYPEID).is(locid));
+        if(locid!=0){
+            query.addCriteria(new Criteria(SolrSearchableUserFields.LOC_TYPEID).is(locid));
+        }
         //加上locId限制
         query.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
         //最多2条记录
@@ -95,7 +97,9 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
            }
         SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchableUserFields.ADDRESS).contains(words));       
         //2为地址
-        query2.addCriteria(new Criteria(SolrSearchableUserFields.LOC_TYPEID).is(locid));
+        if(locid!=0){
+            query2.addCriteria(new Criteria(SolrSearchableUserFields.LOC_TYPEID).is(locid));
+        }
         query2.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
         //最多2条记录
         query2.setRows(10);
