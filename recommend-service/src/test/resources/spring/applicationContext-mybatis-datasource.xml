@@ -13,7 +13,7 @@
 	
 	 <!-- bean config for database and c3p0 -->
   <bean id="zizaikeParentDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-    <property name="driverClass" value="${db.default.driver}" />
+    <property name="driverClass" value="${mysql.default.driver}" />
     <property name="idleConnectionTestPeriod" value="${pool.c3p0.idle_connection_test_period}" />
     <property name="preferredTestQuery" value="${pool.c3p0.preferred_test_query}" />
     <property name="maxIdleTime" value="${pool.c3p0.max_idle_time}" />
@@ -26,15 +26,15 @@
   </bean>
    <!-- zizaike 主数据源 -->
   <bean id="master" parent="zizaikeParentDataSource">
-    <property name="jdbcUrl" value="${db.master.url}" />
-    <property name="user" value="${db.master.user}" />
-    <property name="password" value="${db.master.password}" />
+    <property name="jdbcUrl" value="${mysql.master.url}" />
+    <property name="user" value="${mysql.master.user}" />
+    <property name="password" value="${mysql.master.password}" />
   </bean>
   <!-- zizaike 从数据源 -->
   <bean id="slave" parent="zizaikeParentDataSource">
-    <property name="jdbcUrl" value="${db.slave.url}" />
-    <property name="user" value="${db.slave.user}" />
-    <property name="password" value="${db.slave.password}" />
+    <property name="jdbcUrl" value="${mysql.slave.url}" />
+    <property name="user" value="${mysql.slave.user}" />
+    <property name="password" value="${mysql.slave.password}" />
   </bean>
     <bean id="dataSource" class="com.zizaike.core.framework.springext.database.DynamicDataSource">
     <property name="targetDataSources">
