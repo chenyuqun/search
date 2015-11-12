@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zizaike.recommend.dao.LoctypeMapper" >
+  <resultMap id="BaseResultMap" type="com.zizaike.entity.recommend.hot.Loctype" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="dest_id" property="destId" jdbcType="INTEGER" />
+    <result column="type_name" property="typeName" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="type_code" property="typeCode" jdbcType="VARCHAR" />
+    <result column="type_desc" property="typeDesc" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="BIT" />
+    <result column="rank" property="rank" jdbcType="INTEGER" />
+    <result column="name_code" property="nameCode" jdbcType="VARCHAR" />
+    <result column="map_x" property="mapX" jdbcType="CHAR" />
+    <result column="map_y" property="mapY" jdbcType="CHAR" />
+    <result column="map_zoom" property="mapZoom" jdbcType="CHAR" />
+    <result column="locid" property="locid" jdbcType="INTEGER" />
+    <result column="room_num" property="roomNum" jdbcType="INTEGER" />
+    <result column="home_num" property="homeNum" jdbcType="INTEGER" />
+    <result column="vhome_num" property="vhomeNum" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, dest_id, type_name, parent_id, type_code, type_desc, status, rank, name_code, 
+    map_x, map_y, map_zoom, locid, room_num, home_num, vhome_num
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_loc_type
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_loc_type
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zizaike.entity.recommend.hot.Loctype" >
+    insert into t_loc_type (id, dest_id, type_name, 
+      parent_id, type_code, type_desc, 
+      status, rank, name_code, 
+      map_x, map_y, map_zoom, locid, 
+      room_num, home_num, vhome_num
+      )
+    values (#{id,jdbcType=INTEGER}, #{destId,jdbcType=INTEGER}, #{typeName,jdbcType=VARCHAR}, 
+      #{parentId,jdbcType=INTEGER}, #{typeCode,jdbcType=VARCHAR}, #{typeDesc,jdbcType=VARCHAR}, 
+      #{status,jdbcType=BIT}, #{rank,jdbcType=INTEGER}, #{nameCode,jdbcType=VARCHAR}, 
+      #{mapX,jdbcType=CHAR}, #{mapY,jdbcType=CHAR}, #{mapZoom,jdbcType=CHAR}, #{locid,jdbcType=INTEGER}, 
+      #{roomNum,jdbcType=INTEGER}, #{homeNum,jdbcType=INTEGER}, #{vhomeNum,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.zizaike.entity.recommend.hot.Loctype" >
+    insert into t_loc_type
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="destId != null" >
+        dest_id,
+      </if>
+      <if test="typeName != null" >
+        type_name,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="typeCode != null" >
+        type_code,
+      </if>
+      <if test="typeDesc != null" >
+        type_desc,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="rank != null" >
+        rank,
+      </if>
+      <if test="nameCode != null" >
+        name_code,
+      </if>
+      <if test="mapX != null" >
+        map_x,
+      </if>
+      <if test="mapY != null" >
+        map_y,
+      </if>
+      <if test="mapZoom != null" >
+        map_zoom,
+      </if>
+      <if test="locid != null" >
+        locid,
+      </if>
+      <if test="roomNum != null" >
+        room_num,
+      </if>
+      <if test="homeNum != null" >
+        home_num,
+      </if>
+      <if test="vhomeNum != null" >
+        vhome_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="destId != null" >
+        #{destId,jdbcType=INTEGER},
+      </if>
+      <if test="typeName != null" >
+        #{typeName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="typeCode != null" >
+        #{typeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="typeDesc != null" >
+        #{typeDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=BIT},
+      </if>
+      <if test="rank != null" >
+        #{rank,jdbcType=INTEGER},
+      </if>
+      <if test="nameCode != null" >
+        #{nameCode,jdbcType=VARCHAR},
+      </if>
+      <if test="mapX != null" >
+        #{mapX,jdbcType=CHAR},
+      </if>
+      <if test="mapY != null" >
+        #{mapY,jdbcType=CHAR},
+      </if>
+      <if test="mapZoom != null" >
+        #{mapZoom,jdbcType=CHAR},
+      </if>
+      <if test="locid != null" >
+        #{locid,jdbcType=INTEGER},
+      </if>
+      <if test="roomNum != null" >
+        #{roomNum,jdbcType=INTEGER},
+      </if>
+      <if test="homeNum != null" >
+        #{homeNum,jdbcType=INTEGER},
+      </if>
+      <if test="vhomeNum != null" >
+        #{vhomeNum,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zizaike.entity.recommend.hot.Loctype" >
+    update t_loc_type
+    <set >
+      <if test="destId != null" >
+        dest_id = #{destId,jdbcType=INTEGER},
+      </if>
+      <if test="typeName != null" >
+        type_name = #{typeName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="typeCode != null" >
+        type_code = #{typeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="typeDesc != null" >
+        type_desc = #{typeDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=BIT},
+      </if>
+      <if test="rank != null" >
+        rank = #{rank,jdbcType=INTEGER},
+      </if>
+      <if test="nameCode != null" >
+        name_code = #{nameCode,jdbcType=VARCHAR},
+      </if>
+      <if test="mapX != null" >
+        map_x = #{mapX,jdbcType=CHAR},
+      </if>
+      <if test="mapY != null" >
+        map_y = #{mapY,jdbcType=CHAR},
+      </if>
+      <if test="mapZoom != null" >
+        map_zoom = #{mapZoom,jdbcType=CHAR},
+      </if>
+      <if test="locid != null" >
+        locid = #{locid,jdbcType=INTEGER},
+      </if>
+      <if test="roomNum != null" >
+        room_num = #{roomNum,jdbcType=INTEGER},
+      </if>
+      <if test="homeNum != null" >
+        home_num = #{homeNum,jdbcType=INTEGER},
+      </if>
+      <if test="vhomeNum != null" >
+        vhome_num = #{vhomeNum,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zizaike.entity.recommend.hot.Loctype" >
+    update t_loc_type
+    set dest_id = #{destId,jdbcType=INTEGER},
+      type_name = #{typeName,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=INTEGER},
+      type_code = #{typeCode,jdbcType=VARCHAR},
+      type_desc = #{typeDesc,jdbcType=VARCHAR},
+      status = #{status,jdbcType=BIT},
+      rank = #{rank,jdbcType=INTEGER},
+      name_code = #{nameCode,jdbcType=VARCHAR},
+      map_x = #{mapX,jdbcType=CHAR},
+      map_y = #{mapY,jdbcType=CHAR},
+      map_zoom = #{mapZoom,jdbcType=CHAR},
+      locid = #{locid,jdbcType=INTEGER},
+      room_num = #{roomNum,jdbcType=INTEGER},
+      home_num = #{homeNum,jdbcType=INTEGER},
+      vhome_num = #{vhomeNum,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+   <select id="queryLoctype" resultMap="BaseResultMap" parameterType="com.zizaike.entity.recommend.hot.Loctype">
+    select 
+    <include refid="Base_Column_List" />
+    from t_loc_type
+    where 1=1
+     <if test="destId != null" >
+      AND dest_id = #{destId,jdbcType=INTEGER}
+      </if>
+     <if test="typeName != null" >
+      AND type_name LIKE CONCAT(CONCAT('%', #{typeName, jdbcType=VARCHAR}),'%')
+     </if>
+    order by dest_id ,  rank
+  </select>
+</mapper>

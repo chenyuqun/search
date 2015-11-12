@@ -21,7 +21,7 @@ import com.zizaike.entity.recommend.hot.RecommendType;
 
 /**  
  * ClassName:RecommendTypeHandler <br/>  
- * Function: TODO ADD FUNCTION. <br/>  
+ * Function: 推荐类型handler. <br/>  
  * Reason:  handler. <br/>  
  * Date:     2015年11月4日 下午9:49:43 <br/>  
  * @author   snow.zhang  
@@ -30,12 +30,6 @@ import com.zizaike.entity.recommend.hot.RecommendType;
  * @see        
  */
 public class RecommendTypeHandler extends BaseTypeHandler<RecommendType> {
-    /**
-     * TODO 简单描述该方法的实现功能（可选）.
-     * 
-     * @see org.apache.ibatis.type.BaseTypeHandler#setNonNullParameter(java.sql.PreparedStatement,
-     *      int, java.lang.Object, org.apache.ibatis.type.JdbcType)
-     */
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, RecommendType parameter,
         JdbcType jdbcType) throws SQLException {
@@ -44,12 +38,6 @@ public class RecommendTypeHandler extends BaseTypeHandler<RecommendType> {
 
     }
 
-    /**
-     * TODO 简单描述该方法的实现功能（可选）.
-     * 
-     * @see org.apache.ibatis.type.BaseTypeHandler#getNullableResult(java.sql.ResultSet,
-     *      java.lang.String)
-     */
     @Override
     public RecommendType getNullableResult(ResultSet rs, String columnName) throws SQLException {
 
@@ -57,11 +45,6 @@ public class RecommendTypeHandler extends BaseTypeHandler<RecommendType> {
       return RecommendType.findByValue(value);
     }
 
-    /**
-     * TODO 简单描述该方法的实现功能（可选）.
-     * 
-     * @see org.apache.ibatis.type.BaseTypeHandler#getNullableResult(java.sql.ResultSet, int)
-     */
     @Override
     public RecommendType getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
 
@@ -69,11 +52,6 @@ public class RecommendTypeHandler extends BaseTypeHandler<RecommendType> {
       return RecommendType.findByValue(value);
     }
 
-    /**
-     * TODO 简单描述该方法的实现功能（可选）.
-     * 
-     * @see org.apache.ibatis.type.BaseTypeHandler#getNullableResult(java.sql.CallableStatement, int)
-     */
     @Override
     public RecommendType getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
 
