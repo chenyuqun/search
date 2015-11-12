@@ -32,7 +32,7 @@
 	</appender>
 
 	 <!-- project default level -->
-    <logger name="com.ziziake" level="ERROR"/>
+    <logger name="com.ziziake" level="INFO"/>
     <logger name="org.springframework" level="WARN"/>
     <!--log4jdbc -->
     <logger name="jdbc.sqltiming" level="INFO"/>

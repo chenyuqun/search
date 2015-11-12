@@ -10,13 +10,13 @@
 		</encoder>
 	</appender>
 
-	<!-- 按照每天生成日志文件 -->
+<!-- 按照每天生成日志文件 -->
 	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${catalina.home}/logs/${PRO_NAME}.log</file>
+		<file>${log.file}</file>
 		<Encoding>UTF-8</Encoding>  
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!--日志文件输出的文件名 -->
-			<fileNamePattern>${catalina.home}/logs/${PRO_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<fileNamePattern>${log.file}.%d{yyyy-MM-dd}.%i</fileNamePattern>
 			<!--日志文件保留天数 -->
 			<maxHistory>30</maxHistory>
 			<cleanHistoryOnStart>true</cleanHistoryOnStart>
@@ -31,13 +31,14 @@
 		</encoder>
 	</appender>
 
+
 	 <!-- project default level -->
     <logger name="com.ziziake" level="INFO"/>
     <logger name="org.springframework" level="WARN"/>
     <!--log4jdbc -->
     <logger name="jdbc.sqltiming" level="INFO"/>
     
-    <root level="INFO">
+    <root level="${log.level}">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>
