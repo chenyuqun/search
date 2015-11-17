@@ -109,7 +109,9 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));       
         //1为商圈
         query.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));    
-        query.addCriteria(new Criteria(SolrSearchablePlaceFields.DEST_ID).is(destId));      
+        query.addCriteria(new Criteria(SolrSearchablePlaceFields.DEST_ID).is(destId));
+        //1为有效
+        query.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
         //加上locId限制
         if(locid!=0){
             query.addCriteria(new Criteria(SolrSearchablePlaceFields.LOCID).is(locid));
@@ -140,6 +142,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         //2为景点
         query2.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(2));
         query2.addCriteria(new Criteria(SolrSearchablePlaceFields.DEST_ID).is(destId));
+        query2.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
         if(locid!=0){
             query2.addCriteria(new Criteria(SolrSearchablePlaceFields.LOCID).is(locid));
         }
@@ -194,6 +197,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             //全站商圈
             SimpleQuery query3 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));
             query3.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));
+            query3.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
             query3.setRows(1); 
             shangquan=getSolrOperations().queryForPage(query3, Place.class).iterator(); 
             while(shangquan.hasNext()){
@@ -217,6 +221,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             //全站景点
             SimpleQuery query4 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));
             query4.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(2));
+            query4.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
             query4.setRows(1); 
             spot=getSolrOperations().queryForPage(query4, Place.class).iterator();
             while(shangquan.hasNext()){
