@@ -74,6 +74,8 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         }
         //加上locId限制
         query.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        //有效民宿
+        query.addCriteria(new Criteria(SolrSearchableUserFields.STATUS).is(1));
         //最多2条记录
         query.setRows(2);
         Iterator<User> username=getSolrOperations().queryForPage(query, User.class).iterator();
@@ -104,6 +106,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             query2.addCriteria(new Criteria(SolrSearchableUserFields.LOC_TYPEID).is(locid));
         }
         query2.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        query2.addCriteria(new Criteria(SolrSearchableUserFields.STATUS).is(1));
         //最多2条记录
         query2.setRows(10);
         
@@ -148,6 +151,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         List<AssociateWordsDTO> associateWords=new ArrayList<AssociateWordsDTO>();
         SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchableUserFields.USERNAME).is(words));
         query.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        query.addCriteria(new Criteria(SolrSearchableUserFields.STATUS).is(1));
         //最多1条记录
         query.setRows(1);
         Iterator<User> username=getSolrOperations().queryForPage(query, User.class).iterator();
@@ -174,6 +178,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         //2为地址
         SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchableUserFields.ADDRESS).is(words));   
         query2.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        query2.addCriteria(new Criteria(SolrSearchableUserFields.STATUS).is(1));
         //最多2条记录
         query2.setRows(5);    
         Iterator<User> address=getSolrOperations().queryForPage(query2, User.class).iterator();
