@@ -45,6 +45,11 @@ public class LoctypeServiceTest extends BaseTest {
       List<Loctype> list = loctypeService.queryLoctype(loc);
      Assert.assertNotEquals(0, list.size());
   }
+  @Test(description = "行政级别的数据查询:省、市")
+  public void queryByAreaLevel() throws ZZKServiceException {
+      List<Loctype> list = loctypeService.queryByAreaLevel();
+      Assert.assertNotEquals(0, list.size());
+  }
 
 }
   

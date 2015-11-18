@@ -18,6 +18,7 @@
     <result column="room_num" property="roomNum" jdbcType="INTEGER" />
     <result column="home_num" property="homeNum" jdbcType="INTEGER" />
     <result column="vhome_num" property="vhomeNum" jdbcType="INTEGER" />
+    <result column="area_level" property="areaLevel" jdbcType="INTEGER"  typeHandler="com.zizaike.recommend.dao.handler.AreaLevelHandler"/>
   </resultMap>
   <sql id="Base_Column_List" >
     id, dest_id, type_name, parent_id, type_code, type_desc, status, rank, name_code, 
@@ -232,6 +233,15 @@
      <if test="typeName != null" >
       AND type_name LIKE CONCAT(CONCAT('%', #{typeName, jdbcType=VARCHAR}),'%')
      </if>
+    order by dest_id ,  rank
+  </select>
+  <!-- 查询 行政级别为省、市的数据 -->
+   <select id="queryByAreaLevel" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_loc_type
+    where status = 1
+    and area_level in (1,2)
     order by dest_id ,  rank
   </select>
 </mapper>

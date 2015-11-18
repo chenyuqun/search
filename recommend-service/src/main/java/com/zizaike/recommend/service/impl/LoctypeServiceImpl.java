@@ -39,6 +39,12 @@ public class LoctypeServiceImpl implements LoctypeService {
           
         return loctypeDao.queryLoctype(loctype);
     }
+
+    @Override
+    public List<Loctype> queryByAreaLevel() throws ZZKServiceException {
+          
+        return loctypeDao.queryByAreaLevel();
+    }
     
    
 }
