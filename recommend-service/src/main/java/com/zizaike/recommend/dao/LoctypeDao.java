@@ -20,6 +20,7 @@ package com.zizaike.recommend.dao;
 import java.util.List;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
+import com.zizaike.core.framework.springext.database.Master;
 import com.zizaike.core.framework.springext.database.Slave;
 import com.zizaike.entity.recommend.hot.Loctype;
 import com.zizaike.entity.recommend.hot.Recommend;
@@ -44,7 +45,6 @@ import com.zizaike.entity.recommend.hot.Recommend;
  * @version   
  * @since JDK 1.7  
  */
-@Slave(dataSource=DataSource.SLAVE)
 public interface LoctypeDao {
     /**
      * 
@@ -56,6 +56,7 @@ public interface LoctypeDao {
      * @throws ZZKServiceException  
      * @since JDK 1.7
      */
-       List<Loctype> queryLoctype (Loctype loctype)throws ZZKServiceException;
+    @Slave
+    List<Loctype> queryLoctype (Loctype loctype)throws ZZKServiceException;
 }
   
