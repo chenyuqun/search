@@ -186,7 +186,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             List<Loctype> locall=loctypeService.queryLoctype(loctype);
             for(int i=0;i<locall.size();i++){
                 AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
-                associateWordsDTO.setIsAllDest(0);
+                associateWordsDTO.setIsAllDest(1);
                 associateWordsDTO.setAssociateType(AssociateType.CITY);
                 if(loc.get(i).getLocid()!=null){
                 associateWordsDTO.setLocId(locall.get(i).getLocid());
@@ -198,6 +198,10 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             SimpleQuery query3 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));
             query3.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));
             query3.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
+            /*
+             * 全站搜索只到台湾一级
+             */
+            query3.addCriteria(new Criteria(SolrSearchablePlaceFields.DEST_ID).is(destId));
             query3.setRows(1); 
             shangquan=getSolrOperations().queryForPage(query3, Place.class).iterator(); 
             while(shangquan.hasNext()){
@@ -222,6 +226,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             SimpleQuery query4 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));
             query4.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(2));
             query4.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
+            query4.addCriteria(new Criteria(SolrSearchablePlaceFields.DEST_ID).is(destId));
             query4.setRows(1); 
             spot=getSolrOperations().queryForPage(query4, Place.class).iterator();
             while(shangquan.hasNext()){
