@@ -226,7 +226,7 @@
     select 
     <include refid="Base_Column_List" />
     from t_loc_type
-    where 1=1
+    where status=1
      <if test="destId != null" >
       AND dest_id = #{destId,jdbcType=INTEGER}
       </if>
