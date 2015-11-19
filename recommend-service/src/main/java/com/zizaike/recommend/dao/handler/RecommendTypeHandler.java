@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 
-import com.zizaike.entity.recommend.hot.RecommendType;
+import com.zizaike.entity.recommend.RecommendType;
 
 /**  
  * ClassName:RecommendTypeHandler <br/>  

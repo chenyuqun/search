@@ -9,25 +9,22 @@
 
 package com.zizaike.redis.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.TypeReference;
 import com.zizaike.core.framework.cache.support.redis.RedisCacheDao;
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.recommend.Recommend;
-import com.zizaike.is.recommend.HotRecommendService;
-import com.zizaike.is.redis.HotRecommendRedisService;
+import com.zizaike.entity.recommend.vo.RecommendArea;
+import com.zizaike.is.recommend.RecommendAreaService;
+import com.zizaike.is.redis.RecommendAreaRedisService;
 import com.zizaike.redis.constents.TimeType;
 import com.zizaike.redis.constents.prefix.SearchRedisCacheKey;
 import com.zizaike.redis.constents.prefix.SearchRedisCacheKeyPrefix;
 
 /**
  * ClassName:HotRecommendRedisServiceImpl <br/>
- * Function: 用户热推缓存服务 <br/>
+ * Function: 行政数据缓存 <br/>
  * Date: 2015年11月10日 下午4:07:03 <br/>
  * 
  * @author snow.zhang
@@ -36,32 +33,27 @@ import com.zizaike.redis.constents.prefix.SearchRedisCacheKeyPrefix;
  * @see
  */
 @Service
-public class HotRecommendRedisServiceImpl implements HotRecommendRedisService {
+public class RecommendAreaRedisServiceImpl implements RecommendAreaRedisService {
     @Autowired
     private RedisCacheDao redisCacheDao;
     @Autowired
-    private HotRecommendService hotRecommendService;
+    private RecommendAreaService reService;
 
     @Override
-    public List<Recommend> qury() throws ZZKServiceException {
-        List<Recommend> list = null;
-        list = redisCacheDao.get(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.HOT.getKey(),
-                new TypeReference<ArrayList<Recommend>>() {
-                });
-        if (list == null) {
-            list = hotRecommendService.quryHotRecommend();
-            save(list);
+    public RecommendArea query() throws ZZKServiceException {
+        RecommendArea  recommendArea = new RecommendArea();
+            recommendArea = redisCacheDao.get(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.HOT_STATE_CITY.getKey(), RecommendArea.class);
+        if(recommendArea == null){
+            recommendArea = reService.query();
+            save(recommendArea);
         }
-        return list;
+        
+        return recommendArea;
     }
 
-    /**
-     * 
-     * 缓存一天.
-     */
     @Override
-    public void save(List<Recommend> value) throws ZZKServiceException {
-        redisCacheDao.setEx(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.HOT.getKey(), value,
+    public void save(RecommendArea value) throws ZZKServiceException {
+        redisCacheDao.setEx(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.HOT_STATE_CITY.getKey(), value,
                 TimeType.DAY.getValue());
     }
 

@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 
-import com.zizaike.entity.recommend.hot.AreaLevel;
+import com.zizaike.entity.recommend.AreaLevel;
 
 /**  
  * ClassName:AreaLevelHandler <br/>  

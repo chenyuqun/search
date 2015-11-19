@@ -29,7 +29,7 @@ import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.recommend.hot.Loctype;
+import com.zizaike.entity.recommend.Loctype;
 import com.zizaike.entity.solr.Place;
 import com.zizaike.entity.solr.dto.AssociateType;
 import com.zizaike.entity.solr.dto.AssociateWordsDTO;

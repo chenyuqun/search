@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.core.framework.mybatis.impl.GenericMyIbatisDao;
-import com.zizaike.entity.recommend.hot.Loctype;
+import com.zizaike.entity.recommend.Loctype;
 import com.zizaike.recommend.dao.LoctypeDao;
 
 /**  

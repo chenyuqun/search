@@ -2,8 +2,6 @@ package com.zizaike.recommend.service;
 
 
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,8 +9,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.recommend.Recommend;
-import com.zizaike.is.recommend.HotRecommendService;
+import com.zizaike.entity.recommend.vo.RecommendArea;
+import com.zizaike.is.recommend.RecommendAreaService;
 import com.zizaike.recommend.basetest.BaseTest;
 
 
@@ -27,14 +25,14 @@ import com.zizaike.recommend.basetest.BaseTest;
  */
 @Transactional
 @TransactionConfiguration(defaultRollback = true)
-public class HotRecommendServiceTest extends BaseTest {
+public class RecommendAreaServiceTest extends BaseTest {
   @Autowired
-  private HotRecommendService hotRecommendService;
+  private RecommendAreaService recommendAreaService;
 
-  @Test(description = "查询热推")
-  public void quryHotRecommend() throws ZZKServiceException {
-      List<Recommend> list = hotRecommendService.quryHotRecommend();
-     Assert.assertNotEquals(0, list.size());
+  @Test(description = "查询热推+行政级别")
+  public void quryRecommendArea() throws ZZKServiceException {
+      RecommendArea recommendArea = recommendAreaService.query();
+     Assert.assertNotNull(recommendArea);
   }
 
 }

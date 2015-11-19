@@ -17,6 +17,10 @@
     <!-- 声明需要暴露的服务接口 -->     
    <dubbo:service interface="com.zizaike.is.recommend.HotRecommendService" version="1.0.0" ref="hotRecommendService"  group="${dubbo.group}" />  
 	<bean id="hotRecommendService" class="com.zizaike.recommend.service.impl.HotRecommendServiceImpl" />
+	
    <dubbo:service interface="com.zizaike.is.recommend.LoctypeService" version="1.0.0" ref="loctypeService"  group="${dubbo.group}" />  
 	<bean id="loctypeService" class="com.zizaike.recommend.service.impl.LoctypeServiceImpl" />
+	
+	<dubbo:service interface="com.zizaike.is.recommend.RecommendAreaService" version="1.0.0" ref="recommendAreaService"  group="${dubbo.group}" />  
+	<bean id="recommendAreaService" class="com.zizaike.recommend.service.impl.RecommendAreaServiceImpl" />
 </beans>

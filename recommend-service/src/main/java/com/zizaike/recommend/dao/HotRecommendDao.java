@@ -14,7 +14,7 @@ import java.util.List;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.core.framework.springext.database.Slave;
-import com.zizaike.entity.recommend.hot.Recommend;
+import com.zizaike.entity.recommend.Recommend;
 
 /**  
  * ClassName:IRecommendDao <br/>  

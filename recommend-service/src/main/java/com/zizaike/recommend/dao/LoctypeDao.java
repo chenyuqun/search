@@ -21,7 +21,7 @@ import java.util.List;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.core.framework.springext.database.Slave;
-import com.zizaike.entity.recommend.hot.Loctype;
+import com.zizaike.entity.recommend.Loctype;
 
 /**  
  * ClassName: LoctypeDao <br/>  
