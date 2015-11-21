@@ -17,18 +17,25 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.core.query.Criteria;
+import org.springframework.data.solr.core.query.Crotch;
+import org.springframework.data.solr.core.query.FilterQuery;
+import org.springframework.data.solr.core.query.GroupOptions;
+import org.springframework.data.solr.core.query.SimpleFilterQuery;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.recommend.hot.Loctype;
+import com.zizaike.entity.recommend.Loctype;
 import com.zizaike.entity.solr.Place;
 import com.zizaike.entity.solr.dto.AssociateType;
 import com.zizaike.entity.solr.dto.AssociateWordsDTO;
+import com.zizaike.entity.solr.dto.PlaceDTO;
 import com.zizaike.entity.solr.model.SolrSearchablePlaceFields;
+import com.zizaike.entity.solr.type.PoiType;
 import com.zizaike.is.recommend.LoctypeService;
 import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.UserSolrService;
@@ -40,6 +47,8 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
     public UserSolrService userSolrService; 
     @Autowired
     public LoctypeService loctypeService;
+    private static final Integer MAX_ROWS = 1000;
+    
     @Override
     public List<Place> queryPlaceByWords(String words) throws ZZKServiceException {
         long start = System.currentTimeMillis();
@@ -47,7 +56,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             throw new IllegalParamterException("words is null");
         }
         List<Place> place=new ArrayList<Place>();
-        SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));       
+        SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));       
         //1为商圈
         query.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));
         //最多1条记录
@@ -56,7 +65,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         while(shangquan.hasNext()){
             place.add(shangquan.next());
            }
-        SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));       
+        SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));       
         //2为景点
         query2.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(2));
         //最多1条记录
@@ -100,10 +109,12 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             associateWords.add(associateWordsDTO);
         }
         //List<Place> place=new ArrayList<Place>();
-        SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));       
+        SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));       
         //1为商圈
         query.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));    
-        query.addCriteria(new Criteria(SolrSearchablePlaceFields.DEST_ID).is(destId));      
+        query.addCriteria(new Criteria(SolrSearchablePlaceFields.DEST_ID).is(destId));
+        //1为有效
+        query.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
         //加上locId限制
         if(locid!=0){
             query.addCriteria(new Criteria(SolrSearchablePlaceFields.LOCID).is(locid));
@@ -130,10 +141,11 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             associateWordsDTO.setIsAllDest(0);
             associateWords.add(associateWordsDTO);
            }
-        SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));       
+        SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));       
         //2为景点
         query2.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(2));
         query2.addCriteria(new Criteria(SolrSearchablePlaceFields.DEST_ID).is(destId));
+        query2.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
         if(locid!=0){
             query2.addCriteria(new Criteria(SolrSearchablePlaceFields.LOCID).is(locid));
         }
@@ -186,8 +198,9 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
                 associateWords.add(associateWordsDTO);
             }
             //全站商圈
-            SimpleQuery query3 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));
+            SimpleQuery query3 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));
             query3.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));
+            query3.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
             query3.setRows(1); 
             shangquan=getSolrOperations().queryForPage(query3, Place.class).iterator(); 
             while(shangquan.hasNext()){
@@ -209,8 +222,9 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
                 associateWords.add(associateWordsDTO);
             }
             //全站景点
-            SimpleQuery query4 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).contains(words));
+            SimpleQuery query4 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));
             query4.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(2));
+            query4.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
             query4.setRows(1); 
             spot=getSolrOperations().queryForPage(query4, Place.class).iterator();
             while(shangquan.hasNext()){
@@ -245,6 +259,26 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         }
         LOG.info("when call queryPlaceByWordsAndLoc, use: {}ms", System.currentTimeMillis() - start);
         return associateWords;
+    }
+
+    @Override
+    public List<PlaceDTO> queryPlaceByLocId(Integer locid) throws ZZKServiceException {
+        //全站商圈
+        SimpleQuery queryByLocid = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.LOCID).is(locid));
+        queryByLocid.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
+        queryByLocid.setRows(MAX_ROWS);//设置最大来保证取出所有数据
+       Iterator<Place> placeList=getSolrOperations().queryForPage(queryByLocid, Place.class).iterator(); 
+       List<PlaceDTO> list = new ArrayList<PlaceDTO>();
+       
+       for (Iterator<Place> iterator = placeList; iterator.hasNext();) {
+           Place place = (Place) iterator.next();
+           PlaceDTO placeDTO = new PlaceDTO();
+           placeDTO.setId(place.getId());
+           placeDTO.setPoiName(place.getPoiName());
+           placeDTO.setPoiType(PoiType.findByValue(place.getPoiType()));
+           list.add(placeDTO);
+    }
+        return list;
     }
     
     

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.zizaike.recommend.dao.RecommendMapper" >
-  <resultMap id="BaseResultMap" type="com.zizaike.entity.recommend.hot.Recommend" >
+  <resultMap id="BaseResultMap" type="com.zizaike.entity.recommend.Recommend" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="dest_id" property="destId" jdbcType="INTEGER" />
-    <result column="recommend_type" property="recommendType" jdbcType="INTEGER"  typeHandler="com.zizaike.recommend.dao.handler.RecommendTypeHandler"/>
+    <result column="recommend_type" property="recommendType" typeHandler="com.zizaike.recommend.dao.handler.RecommendTypeHandler"/>
     <result column="recommend_name" property="recommendName" jdbcType="VARCHAR" />
     <result column="e_name" property="engName" jdbcType="VARCHAR" />
     <result column="rank" property="rank" jdbcType="INTEGER" />
@@ -26,15 +26,15 @@
     delete from t_search_recommend
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.zizaike.entity.recommend.hot.Recommend" >
+  <insert id="insert" parameterType="com.zizaike.entity.recommend.Recommend" >
     insert into t_search_recommend ( dest_id, recommend_type, 
       recommend_name, rank, active, relation_id,
       create_at, update_at)
-    values ( #{destId,jdbcType=INTEGER}, #{recommendType,typeHandler=com.zizaike.recommend.dao.handler.RecommendTypeHandler,javaType=com.zizaike.entity.recommend.hot.RecommendType}, 
+    values ( #{destId,jdbcType=INTEGER}, #{recommendType,typeHandler=com.zizaike.recommend.dao.handler.RecommendTypeHandler,javaType=com.zizaike.entity.recommend.RecommendType}, 
       #{recommendName,jdbcType=VARCHAR}, #{rank,jdbcType=INTEGER}, #{active,jdbcType=INTEGER}, #{relationId,jdbcType=INTEGER}, 
       #{createAt,jdbcType=TIMESTAMP}, #{updateAt,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.zizaike.entity.recommend.hot.Recommend" >
+  <insert id="insertSelective" parameterType="com.zizaike.entity.recommend.Recommend" >
     insert into t_search_recommend
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -76,7 +76,7 @@
         #{destId,jdbcType=INTEGER},
       </if>
       <if test="recommendType != null" >
-         #{recommendType,typeHandler=com.zizaike.recommend.dao.handler.RecommendTypeHandler,javaType=com.zizaike.entity.recommend.hot.RecommendType},
+         #{recommendType,typeHandler=com.zizaike.recommend.dao.handler.RecommendTypeHandler,javaType=com.zizaike.entity.recommend.RecommendType},
       </if>
       <if test="recommendName != null" >
         #{recommendName,jdbcType=VARCHAR},
@@ -101,14 +101,14 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zizaike.entity.recommend.hot.Recommend" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.zizaike.entity.recommend.Recommend" >
     update t_search_recommend
     <set >
       <if test="destId != null" >
         dest_id = #{destId,jdbcType=INTEGER},
       </if>
       <if test="recommendType != null" >
-        recommend_type = #{recommendType,typeHandler=com.zizaike.recommend.dao.handler.RecommendTypeHandler,javaType=com.zizaike.entity.recommend.hot.RecommendType},
+        recommend_type = #{recommendType,typeHandler=com.zizaike.recommend.dao.handler.RecommendTypeHandler,javaType=com.zizaike.entity.recommend.RecommendType},
       </if>
       <if test="recommendName != null" >
         recommend_name = #{recommendName,jdbcType=VARCHAR},
@@ -134,10 +134,10 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zizaike.entity.recommend.hot.Recommend" >
+  <update id="updateByPrimaryKey" parameterType="com.zizaike.entity.recommend.Recommend" >
     update t_search_recommend
     set dest_id = #{destId,jdbcType=INTEGER},
-      recommend_type = #{recommendType,typeHandler=com.zizaike.recommend.dao.handler.RecommendTypeHandler,javaType=com.zizaike.entity.recommend.hot.RecommendType},
+      recommend_type = #{recommendType,typeHandler=com.zizaike.recommend.dao.handler.RecommendTypeHandler,javaType=com.zizaike.entity.recommend.RecommendType},
       recommend_name = #{recommendName,jdbcType=VARCHAR},
       e_name =  #{engName,jdbcType=VARCHAR},
       rank = #{rank,jdbcType=INTEGER},

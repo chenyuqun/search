@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.core.framework.mybatis.impl.GenericMyIbatisDao;
-import com.zizaike.entity.recommend.hot.Recommend;
+import com.zizaike.entity.recommend.Recommend;
 import com.zizaike.recommend.dao.HotRecommendDao;
 
 /**  

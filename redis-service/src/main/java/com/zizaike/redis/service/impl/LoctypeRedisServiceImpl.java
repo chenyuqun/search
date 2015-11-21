@@ -18,16 +18,16 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.TypeReference;
 import com.zizaike.core.framework.cache.support.redis.RedisCacheDao;
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.recommend.Recommend;
-import com.zizaike.is.recommend.HotRecommendService;
-import com.zizaike.is.redis.HotRecommendRedisService;
+import com.zizaike.entity.recommend.Loctype;
+import com.zizaike.is.recommend.LoctypeService;
+import com.zizaike.is.redis.LoctypeRedisService;
 import com.zizaike.redis.constents.TimeType;
 import com.zizaike.redis.constents.prefix.SearchRedisCacheKey;
 import com.zizaike.redis.constents.prefix.SearchRedisCacheKeyPrefix;
 
 /**
  * ClassName:HotRecommendRedisServiceImpl <br/>
- * Function: 用户热推缓存服务 <br/>
+ * Function: 行政数据缓存 <br/>
  * Date: 2015年11月10日 下午4:07:03 <br/>
  * 
  * @author snow.zhang
@@ -36,33 +36,31 @@ import com.zizaike.redis.constents.prefix.SearchRedisCacheKeyPrefix;
  * @see
  */
 @Service
-public class HotRecommendRedisServiceImpl implements HotRecommendRedisService {
+public class LoctypeRedisServiceImpl implements LoctypeRedisService {
     @Autowired
     private RedisCacheDao redisCacheDao;
     @Autowired
-    private HotRecommendService hotRecommendService;
+    private LoctypeService loctypeService;
 
     @Override
-    public List<Recommend> qury() throws ZZKServiceException {
-        List<Recommend> list = null;
-        list = redisCacheDao.get(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.HOT.getKey(),
-                new TypeReference<ArrayList<Recommend>>() {
-                });
-        if (list == null) {
-            list = hotRecommendService.quryHotRecommend();
-            save(list);
-        }
+    public List<Loctype> queryByAreaLevel() throws ZZKServiceException {
+        List<Loctype> list = null;
+            list = redisCacheDao.get(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.STATE_CITY.getKey(),
+                    new TypeReference<ArrayList<Loctype>>() {
+                    });
+            if (list == null) {
+                list = loctypeService.queryByAreaLevel();
+                save(list);
+            }
         return list;
     }
 
-    /**
-     * 
-     * 缓存一天.
-     */
     @Override
-    public void save(List<Recommend> value) throws ZZKServiceException {
-        redisCacheDao.setEx(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.HOT.getKey(), value,
+    public void save(List<Loctype> list) throws ZZKServiceException {
+
+        redisCacheDao.setEx(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.STATE_CITY.getKey(), list,
                 TimeType.DAY.getValue());
+
     }
 
 }

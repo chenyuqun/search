@@ -67,22 +67,26 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         }
         List<AssociateWordsDTO> associateWords=new ArrayList<AssociateWordsDTO>();
         //List<User> user=new ArrayList<User>();
-        SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchableUserFields.USERNAME).contains(words));       
+        SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchableUserFields.USERNAME).is(words));       
         //1为商圈
         if(locid!=0){
             query.addCriteria(new Criteria(SolrSearchableUserFields.LOC_TYPEID).is(locid));
         }
         //加上locId限制
         query.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        //有效民宿
+        query.addCriteria(new Criteria(SolrSearchableUserFields.STATUS).is(1));
         //最多2条记录
         query.setRows(2);
-        Iterator<User> username=getSolrOperations().queryForPage(query, User.class).iterator();            
+        Iterator<User> username=getSolrOperations().queryForPage(query, User.class).iterator();
+        List<Integer> ids=new ArrayList<Integer>();
         while(username.hasNext()){
             //user.add(username.next());
             User user=username.next();
             AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
             if(user.getId()!=null){
             associateWordsDTO.setUid(user.getId());
+            ids.add(user.getId());
             }
             associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_NAME);
             if(user.getDestId()!=null){
@@ -96,34 +100,40 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             associateWordsDTO.setIsAllDest(0);
             associateWords.add(associateWordsDTO);
            }
-        SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchableUserFields.ADDRESS).contains(words));       
+        SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchableUserFields.ADDRESS).is(words));       
         //2为地址
         if(locid!=0){
             query2.addCriteria(new Criteria(SolrSearchableUserFields.LOC_TYPEID).is(locid));
         }
         query2.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        query2.addCriteria(new Criteria(SolrSearchableUserFields.STATUS).is(1));
         //最多2条记录
         query2.setRows(10);
         
         Iterator<User> address=getSolrOperations().queryForPage(query2, User.class).iterator();
+        /**
+         * 有可能有重复的民宿 
+         */
         while(address.hasNext()){
             //user.add(address.next());
             User user=address.next();
-            AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
-            if(user.getId()!=null){
-            associateWordsDTO.setUid(user.getId());
-            }
-            associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_ADDRESS);
-            if(user.getDestId()!=null){
-            associateWordsDTO.setDestId(user.getDestId());
-            }
-            associateWordsDTO.setName(user.getUsername()==null?"":user.getUsername());
-            associateWordsDTO.setAddress(user.getAddress()==null?"":user.getAddress());
-            if(user.getLocTypeid()!=null){
-            associateWordsDTO.setLocId(user.getLocTypeid());
-            }
-            associateWordsDTO.setIsAllDest(0);
-            associateWords.add(associateWordsDTO);
+            if(user.getId()!=null&&ids.contains(user.getId())==false){
+                AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
+                if(user.getId()!=null){
+                associateWordsDTO.setUid(user.getId());
+                }
+                associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_ADDRESS);
+                if(user.getDestId()!=null){
+                associateWordsDTO.setDestId(user.getDestId());
+                }
+                associateWordsDTO.setName(user.getUsername()==null?"":user.getUsername());
+                associateWordsDTO.setAddress(user.getAddress()==null?"":user.getAddress());
+                if(user.getLocTypeid()!=null){
+                associateWordsDTO.setLocId(user.getLocTypeid());
+                }
+                associateWordsDTO.setIsAllDest(0);
+                associateWords.add(associateWordsDTO);
+                }
              }
         LOG.info("when call queryUserByWordsAndLoc, use: {}ms", System.currentTimeMillis() - start);
         return associateWords;
@@ -139,16 +149,19 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             throw new IllegalParamterException("destId is null");
         }
         List<AssociateWordsDTO> associateWords=new ArrayList<AssociateWordsDTO>();
-        SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchableUserFields.USERNAME).contains(words));
+        SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchableUserFields.USERNAME).is(words));
         query.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        query.addCriteria(new Criteria(SolrSearchableUserFields.STATUS).is(1));
         //最多1条记录
         query.setRows(1);
-        Iterator<User> username=getSolrOperations().queryForPage(query, User.class).iterator();            
+        Iterator<User> username=getSolrOperations().queryForPage(query, User.class).iterator();
+        int u=0;
         while(username.hasNext()){
             User user=username.next();
             AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
             if(user.getId()!=null){
             associateWordsDTO.setUid(user.getId());
+            u=user.getId();
             }
             associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_NAME);
             if(user.getDestId()!=null){
@@ -163,29 +176,32 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             associateWords.add(associateWordsDTO);
            }
         //2为地址
-        SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchableUserFields.ADDRESS).contains(words));   
+        SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchableUserFields.ADDRESS).is(words));   
         query2.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        query2.addCriteria(new Criteria(SolrSearchableUserFields.STATUS).is(1));
         //最多2条记录
         query2.setRows(5);    
         Iterator<User> address=getSolrOperations().queryForPage(query2, User.class).iterator();
         while(address.hasNext()){
             
             User user=address.next();
-            AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
-            if(user.getId()!=null){
-            associateWordsDTO.setUid(user.getId());
-            }
-            associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_ADDRESS);
-            if(user.getDestId()!=null){
-            associateWordsDTO.setDestId(user.getDestId());
-            }
-            associateWordsDTO.setName(user.getUsername()==null?"":user.getUsername());
-            associateWordsDTO.setAddress(user.getAddress()==null?"":user.getAddress());
-            if(user.getLocTypeid()!=null){
-            associateWordsDTO.setLocId(user.getLocTypeid());
-            }
-            associateWordsDTO.setIsAllDest(1);
-            associateWords.add(associateWordsDTO);
+            if(user.getId()!=null&&user.getId()!=u){
+                AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
+                if(user.getId()!=null){
+                associateWordsDTO.setUid(user.getId());
+                }
+                associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_ADDRESS);
+                if(user.getDestId()!=null){
+                associateWordsDTO.setDestId(user.getDestId());
+                }
+                associateWordsDTO.setName(user.getUsername()==null?"":user.getUsername());
+                associateWordsDTO.setAddress(user.getAddress()==null?"":user.getAddress());
+                if(user.getLocTypeid()!=null){
+                associateWordsDTO.setLocId(user.getLocTypeid());
+                }
+                associateWordsDTO.setIsAllDest(1);
+                associateWords.add(associateWordsDTO);
+                }
              }
         LOG.info("when call queryUserByWordsAndDest, use: {}ms", System.currentTimeMillis() - start);
         return associateWords;

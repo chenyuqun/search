@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.recommend.hot.Recommend;
+import com.zizaike.entity.recommend.Recommend;
 import com.zizaike.is.recommend.HotRecommendService;
 import com.zizaike.recommend.dao.HotRecommendDao;
 

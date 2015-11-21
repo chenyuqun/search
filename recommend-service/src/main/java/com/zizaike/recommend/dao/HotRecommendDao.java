@@ -14,7 +14,7 @@ import java.util.List;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.core.framework.springext.database.Slave;
-import com.zizaike.entity.recommend.hot.Recommend;
+import com.zizaike.entity.recommend.Recommend;
 
 /**  
  * ClassName:IRecommendDao <br/>  
@@ -26,7 +26,6 @@ import com.zizaike.entity.recommend.hot.Recommend;
  * @since    JDK 1.7  
  * @see        
  */
-@Slave(dataSource=DataSource.SLAVE)
 public interface HotRecommendDao {
     /**
      * 
@@ -38,6 +37,7 @@ public interface HotRecommendDao {
      * @throws ZZKServiceException  
      * @since JDK 1.7
      */
-       List<Recommend> quryHotRecommend ()throws ZZKServiceException;
+    @Slave
+    List<Recommend> quryHotRecommend ()throws ZZKServiceException;
 }
   

@@ -11,11 +11,13 @@ package com.zizaike.recommend.service.impl;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.recommend.hot.Loctype;
+import com.zizaike.entity.recommend.Loctype;
 import com.zizaike.is.recommend.LoctypeService;
 import com.zizaike.recommend.dao.LoctypeDao;
 
@@ -31,13 +33,22 @@ import com.zizaike.recommend.dao.LoctypeDao;
  */
 @Service
 public class LoctypeServiceImpl implements LoctypeService {
+    private static final Logger LOG = LoggerFactory.getLogger(LoctypeServiceImpl.class);
     @Autowired
    private LoctypeDao loctypeDao;
 
     @Override
     public List<Loctype> queryLoctype(Loctype loctype) throws ZZKServiceException {
+        long start = System.currentTimeMillis();
+          List<Loctype> list = loctypeDao.queryLoctype(loctype);
+          LOG.info("when call queryLoctype, use: {}ms , list .size {}", System.currentTimeMillis() - start,list.size());
+        return list;
+    }
+
+    @Override
+    public List<Loctype> queryByAreaLevel() throws ZZKServiceException {
           
-        return loctypeDao.queryLoctype(loctype);
+        return loctypeDao.queryByAreaLevel();
     }
     
    

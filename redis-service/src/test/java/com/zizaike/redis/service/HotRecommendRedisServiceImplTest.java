@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 
 import com.alibaba.fastjson.TypeReference;
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.recommend.hot.Recommend;
+import com.zizaike.entity.recommend.Recommend;
 import com.zizaike.is.redis.HotRecommendRedisService;
 import com.zizaike.redis.basetest.BaseTest;
 import com.zizaike.redis.constents.prefix.SearchRedisCacheKeyPrefix;

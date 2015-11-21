@@ -18,7 +18,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.recommend.hot.Loctype;
+import com.zizaike.entity.recommend.Loctype;
 import com.zizaike.is.recommend.LoctypeService;
 import com.zizaike.recommend.basetest.BaseTest;
 
@@ -44,6 +44,11 @@ public class LoctypeServiceTest extends BaseTest {
       loc.setTypeName("台");
       List<Loctype> list = loctypeService.queryLoctype(loc);
      Assert.assertNotEquals(0, list.size());
+  }
+  @Test(description = "行政级别的数据查询:省、市")
+  public void queryByAreaLevel() throws ZZKServiceException {
+      List<Loctype> list = loctypeService.queryByAreaLevel();
+      Assert.assertNotEquals(0, list.size());
   }
 
 }

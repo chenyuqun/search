@@ -8,4 +8,6 @@
     http://code.alibabatech.com/schema/dubbo/dubbo.xsd">  
     <!-- 热推 -->
     <dubbo:reference id="hotRecommendService" interface="com.zizaike.is.recommend.HotRecommendService" version="1.0.0" group="${dubbo.group}"  check="false"/>
+    <dubbo:reference id="loctypeService" interface="com.zizaike.is.recommend.LoctypeService" version="1.0.0" group="${dubbo.group}"  check="false"/>
+    <dubbo:reference id="recommendAreaService" interface="com.zizaike.is.recommend.RecommendAreaService" version="1.0.0" group="${dubbo.group}"  check="false"/>
 </beans>
