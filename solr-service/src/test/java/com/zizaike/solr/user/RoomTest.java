@@ -16,7 +16,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
+import com.zizaike.entity.recommend.hot.RecommendType;
 import com.zizaike.entity.solr.Room;
+import com.zizaike.entity.solr.RoomSolr;
+import com.zizaike.entity.solr.SearchWordsVo;
 import com.zizaike.is.solr.RoomSolrService;
 import com.zizaike.solr.example.test.AbstractSolrIntegrationTest;
 
@@ -35,9 +38,19 @@ public class RoomTest extends AbstractSolrIntegrationTest {
     @Autowired
     RoomSolrService roomService;
 
+//    @Test
+//    public void testQueryRoomByWords() throws ZZKServiceException {
+//        List<Room> room = roomService.queryRoomByWords("西门町", 2685);
+//        Assert.assertNotNull(room, "room is null");
+//    }
+    
     @Test
-    public void testQueryRoomByWords() throws ZZKServiceException {
-        List<Room> room = roomService.queryRoomByWords("西门町", 2685);
+    public void testSearchSolr() throws ZZKServiceException {
+        SearchWordsVo sv=new SearchWordsVo();
+        sv.setDestId(10);
+        sv.setKeyWords("台");
+        sv.setRecommendType(RecommendType.BUSINES_CIRCLE);
+        RoomSolr room = roomService.searchSolr(sv);
         Assert.assertNotNull(room, "room is null");
     }
 }
