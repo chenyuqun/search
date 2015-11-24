@@ -52,9 +52,11 @@ public class RoomTest extends AbstractSolrIntegrationTest {
         //sv.setKeyWords("");
         sv.setPage(1);
         sv.setSearchid(2685);
-        sv.setCheckInDate("1123");
-        sv.setCheckOutDate("1125");
+        sv.setCheckInDate("2015-11-26");
+        sv.setCheckOutDate("2015-11-24");
         sv.setSearchType(SearchType.CITY);
+        sv.setOrder(1);
+        sv.setService("{\"speed_room\": 1,\"tv\": 1,\"jiesong\": 1,\"baoche\": 1,\"breakfast\": 1,\"aircondition\": 1,\"wifi\": 1,\"park\": 1,\"freezer\": 1,\"toliet\": 1}");
         RoomSolr room = roomService.searchSolr(sv);
         Assert.assertNotNull(room, "room is null");
     }
