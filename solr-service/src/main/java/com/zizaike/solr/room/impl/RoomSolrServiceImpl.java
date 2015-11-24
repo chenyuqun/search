@@ -10,14 +10,10 @@
 package com.zizaike.solr.room.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
+
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.lucene.document.Field;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.PhraseQuery;
-import org.apache.lucene.search.Query;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -25,43 +21,28 @@ import org.apache.solr.client.solrj.beans.DocumentObjectBinder;
 import org.apache.solr.client.solrj.response.Group;
 import org.apache.solr.client.solrj.response.GroupResponse;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.GroupParams;
-import org.apache.solr.parser.QueryParser;
-import org.apache.solr.search.DisMaxQParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Sort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.data.solr.core.QueryParsers;
-import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.Criteria;
-import org.springframework.data.solr.core.query.FilterQuery;
-import org.springframework.data.solr.core.query.Function;
-import org.springframework.data.solr.core.query.GroupOptions;
-import org.springframework.data.solr.core.query.SimpleField;
-import org.springframework.data.solr.core.query.SimpleStringCriteria;
-import org.springframework.data.solr.core.query.SolrDataQuery;
-import org.springframework.data.solr.core.query.Query.Operator;
-import org.springframework.data.solr.core.query.SimpleFilterQuery;
 import org.springframework.data.solr.core.query.SimpleQuery;
-import org.springframework.data.solr.core.query.StatsOptions;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.recommend.hot.RecommendType;
+import com.zizaike.entity.solr.Place;
 import com.zizaike.entity.solr.Room;
 import com.zizaike.entity.solr.RoomList;
 import com.zizaike.entity.solr.RoomSolr;
+import com.zizaike.entity.solr.SearchType;
 import com.zizaike.entity.solr.SearchWordsVo;
-import com.zizaike.entity.solr.User;
 import com.zizaike.entity.solr.model.SolrSearchableRoomFields;
+import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.RoomSolrService;
-import com.zizaike.solr.tools.SolrDocumentTool;
 //import com.zizaike.solr.tools.SolrDoucmentTools;
 
 /**  
@@ -77,6 +58,10 @@ import com.zizaike.solr.tools.SolrDocumentTool;
 @NoRepositoryBean
 public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  implements RoomSolrService {
     protected final Logger LOG = LoggerFactory.getLogger(RoomSolrServiceImpl.class);
+    @Autowired
+    public PlaceSolrService placeSolrService; 
+    
+    
     @Override
     public List<Room> queryRoomByWords(String words,int locTypeid) throws ZZKServiceException {
         long start = System.currentTimeMillis();
@@ -109,15 +94,36 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
     @Override
     public RoomSolr searchSolr(SearchWordsVo searchWordsVo) throws ZZKServiceException{
         long start = System.currentTimeMillis();
-//        if (words == null) {
-//            throw new IllegalParamterException("words is null");
-//        }
-        if(searchWordsVo.getKeyWords() ==""){
+        /**
+         * search 1普通查询 地点关联 2 poi查询 坐标关联
+         */
+        int searchType=1;
+        if(searchWordsVo.getSearchType()==SearchType.BUSINES_CIRCLE
+                ||searchWordsVo.getSearchType()==SearchType.BUSINESS_AREA
+                ||searchWordsVo.getSearchType()==SearchType.SCENIC_SPOTS
+                ||searchWordsVo.getSearchType()==SearchType.SPORTVAN
+                ){
+            searchType=2;
+        }
+        /**
+         * 获取坐标信息
+         */
+        String geoSort="";
+        String geoFq="";
+        String geoFl="";
+        if(searchType==2){
+            Place place=placeSolrService.queryPlaceById(searchWordsVo.getSearchid());
+            geoSort="div(score_f, map(geodist(latlng_p,"+place.getGoogleMapLat()+","+place.getGoogleMapLng()+"),0,1,1))";
+            geoFq="{!geofilt pt="+place.getGoogleMapLat()+","+place.getGoogleMapLng()+" sfield=latlng_p d=10}";
+            geoFl="*, distance:geodist(latlng_p, "+place.getGoogleMapLat()+","+place.getGoogleMapLng()+")";
+        }
+        if(searchWordsVo.getKeyWords()==""||searchWordsVo.getKeyWords()==null||searchWordsVo.getKeyWords().isEmpty()){
             searchWordsVo.setKeyWords("*:*");
         }
         SolrQuery solrquery=new SolrQuery(); 
         solrquery.set(CommonParams.Q, searchWordsVo.getKeyWords());
         solrquery.set(CommonParams.WT,"json");
+        solrquery.set("q.op","OR");
         /*
          * DisMax Conditions
          */
@@ -133,8 +139,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
         /*
          * 2种搜索方式
          */
-        if(searchWordsVo.getRecommendType()==RecommendType.BUSINES_CIRCLE){
-            solrquery.addSort("div(score_f, map(geodist(latlng_p,25.022167,121.528242),0,1,1))", ORDER.desc);
+        if(searchType==2
+                ){
+            solrquery.addSort(geoSort, ORDER.desc);
         }else{
             solrquery.addSort("score_f", ORDER.desc);
         }
@@ -142,30 +149,58 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
         /*
          * Page Conditions
          */
-        solrquery.setStart(0);
+        solrquery.setStart((searchWordsVo.getPage()-1));
         solrquery.setRows(25);
         /*
          * Filter Conditions
          */
-        solrquery.setFilterQueries("status:1 AND dest_id:10 AND (*:* AND NOT soldout_room_dates_ss:(1119 OR 1120)) AND id:[0 TO 200000000] AND verified_by_zzk:1 AND -uid:(66 40080 40793 292734) AND {!geofilt pt=25.022167,121.528242 sfield=latlng_p d=10}");
+        StringBuffer filterQueries=new StringBuffer();
+        filterQueries.append("status:1 AND id:[0 TO 200000000] AND verified_by_zzk:1 AND -uid:(66 40080 40793 292734)");
+       // solrquery.setFilterQueries("status:1 AND id:[0 TO 200000000] AND verified_by_zzk:1 AND -uid:(66 40080 40793 292734)");
+    //    solrquery.setFilterQueries("status:1 AND dest_id:10 AND (*:* AND NOT soldout_room_dates_ss:(1119 OR 1120)) AND id:[0 TO 200000000] AND verified_by_zzk:1 AND -uid:(66 40080 40793 292734) AND {!geofilt pt=25.022167,121.528242 sfield=latlng_p d=10}");
+        if(searchWordsVo.getDestId()!=0){
+            filterQueries.append(" AND dest_id:"+searchWordsVo.getDestId()+"");
+        }
+        if(searchWordsVo.getCheckInDate()!=null&&searchWordsVo.getCheckOutDate()!=null
+                &&(Integer.parseInt(searchWordsVo.getCheckOutDate())-Integer.parseInt(searchWordsVo.getCheckInDate())>0)){
+            int i=Integer.parseInt(searchWordsVo.getCheckOutDate())-Integer.parseInt(searchWordsVo.getCheckInDate());
+            int checkInDate=Integer.parseInt(searchWordsVo.getCheckInDate());
+            StringBuffer sb=new StringBuffer();
+            sb.append(checkInDate);
+            for(int j=1;j<i;j++){
+                checkInDate++;
+                sb.append(" OR "+checkInDate);
+            }
+           
+            filterQueries.append(" AND (*:* AND NOT soldout_room_dates_ss:("+sb+"))");
+        }
+        if(searchType==1){
+            filterQueries.append(" AND location_typeid:"+searchWordsVo.getSearchid()+"");
+        }
+        if(searchType==2){
+            filterQueries.append(" AND "+geoFq);
+        }
+        solrquery.setFilterQueries(filterQueries.toString());
         /*
          * Group Conditions
-         */
+         */ 
         solrquery.set(GroupParams.GROUP_TOTAL_COUNT, true);
         solrquery.set(GroupParams.GROUP_FIELD, "uid");
         solrquery.set(GroupParams.GROUP_FORMAT, "grouped");
         solrquery.set(GroupParams.GROUP, true);
         solrquery.set(GroupParams.GROUP_OFFSET, 0);
         solrquery.set(GroupParams.GROUP_LIMIT, 100);
-        if(searchWordsVo.getRecommendType()==RecommendType.BUSINES_CIRCLE){
-            solrquery.set(GroupParams.GROUP_SORT, "verified_by_zzk desc, score desc, div(score_f, map(geodist(latlng_p,25.022167,121.528242),0,1,1)) desc, changed desc");
+        if(searchType==2){
+            solrquery.set(GroupParams.GROUP_SORT, "verified_by_zzk desc, score desc, "+geoSort+" desc, changed desc");
         }else{
             solrquery.set(GroupParams.GROUP_SORT, "verified_by_zzk desc, score desc, score_f desc, changed desc");
         }
         /*
          * fl
          */
-        solrquery.set(CommonParams.FL, "*, distance:geodist(latlng_p, 25.022167, 121.528242)");
+        if(searchType==2){
+        solrquery.set(CommonParams.FL, geoFl);
+        }
         //SolrTemplate solrTemplate=new SolrTemplate(this.getSolrOperations().getSolrServer());
         //SolrQuery solrQuery = new QueryParsers().getForClass(query.getClass()).constructSolrQuery(query);
         DocumentObjectBinder binder = new DocumentObjectBinder(); 

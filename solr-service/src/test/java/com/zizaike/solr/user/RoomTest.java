@@ -16,9 +16,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.recommend.hot.RecommendType;
+import com.zizaike.entity.recommend.RecommendType;
 import com.zizaike.entity.solr.Room;
 import com.zizaike.entity.solr.RoomSolr;
+import com.zizaike.entity.solr.SearchType;
 import com.zizaike.entity.solr.SearchWordsVo;
 import com.zizaike.is.solr.RoomSolrService;
 import com.zizaike.solr.example.test.AbstractSolrIntegrationTest;
@@ -48,8 +49,12 @@ public class RoomTest extends AbstractSolrIntegrationTest {
     public void testSearchSolr() throws ZZKServiceException {
         SearchWordsVo sv=new SearchWordsVo();
         sv.setDestId(10);
-        sv.setKeyWords("台");
-        sv.setRecommendType(RecommendType.BUSINES_CIRCLE);
+        //sv.setKeyWords("");
+        sv.setPage(1);
+        sv.setSearchid(2685);
+        sv.setCheckInDate("1123");
+        sv.setCheckOutDate("1125");
+        sv.setSearchType(SearchType.CITY);
         RoomSolr room = roomService.searchSolr(sv);
         Assert.assertNotNull(room, "room is null");
     }

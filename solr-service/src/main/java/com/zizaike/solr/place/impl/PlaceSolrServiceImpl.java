@@ -281,6 +281,14 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         return list;
     }
     
+    @Override
+    public Place queryPlaceById(Integer id) throws ZZKServiceException {
+        //根据ID获取place
+        SimpleQuery queryById = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.ID).is(id));
+        queryById.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
+        Place place=getSolrOperations().queryForObject(queryById, Place.class);
+        return place;
+    }
     
 }
   
