@@ -36,5 +36,10 @@ public class HotRecommendServiceTest extends BaseTest {
       List<Recommend> list = hotRecommendService.quryHotRecommend();
      Assert.assertNotEquals(0, list.size());
   }
+  @Test(description = "查询top热推")
+  public void quryTopHotRecommend() throws ZZKServiceException {
+      List<Recommend> list = hotRecommendService.quryTopHotRecommend();
+      Assert.assertNotEquals(0, list.size());
+  }
 
 }

@@ -23,6 +23,7 @@ import com.zizaike.entity.recommend.Loctype;
 import com.zizaike.entity.recommend.Recommend;
 import com.zizaike.entity.recommend.vo.CountryArea;
 import com.zizaike.entity.recommend.vo.RecommendArea;
+import com.zizaike.is.recommend.HotRecommendService;
 import com.zizaike.is.recommend.RecommendAreaService;
 import com.zizaike.recommend.dao.DestConfigDao;
 import com.zizaike.recommend.dao.HotRecommendDao;
@@ -46,10 +47,12 @@ public class RecommendAreaServiceImpl implements RecommendAreaService {
     private HotRecommendDao hotRecommendDao;
     @Autowired
     private LoctypeDao loctypeDao;
+    @Autowired
+    private HotRecommendService hotRecommendService;
 
     @Override
     public RecommendArea query() throws ZZKServiceException {
-        List<Recommend> recommends = hotRecommendDao.quryHotRecommend();
+        List<Recommend> recommends = hotRecommendService.quryTopHotRecommend();
         List<DestConfig> countrys =    destConfigDao.query();
         List<Loctype> loctypes = loctypeDao.queryByAreaLevel();
         List<CountryArea> countryAreas = new ArrayList<CountryArea>();
