@@ -70,7 +70,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
     @Autowired
     public DestConfigService destConfigService;
     //图片地址
-    private static final String IMAGE_HOST = "image.zizaike.com";
+    private static final String IMAGE_HOST = "http://image.zizaike.com";
     @Override
     public List<Room> queryRoomByWords(String words,int locTypeid) throws ZZKServiceException {
         long start = System.currentTimeMillis();
