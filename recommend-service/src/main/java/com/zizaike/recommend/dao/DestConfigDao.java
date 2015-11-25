@@ -37,5 +37,17 @@ public interface DestConfigDao {
     @Slave
     List<DestConfig> query() throws ZZKServiceException;
     
+    /**
+     * 
+     * query:根据destId查询国家信息. <br/>  
+     *  
+     * @author alex 
+     * @return
+     * @throws ZZKServiceException  
+     * @since JDK 1.7
+     */
+    @Slave
+   DestConfig queryByDestId(Integer destId) throws ZZKServiceException;
+    
 }
   

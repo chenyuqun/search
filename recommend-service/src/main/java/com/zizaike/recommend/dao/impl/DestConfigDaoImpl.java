@@ -34,6 +34,10 @@ public class DestConfigDaoImpl extends GenericMyIbatisDao<DestConfig, Integer> i
     public List<DestConfig> query() throws ZZKServiceException {
         return this.getSqlSession().selectList(NAMESPACE+"queryAll");
     }
-
+    
+    @Override
+    public DestConfig queryByDestId(Integer destId) throws ZZKServiceException {
+        return this.getSqlSession().selectOne(NAMESPACE+"queryByDestId",destId);
+    }
 }
   
