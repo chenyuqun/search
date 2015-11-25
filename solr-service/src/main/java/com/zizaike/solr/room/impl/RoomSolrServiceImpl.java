@@ -209,7 +209,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
         /*
          * 价格
          */
-        if(searchWordsVo.getPrice()!=null&&searchWordsVo.getPrice()!=""){
+        if(searchWordsVo.getPrice()!=null&&searchWordsVo.getPrice()!=""&&searchWordsVo.getPrice().isEmpty()==false){
             String[] price=searchWordsVo.getPrice().split(",");
             /*
              * 是否需要转换币种
@@ -221,7 +221,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
         /*
          *服务
          */
-        if(searchWordsVo.getService()!=null&&searchWordsVo.getService()!=""){
+        if(searchWordsVo.getService()!=null&&searchWordsVo.getService()!=""&&searchWordsVo.getService().isEmpty()==false){
           HashMap map=JSON.parseObject(searchWordsVo.getService(), new TypeReference<HashMap<String,String>>(){});
           /*
            * /速订
@@ -289,7 +289,8 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
          * 日期
          */
         if(searchWordsVo.getCheckInDate()!=null&&searchWordsVo.getCheckOutDate()!=null
-            &&searchWordsVo.getCheckInDate()!=""&&searchWordsVo.getCheckOutDate()!=""){
+            &&searchWordsVo.getCheckInDate()!=""&&searchWordsVo.getCheckOutDate()!=""
+            &&searchWordsVo.getCheckInDate().isEmpty()==false&&searchWordsVo.getCheckOutDate().isEmpty()==false){
             StringBuffer sb=new StringBuffer();
             try {
                 Date date1;
@@ -439,12 +440,12 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 
                     roomList.setAddress(address);
                     roomList.setCommentNum(commentNum);
-                    roomList.setHomeStayImage(IMAGE_HOST+homeStayImage+"/200x200.jpg");
+                    roomList.setHomeStayImage(IMAGE_HOST+"/"+homeStayImage+"/200x200.jpg");
                     roomList.setHsRatingAvgI(hsRatingAvgI);
                     roomList.setIsSpeed(isSpeed);
                     roomList.setMinPrice(minPrice);
                     roomList.setUsername(username);
-                    roomList.setUserPhoto(IMAGE_HOST+userPhoto+"/200x200.jpg");
+                    roomList.setUserPhoto(IMAGE_HOST+"/"+userPhoto+"/200x200.jpg");
                     roomList.setUserPoiId(userPoiId);
                     roomList.setUserPoiName(userPoiName);
                     /*
