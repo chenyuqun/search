@@ -158,4 +158,13 @@
     where status = 1
   </select>
   
+   <select id="queryByDestId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select 
+    <include refid="Base_Column_List" />
+    from t_dest_config
+    where status=1
+    
+      AND dest_id = #{destId,jdbcType=INTEGER}
+     
+  </select>
 </mapper>

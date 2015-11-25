@@ -111,8 +111,10 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         //List<Place> place=new ArrayList<Place>();
         SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));       
         //1为商圈
-        query.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));    
+        query.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(1));
+        if(destId!=0){
         query.addCriteria(new Criteria(SolrSearchablePlaceFields.DEST_ID).is(destId));
+        }
         //1为有效
         query.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
         //加上locId限制
@@ -144,7 +146,9 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));       
         //2为景点
         query2.addCriteria(new Criteria(SolrSearchablePlaceFields.POI_TYPE).is(2));
+        if(destId!=0){
         query2.addCriteria(new Criteria(SolrSearchablePlaceFields.DEST_ID).is(destId));
+        }
         query2.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
         if(locid!=0){
             query2.addCriteria(new Criteria(SolrSearchablePlaceFields.LOCID).is(locid));

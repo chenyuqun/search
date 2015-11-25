@@ -23,4 +23,7 @@
 	
 	<dubbo:service interface="com.zizaike.is.recommend.RecommendAreaService" version="1.0.0" ref="recommendAreaService"  group="${dubbo.group}" />  
 	<bean id="recommendAreaService" class="com.zizaike.recommend.service.impl.RecommendAreaServiceImpl" />
+	
+	<dubbo:service interface="com.zizaike.is.recommend.DestConfigService" version="1.0.0" ref="destConfigService"  group="${dubbo.group}" />  
+	<bean id="destConfigService" class="com.zizaike.recommend.service.impl.DestConfigServiceImpl" />
 </beans>

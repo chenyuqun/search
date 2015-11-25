@@ -12,6 +12,7 @@ package com.zizaike.recommend.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.DestConfig;
@@ -27,6 +28,7 @@ import com.zizaike.recommend.dao.DestConfigDao;
  * @since    JDK 1.7  
  * @see        
  */
+@Service
 public class DestConfigServiceImpl implements DestConfigService {
     @Autowired
     private DestConfigDao destConfigDao;
@@ -34,6 +36,9 @@ public class DestConfigServiceImpl implements DestConfigService {
     public List<DestConfig> query() throws ZZKServiceException {
         return destConfigDao.query();
     }
-
+    @Override
+    public DestConfig queryByDestId(Integer destId) throws ZZKServiceException {
+        return destConfigDao.queryByDestId(destId);
+    }
 }
   
