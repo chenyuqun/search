@@ -227,7 +227,7 @@
     <include refid="Base_Column_List" />
     from t_loc_type
     where status=1
-     <if test="destId != null" >
+     <if test="destId != null and destId !=0" >
       AND dest_id = #{destId,jdbcType=INTEGER}
       </if>
      <if test="typeName != null" >
