@@ -73,6 +73,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
     public DestConfigService destConfigService;
     //图片地址
     private static final String IMAGE_HOST = "http://img1.zzkcdn.com";
+    private static final Integer pageSize=10;
     
     @Override
     public List<Room> queryRoomByWords(String words,int locTypeid) throws ZZKServiceException {
@@ -181,7 +182,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
         /*
          * Page Conditions
          */
-        solrquery.setStart((searchWordsVo.getPage()-1));
+        solrquery.setStart((searchWordsVo.getPage()-1)*pageSize);
         /*
          * app端一页显示10
          */
@@ -229,61 +230,61 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
           /*
            * /速订
            */
-          if(map.get("speed_room")!=null&&map.get("speed_room")!=""&&map.get("speed_room")=="1"){
+          if(map.get("speed_room")!=null&&map.get("speed_room")!=""&&map.get("speed_room").toString().equals("1")){
               filterQueries.append(" AND speed_room:1");
           }
           /*
            * 接送服务
            */
-          if(map.get("jiesong")!=null&&map.get("jiesong")!=""&&map.get("jiesong")=="1"){
+          if(map.get("jiesong")!=null&&map.get("jiesong")!=""&&map.get("jiesong").equals("1")){
               filterQueries.append(" AND jiesong_service_i:1");
           }
           /*
            * 包车服务
            */
-          if(map.get("baoche")!=null&&map.get("baoche")!=""&&map.get("baoche")=="1"){
+          if(map.get("baoche")!=null&&map.get("baoche")!=""&&map.get("baoche").equals("1")){
               filterQueries.append(" AND baoche_service_i:1");
           }
           /*
            * 早餐服务
            */
-          if(map.get("breakfast")!=null&&map.get("breakfast")!=""&&map.get("breakfast")=="1"){
+          if(map.get("breakfast")!=null&&map.get("breakfast")!=""&&map.get("breakfast").equals("1")){
               filterQueries.append(" AND breakfast:1");
           }
           /*
            * 独立卫生间
            */
-          if(map.get("toliet")!=null&&map.get("toliet")!=""&&map.get("toliet")=="1"){
+          if(map.get("toliet")!=null&&map.get("toliet")!=""&&map.get("toliet").equals("1")){
               filterQueries.append(" AND roomsetting:独立卫浴");
           }
           /*
            * 电视
            */
-          if(map.get("tv")!=null&&map.get("tv")!=""&&map.get("tv")=="1"){
+          if(map.get("tv")!=null&&map.get("tv")!=""&&map.get("tv").equals("1")){
               filterQueries.append(" AND roomsetting:电视机");
           }
           /*
            * 空调
            */
-          if(map.get("aircondition")!=null&&map.get("aircondition")!=""&&map.get("aircondition")=="1"){
+          if(map.get("aircondition")!=null&&map.get("aircondition")!=""&&map.get("aircondition").equals("1")){
               filterQueries.append(" AND roomsetting:空调");
           }
           /*
            * 冰箱
            */
-          if(map.get("freezer")!=null&&map.get("freezer")!=""&&map.get("freezer")=="1"){
+          if(map.get("freezer")!=null&&map.get("freezer")!=""&&map.get("freezer").equals("1")){
               filterQueries.append(" AND roomsetting:电冰箱");
           }
           /*
            * wifi
            */
-          if(map.get("wifi")!=null&&map.get("wifi")!=""&&map.get("wifi")=="1"){
+          if(map.get("wifi")!=null&&map.get("wifi")!=""&&map.get("wifi").equals("1")){
               filterQueries.append(" AND wifi_i:1");
           }
           /*
            * 免费停车
            */
-          if(map.get("park")!=null&&map.get("park")!=""&&map.get("park")=="1"){
+          if(map.get("park")!=null&&map.get("park")!=""&&map.get("park").equals("1")){
               filterQueries.append(" AND roomsetting:免费停车位");
           }
           
@@ -388,7 +389,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 GroupResponse gr=qr.getGroupResponse();
                 //匹配民宿数目
                 int uids=gr.getValues().get(0).getNGroups();
-                solrquery.setStart(uids-(searchWordsVo.getPage())-10);
+                solrquery.setStart(uids-(searchWordsVo.getPage())-pageSize);
             }
             QueryResponse qr=getSolrOperations().getSolrServer().query(solrquery);
             GroupResponse gr=qr.getGroupResponse();
@@ -455,7 +456,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 
                     roomList.setAddress(address);
                     roomList.setCommentNum(commentNum);
-                    roomList.setHsRatingAvg(new BigDecimal(hsRatingAvgI/20.00).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue());
+                    roomList.setHsRatingAvg(new BigDecimal(hsRatingAvgI/20.00).setScale(1, BigDecimal.ROUND_HALF_UP).floatValue());
                     
                     roomList.setIsSpeed(isSpeed);
                     roomList.setMinPrice(minPrice);
@@ -469,7 +470,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                     if(userPhoto!=null&&userPhoto.contains("public/zzk_")){
                         roomList.setUserPhoto(IMAGE_HOST+"/"+userPhoto.substring(7)+"-homepic800x600.jpg");
                     }else if(userPhoto!=""){
-                        roomList.setUserPhoto(IMAGE_HOST+"/"+userPhoto+"/2000x1500.jpg-homepic800x600.jpg");
+                        roomList.setUserPhoto(IMAGE_HOST+"/"+userPhoto+"/2000x1500.j  pg-homepic800x600.jpg");
                     }
               
                     if(homeStayImage==""||userPhoto==""){
