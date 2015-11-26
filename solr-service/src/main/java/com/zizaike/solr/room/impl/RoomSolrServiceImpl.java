@@ -389,7 +389,12 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 GroupResponse gr=qr.getGroupResponse();
                 //匹配民宿数目
                 int uids=gr.getValues().get(0).getNGroups();
-                solrquery.setStart(uids-(searchWordsVo.getPage())*pageSize);
+                if((uids-(searchWordsVo.getPage())*pageSize)>0){
+                    solrquery.setStart(uids-(searchWordsVo.getPage())*pageSize);
+                }else{
+                    solrquery.setStart(0);
+                    solrquery.setRows((uids-(searchWordsVo.getPage())*pageSize)+pageSize);
+                }
             }
             QueryResponse qr=getSolrOperations().getSolrServer().query(solrquery);
             GroupResponse gr=qr.getGroupResponse();
