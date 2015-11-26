@@ -230,7 +230,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
           /*
            * /速订
            */
-          if(map.get("speed_room")!=null&&map.get("speed_room")!=""&&map.get("speed_room").toString().equals("1")){
+          if(map.get("speed_room")!=null&&map.get("speed_room")!=""&&map.get("speed_room").equals("1")){
               filterQueries.append(" AND speed_room:1");
           }
           /*
@@ -389,7 +389,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 GroupResponse gr=qr.getGroupResponse();
                 //匹配民宿数目
                 int uids=gr.getValues().get(0).getNGroups();
-                solrquery.setStart(uids-(searchWordsVo.getPage())-pageSize);
+                solrquery.setStart(uids-(searchWordsVo.getPage())*pageSize);
             }
             QueryResponse qr=getSolrOperations().getSolrServer().query(solrquery);
             GroupResponse gr=qr.getGroupResponse();
@@ -470,7 +470,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                     if(userPhoto!=null&&userPhoto.contains("public/zzk_")){
                         roomList.setUserPhoto(IMAGE_HOST+"/"+userPhoto.substring(7)+"-homepic800x600.jpg");
                     }else if(userPhoto!=""){
-                        roomList.setUserPhoto(IMAGE_HOST+"/"+userPhoto+"/2000x1500.j  pg-homepic800x600.jpg");
+                        roomList.setUserPhoto(IMAGE_HOST+"/"+userPhoto+"/2000x1500.jpg-homepic800x600.jpg");
                     }
               
                     if(homeStayImage==""||userPhoto==""){
