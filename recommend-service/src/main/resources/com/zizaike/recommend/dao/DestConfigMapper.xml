@@ -155,7 +155,7 @@
     select 
     <include refid="Base_Column_List" />
     from t_dest_config
-    where status = 1
+    where status = 1 and dest_id in ('10','11','12','15');
   </select>
   
    <select id="queryByDestId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
