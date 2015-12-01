@@ -79,7 +79,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         query.addCriteria(new Criteria(SolrSearchableUserFields.ID).is(values).not());
         //1为商圈
         if(locid!=0){
-            query.addCriteria(new Criteria(SolrSearchableUserFields.LOC_TYPEID).is(locid));
+            query.addCriteria(new Criteria(SolrSearchableUserFields.LOCATION_TYPEID).is(locid));
         }
         //加上locId限制
         if(destId!=0){
@@ -120,7 +120,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         query2.addCriteria(new Criteria(SolrSearchableUserFields.ID).is(values).not());
         //2为地址
         if(locid!=0){
-            query2.addCriteria(new Criteria(SolrSearchableUserFields.LOC_TYPEID).is(locid));
+            query2.addCriteria(new Criteria(SolrSearchableUserFields.LOCATION_TYPEID).is(locid));
         }
         if(destId!=0){
             query2.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
