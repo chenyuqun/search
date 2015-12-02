@@ -42,7 +42,10 @@
 				<artifactId>maven-war-plugin</artifactId>
 			</plugin>
 		</plugins>
-        <resources>
+       <filters>
+			<filter>src/main/resources/${env}</filter>
+		</filters>
+		  <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
