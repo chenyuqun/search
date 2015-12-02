@@ -16,4 +16,6 @@
     <dubbo:consumer timeout="${dubbo.timeout}"/>
      <dubbo:monitor protocol="registry"/>
     <dubbo:reference id="loctypeService" interface="com.zizaike.is.recommend.LoctypeService" version="1.0.0" group="${dubbo.group}"  check="false"/>
+	<dubbo:reference id="destConfigService" interface="com.zizaike.is.recommend.DestConfigService" version="1.0.0" group="${dubbo.group}"  check="false"/>
+	
 </beans>

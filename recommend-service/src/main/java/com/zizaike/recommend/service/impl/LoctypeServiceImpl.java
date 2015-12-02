@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.recommend.hot.Loctype;
+import com.zizaike.entity.recommend.Loctype;
 import com.zizaike.is.recommend.LoctypeService;
 import com.zizaike.recommend.dao.LoctypeDao;
 
@@ -43,6 +43,12 @@ public class LoctypeServiceImpl implements LoctypeService {
           List<Loctype> list = loctypeDao.queryLoctype(loctype);
           LOG.info("when call queryLoctype, use: {}ms , list .size {}", System.currentTimeMillis() - start,list.size());
         return list;
+    }
+
+    @Override
+    public List<Loctype> queryByAreaLevel() throws ZZKServiceException {
+          
+        return loctypeDao.queryByAreaLevel();
     }
     
    

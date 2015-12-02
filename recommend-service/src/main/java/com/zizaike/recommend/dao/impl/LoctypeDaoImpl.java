@@ -15,9 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.core.framework.mybatis.impl.GenericMyIbatisDao;
-import com.zizaike.entity.recommend.hot.Loctype;
-import com.zizaike.entity.recommend.hot.Recommend;
-import com.zizaike.recommend.dao.HotRecommendDao;
+import com.zizaike.entity.recommend.Loctype;
 import com.zizaike.recommend.dao.LoctypeDao;
 
 /**  
@@ -38,6 +36,10 @@ public class LoctypeDaoImpl extends GenericMyIbatisDao<Loctype, Integer>implemen
     @Override
     public List<Loctype> queryLoctype(Loctype loctype) throws ZZKServiceException {
         return this.getSqlSession().selectList(NAMESPACE+"queryLoctype",loctype);
+    }
+    @Override
+    public List<Loctype> queryByAreaLevel() throws ZZKServiceException {
+        return this.getSqlSession().selectList(NAMESPACE+"queryByAreaLevel");
     }
 
 }

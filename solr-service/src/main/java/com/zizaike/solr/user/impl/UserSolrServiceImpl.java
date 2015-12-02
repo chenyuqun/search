@@ -67,17 +67,30 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         }
         List<AssociateWordsDTO> associateWords=new ArrayList<AssociateWordsDTO>();
         //List<User> user=new ArrayList<User>();
-        SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchableUserFields.USERNAME).is(words));       
+        SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchableUserFields.USERNAME).is(words));
+        /*
+         * 测试民宿 特例
+         */   
+        ArrayList<Integer> values=new ArrayList<Integer>();
+        values.add(66);
+        values.add(40080);
+        values.add(40793);
+        values.add(292734);  
+        query.addCriteria(new Criteria(SolrSearchableUserFields.ID).is(values).not());
         //1为商圈
         if(locid!=0){
-            query.addCriteria(new Criteria(SolrSearchableUserFields.LOC_TYPEID).is(locid));
+            query.addCriteria(new Criteria(SolrSearchableUserFields.LOCATION_TYPEID).is(locid));
         }
         //加上locId限制
-        query.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        if(destId!=0){
+            query.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        }
         //有效民宿
         query.addCriteria(new Criteria(SolrSearchableUserFields.STATUS).is(1));
+        //认证
+        query.addCriteria(new Criteria(SolrSearchableUserFields.VERIFIED_BY_ZZK).is(1));
         //最多2条记录
-        query.setRows(2);
+        query.setRows(10);
         Iterator<User> username=getSolrOperations().queryForPage(query, User.class).iterator();
         List<Integer> ids=new ArrayList<Integer>();
         while(username.hasNext()){
@@ -98,15 +111,22 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             associateWordsDTO.setLocId(user.getLocTypeid());
             }
             associateWordsDTO.setIsAllDest(0);
+            if(user.getHsSpeedRoomI()!=null){
+                associateWordsDTO.setIsSpeedRoom(user.getHsSpeedRoomI());
+            }
             associateWords.add(associateWordsDTO);
            }
-        SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchableUserFields.ADDRESS).is(words));       
+        SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchableUserFields.ADDRESS).is(words)); 
+        query2.addCriteria(new Criteria(SolrSearchableUserFields.ID).is(values).not());
         //2为地址
         if(locid!=0){
-            query2.addCriteria(new Criteria(SolrSearchableUserFields.LOC_TYPEID).is(locid));
+            query2.addCriteria(new Criteria(SolrSearchableUserFields.LOCATION_TYPEID).is(locid));
         }
-        query2.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        if(destId!=0){
+            query2.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        }
         query2.addCriteria(new Criteria(SolrSearchableUserFields.STATUS).is(1));
+        query2.addCriteria(new Criteria(SolrSearchableUserFields.VERIFIED_BY_ZZK).is(1));
         //最多2条记录
         query2.setRows(10);
         
@@ -132,6 +152,9 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                 associateWordsDTO.setLocId(user.getLocTypeid());
                 }
                 associateWordsDTO.setIsAllDest(0);
+                if(user.getHsSpeedRoomI()!=null){
+                    associateWordsDTO.setIsSpeedRoom(user.getHsSpeedRoomI());
+                }
                 associateWords.add(associateWordsDTO);
                 }
              }
@@ -150,10 +173,23 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         }
         List<AssociateWordsDTO> associateWords=new ArrayList<AssociateWordsDTO>();
         SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchableUserFields.USERNAME).is(words));
-        query.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        /*
+         * 测试民宿 特例
+         */   
+        ArrayList<Integer> values=new ArrayList<Integer>();
+        values.add(66);
+        values.add(40080);
+        values.add(40793);
+        values.add(292734);  
+        query.addCriteria(new Criteria(SolrSearchableUserFields.ID).is(values).not());
+        if(destId!=0){
+            query.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        }
         query.addCriteria(new Criteria(SolrSearchableUserFields.STATUS).is(1));
+        //认证
+        query.addCriteria(new Criteria(SolrSearchableUserFields.VERIFIED_BY_ZZK).is(1));
         //最多1条记录
-        query.setRows(1);
+        query.setRows(5);
         Iterator<User> username=getSolrOperations().queryForPage(query, User.class).iterator();
         int u=0;
         while(username.hasNext()){
@@ -172,13 +208,20 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             if(user.getLocTypeid()!=null){
             associateWordsDTO.setLocId(user.getLocTypeid());
             }
+            if(user.getHsSpeedRoomI()!=null){
+                associateWordsDTO.setIsSpeedRoom(user.getHsSpeedRoomI());
+            }
             associateWordsDTO.setIsAllDest(1);
             associateWords.add(associateWordsDTO);
            }
         //2为地址
-        SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchableUserFields.ADDRESS).is(words));   
-        query2.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchableUserFields.ADDRESS).is(words));
+        query2.addCriteria(new Criteria(SolrSearchableUserFields.ID).is(values).not());
+        if(destId!=0){
+            query2.addCriteria(new Criteria(SolrSearchableUserFields.DEST_ID).is(destId));
+        }
         query2.addCriteria(new Criteria(SolrSearchableUserFields.STATUS).is(1));
+        query2.addCriteria(new Criteria(SolrSearchableUserFields.VERIFIED_BY_ZZK).is(1));
         //最多2条记录
         query2.setRows(5);    
         Iterator<User> address=getSolrOperations().queryForPage(query2, User.class).iterator();
@@ -200,6 +243,9 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                 associateWordsDTO.setLocId(user.getLocTypeid());
                 }
                 associateWordsDTO.setIsAllDest(1);
+                if(user.getHsSpeedRoomI()!=null){
+                    associateWordsDTO.setIsSpeedRoom(user.getHsSpeedRoomI());
+                }
                 associateWords.add(associateWordsDTO);
                 }
              }

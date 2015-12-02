@@ -11,7 +11,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
-import com.zizaike.entity.recommend.hot.Recommend;
+import com.zizaike.entity.recommend.Recommend;
 import com.zizaike.is.recommend.HotRecommendService;
 import com.zizaike.recommend.basetest.BaseTest;
 
@@ -35,6 +35,11 @@ public class HotRecommendServiceTest extends BaseTest {
   public void quryHotRecommend() throws ZZKServiceException {
       List<Recommend> list = hotRecommendService.quryHotRecommend();
      Assert.assertNotEquals(0, list.size());
+  }
+  @Test(description = "查询top热推")
+  public void quryTopHotRecommend() throws ZZKServiceException {
+      List<Recommend> list = hotRecommendService.quryTopHotRecommend();
+      Assert.assertNotEquals(0, list.size());
   }
 
 }

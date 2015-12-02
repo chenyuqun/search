@@ -17,4 +17,7 @@
     <!-- 热推缓存 -->     
    <dubbo:service interface="com.zizaike.is.redis.HotRecommendRedisService" version="1.0.0" ref="hotRecommendRedisService"  group="${dubbo.group}" />  
 	<bean id="hotRecommendRedisService" class="com.zizaike.redis.service.impl.HotRecommendRedisServiceImpl" />
+	<!-- 地址与热推 -->
+   <dubbo:service interface="com.zizaike.is.redis.RecommendAreaRedisService" version="1.0.0" ref="recommendAreaRedisService"  group="${dubbo.group}" />  
+	<bean id="recommendAreaRedisService" class="com.zizaike.redis.service.impl.RecommendAreaRedisServiceImpl" />
 </beans>

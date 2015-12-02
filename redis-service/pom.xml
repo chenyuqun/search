@@ -42,17 +42,15 @@
 				<artifactId>maven-war-plugin</artifactId>
 			</plugin>
 		</plugins>
-		<!-- 通过profile决定env, 根据env来试用不同的过滤文件来处理resources中的properties文件 -->
-		<filters>
-            <filter>src/main/resources/${env}</filter>
-        </filters> 
-        <resources>
+       <filters>
+			<filter>src/main/resources/${env}</filter>
+		</filters>
+		  <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <excludes>
-                    <exclude>filters/*</exclude>
-                    <exclude>*.properties</exclude>
+                    <exclude>${excludePropertyFiles}</exclude>
                 </excludes>
             </resource>
             <resource>
@@ -60,7 +58,7 @@
                 <filtering>false</filtering>
                 <includes>
                      <include>spring/*</include>
-                    <include>${excludePropertyFiles}</include>
+                    <include>${includePropertyFiles}</include>
                 </includes>
             </resource>
         </resources>
@@ -74,7 +72,15 @@
 			</activation>
 			<properties>
 				<env>logback.properties</env>
-				<excludePropertyFiles>logback.xml</excludePropertyFiles>
+				<includePropertyFiles>logback.xml</includePropertyFiles>
+			</properties>
+		</profile>
+		<profile>
+			<id>test</id>
+			<properties>
+				<env>logback.properties</env>
+				<excludePropertyFiles>filters/*</excludePropertyFiles>
+				<includePropertyFiles>logback.xml</includePropertyFiles>
 			</properties>
 		</profile>
 		<profile>
