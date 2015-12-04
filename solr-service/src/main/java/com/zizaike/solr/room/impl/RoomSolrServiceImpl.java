@@ -152,6 +152,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
             /*
              * 默认排序
              */
+            solrquery.addSort("speed_room",ORDER.desc);
             solrquery.addSort("score", ORDER.desc);
         }else if(searchWordsVo.getOrder()==2){
             /*
