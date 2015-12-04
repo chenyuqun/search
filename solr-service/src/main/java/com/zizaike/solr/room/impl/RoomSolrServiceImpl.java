@@ -127,7 +127,14 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
         if(searchType==2){
             Place place=placeSolrService.queryPlaceById(searchWordsVo.getSearchid());
             geoSort="div(score_f, map(geodist(latlng_p,"+place.getGoogleMapLat()+","+place.getGoogleMapLng()+"),0,1,1))";
-            geoFq="{!geofilt pt="+place.getGoogleMapLat()+","+place.getGoogleMapLng()+" sfield=latlng_p d=10}";
+            geoFq="{!geofilt pt="
+                    +place.getGoogleMapLat()+","+place.getGoogleMapLng()
+                    +" sfield=latlng_p d="
+                    /**
+                     * 如果搜索半径不为空的话则用搜索半径,如果为空则用poi默认的搜索半径
+                     */
+                    + (searchWordsVo.getSearchRadius() != null ? searchWordsVo.getSearchRadius(): place.getSearchRadius())
+                    +"}";
             geoFl="*, distance:geodist(latlng_p, "+place.getGoogleMapLat()+","+place.getGoogleMapLng()+")";
         }
         if(searchWordsVo.getKeyWords()==""||searchWordsVo.getKeyWords()==null||searchWordsVo.getKeyWords().isEmpty()){
@@ -168,7 +175,14 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
              * 好评优先
              */
             solrquery.addSort("hs_comments_num_i", ORDER.desc);
+        }else if(searchWordsVo.getOrder()==5){
+            solrquery.addSort("distance", ORDER.asc);
+        }else if(searchWordsVo.getOrder()==6){
+            solrquery.addSort("distance", ORDER.desc);
         }
+        
+        
+        
         /*
          * 2种搜索方式
          */
