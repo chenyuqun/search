@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import com.zizaike.is.common.HanLPService;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -71,6 +72,8 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
     
     @Autowired
     public DestConfigService destConfigService;
+    @Autowired
+    private HanLPService hanLPService;
     //图片地址
     private static final String IMAGE_HOST = "http://img1.zzkcdn.com";
     private static final Integer pageSize=10;
@@ -140,8 +143,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
         if(searchWordsVo.getKeyWords()==""||searchWordsVo.getKeyWords()==null||searchWordsVo.getKeyWords().isEmpty()){
             searchWordsVo.setKeyWords("*:*");
         }
-        SolrQuery solrquery=new SolrQuery(); 
-        solrquery.set(CommonParams.Q, searchWordsVo.getKeyWords());
+        SolrQuery solrquery=new SolrQuery();
+        //把繁体转成简体再查询
+        solrquery.set(CommonParams.Q, hanLPService.convertToSimplifiedChinese(searchWordsVo.getKeyWords()));
         solrquery.set(CommonParams.WT,"json");
         solrquery.set("q.op","OR");
         /*
@@ -159,6 +163,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
             /*
              * 默认排序
              */
+            solrquery.addSort("speed_room",ORDER.desc);
             solrquery.addSort("score", ORDER.desc);
         }else if(searchWordsVo.getOrder()==2){
             /*

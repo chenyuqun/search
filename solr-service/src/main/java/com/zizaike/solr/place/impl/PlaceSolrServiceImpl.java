@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.zizaike.is.common.HanLPService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,8 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
     public UserSolrService userSolrService; 
     @Autowired
     public LoctypeService loctypeService;
+    @Autowired
+    private HanLPService hanLPService;
     private static final Integer MAX_ROWS = 1000;
     
     @Override
@@ -91,7 +94,8 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
         if (destId == null) {
             throw new IllegalParamterException("destId is null");
         }
-        
+        //繁体转成简体
+        words = hanLPService.convertToSimplifiedChinese(words);
         List<AssociateWordsDTO> associateWords=new ArrayList<AssociateWordsDTO>();
         //查询城市 走database
         Loctype loctype=new Loctype();
