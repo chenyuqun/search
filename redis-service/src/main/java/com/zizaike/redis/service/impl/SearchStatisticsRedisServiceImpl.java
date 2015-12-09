@@ -1,0 +1,115 @@
+package com.zizaike.redis.service.impl;
+
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import redis.clients.jedis.Tuple;
+
+import com.zizaike.core.framework.cache.support.redis.RedisCacheDao;
+import com.zizaike.core.framework.exception.IllegalParamterException;
+import com.zizaike.core.framework.exception.ZZKServiceException;
+import com.zizaike.entity.base.ChannelType;
+import com.zizaike.is.redis.SearchStatisticsRedisService;
+import com.zizaike.redis.constents.prefix.SearchRedisCacheKey;
+import com.zizaike.redis.constents.prefix.SearchRedisCacheKeyPrefix;
+/**
+ * 
+ * ClassName: SearchRedisServiceImpl <br/>  
+ * Function: 搜索统计服务. <br/>  
+ * date: 2015年12月8日 下午8:35:38 <br/>  
+ *  
+ * @author snow.zhang  
+ * @version   
+ * @since JDK 1.7
+ */
+@Service
+public class SearchStatisticsRedisServiceImpl implements SearchStatisticsRedisService {
+    private static final Long START = 0L;
+    private static final Long END = 20L;
+    private static final Long END_EVERY_DAY = 50L;
+    private static final Double INCR = 1.0;
+
+    @Autowired
+    private RedisCacheDao redisCacheDao;
+
+    @Override
+    public void zincrHotSearch(ChannelType channelType, String member) throws ZZKServiceException {
+        if (channelType == null) {
+            throw new IllegalParamterException("channelType is null");
+        }
+        redisCacheDao.zincrby(channelType == ChannelType.APP ? SearchRedisCacheKeyPrefix.APP_HOT : SearchRedisCacheKeyPrefix.WEB_HOT, SearchRedisCacheKey.FOREVER.getKey(), INCR, member);
+    }
+
+
+    @Override
+    public Set getHotSearch(ChannelType channelType) throws ZZKServiceException {
+        if (channelType == null) {
+            throw new IllegalParamterException("channelType is null");
+        }
+        Set<Tuple> set = redisCacheDao.zrevrangeWithScores(channelType == ChannelType.APP ? SearchRedisCacheKeyPrefix.APP_HOT : SearchRedisCacheKeyPrefix.WEB_HOT, SearchRedisCacheKey.FOREVER.getKey(), START, END);
+        return set;
+    }
+
+    @Override
+    public void zincrHotSearchEveryDay(ChannelType channelType, String member) throws ZZKServiceException {
+        if (channelType == null) {
+            throw new IllegalParamterException("channelType is null");
+        }
+        redisCacheDao.zincrby(channelType == ChannelType.APP ? SearchRedisCacheKeyPrefix.APP_HOT : SearchRedisCacheKeyPrefix.WEB_HOT, SearchRedisCacheKey.ERVERY_DAY.getKey(), INCR, member);
+    }
+
+    @Override
+    public Set getHotSearchEveryDay(ChannelType channelType) throws ZZKServiceException {
+        if (channelType == null) {
+            throw new IllegalParamterException("channelType is null");
+        }
+        Set<Tuple> set = redisCacheDao.zrevrangeWithScores(channelType == ChannelType.APP ? SearchRedisCacheKeyPrefix.APP_HOT : SearchRedisCacheKeyPrefix.WEB_HOT, SearchRedisCacheKey.ERVERY_DAY.getKey(), START, END_EVERY_DAY);
+        return set;
+    }
+
+
+    @Override
+    public void zincrResultLessSearch(ChannelType channelType, String member) throws ZZKServiceException {
+          
+        if (channelType == null) {
+            throw new IllegalParamterException("channelType is null");
+        }
+        redisCacheDao.zincrby(channelType == ChannelType.APP ? SearchRedisCacheKeyPrefix.APP_RESULT_LESS : SearchRedisCacheKeyPrefix.WEB_RESULT_LESS, SearchRedisCacheKey.FOREVER.getKey(), INCR, member);
+        
+    }
+
+
+    @Override
+    public Set getResultLessSearch(ChannelType channelType) throws ZZKServiceException {
+          
+        if (channelType == null) {
+            throw new IllegalParamterException("channelType is null");
+        }
+        Set<Tuple> set = redisCacheDao.zrevrangeWithScores(channelType == ChannelType.APP ? SearchRedisCacheKeyPrefix.APP_RESULT_LESS : SearchRedisCacheKeyPrefix.WEB_RESULT_LESS, SearchRedisCacheKey.FOREVER.getKey(), START, END);
+        return set;
+    }
+
+
+    @Override
+    public void zincrResultLessSearchEveryDay(ChannelType channelType, String member) throws ZZKServiceException {
+          
+        if (channelType == null) {
+            throw new IllegalParamterException("channelType is null");
+        }
+        redisCacheDao.zincrby(channelType == ChannelType.APP ? SearchRedisCacheKeyPrefix.APP_RESULT_LESS : SearchRedisCacheKeyPrefix.WEB_RESULT_LESS, SearchRedisCacheKey.ERVERY_DAY.getKey(), INCR, member);
+        
+    }
+
+
+    @Override
+    public Set getResultLessSearchEveryDay(ChannelType channelType) throws ZZKServiceException {
+          
+        if (channelType == null) {
+            throw new IllegalParamterException("channelType is null");
+        }
+        Set<Tuple> set = redisCacheDao.zrevrangeWithScores(channelType == ChannelType.APP ? SearchRedisCacheKeyPrefix.APP_RESULT_LESS : SearchRedisCacheKeyPrefix.WEB_RESULT_LESS, SearchRedisCacheKey.ERVERY_DAY.getKey(), START, END_EVERY_DAY);
+        return set;
+    }
+}

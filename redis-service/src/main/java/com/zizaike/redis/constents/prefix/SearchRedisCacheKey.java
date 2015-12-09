@@ -24,7 +24,16 @@ public enum SearchRedisCacheKey implements CacheKey {
     /**
      * 热点+行政
      */
-    HOT_STATE_CITY("hotStateCity"), ;
+    HOT_STATE_CITY("hotStateCity"),
+    /**
+     * 累计
+     */
+    FOREVER("forever"),
+    /**
+     * 每天
+     */
+    ERVERY_DAY("day")
+    ;
     private String key;
 
     private SearchRedisCacheKey(String key) {

@@ -49,15 +49,15 @@ public class RoomTest extends AbstractSolrIntegrationTest {
     public void testSearchSolr() throws ZZKServiceException {
         SearchWordsVo sv=new SearchWordsVo();
         sv.setDestId(10);
-        //sv.setKeyWords("");
+        sv.setKeyWords("爱的物语");
         sv.setPage(1);
         //sv.setSearchid(2986);
-        sv.setCheckInDate("");
-        sv.setCheckOutDate("");
+        sv.setCheckInDate("2015-12-09");
+        sv.setCheckOutDate("2015-12-10");
         sv.setSearchType(SearchType.CITY);
         sv.setOrder(1);
         //sv.setRoomModel(1);
-        sv.setService("{\"speed_room\": 1,\"tv\": 0,\"jiesong\": 0,\"baoche\": 0,\"breakfast\": 0,\"aircondition\": 0,\"wifi\": 0,\"park\": 0,\"freezer\": 0,\"toliet\": 0}");
+        sv.setService("{\"speed_room\": 0,\"tv\": 0,\"jiesong\": 0,\"baoche\": 0,\"breakfast\": 0,\"aircondition\": 0,\"wifi\": 0,\"park\": 0,\"freezer\": 0,\"toliet\": 0,\"promotion\": 1}");
         //sv.setMultiprice(11);
         RoomSolr room = roomService.searchSolr(sv);
         Assert.assertNotNull(room, "room is null");

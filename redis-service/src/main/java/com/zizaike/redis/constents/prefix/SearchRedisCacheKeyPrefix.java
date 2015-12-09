@@ -16,7 +16,23 @@ public enum SearchRedisCacheKeyPrefix implements CacheKeyPrefix {
     /**
      * 查询域:推荐业务
      */
-    RECOMMEND("search:recommend"), ;
+    RECOMMEND("search:recommend"),
+    /**
+     * APP搜索HOT计数业务
+     */
+    APP_HOT("search:app:hot"),
+    /**
+     * WEB搜索HOT计数业务
+     */
+    WEB_HOT("search:web:hot"),
+    /**
+     * APP搜索无结果计数业务
+     */
+    APP_RESULT_LESS("search:app:resultLess"),
+    /**
+     * WEB搜索无结果计数业务
+     */
+    WEB_RESULT_LESS("search:web:resultLess"),;
 
     private String prefix;
 

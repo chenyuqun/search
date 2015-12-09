@@ -12,6 +12,7 @@ package com.zizaike.redis.dao.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import com.zizaike.core.framework.cache.CacheKeyPrefix;
 import com.zizaike.core.framework.cache.support.redis.RedisCacheDao;
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
+import redis.clients.jedis.Tuple;
 
 /**
  * ClassName:redisDao <br/>
@@ -103,5 +105,12 @@ public class RedisCacheDaoImpl implements RedisCacheDao {
     public boolean exist(CacheKeyPrefix prefix, String key) {
         return jedisCluster.exists(CacheKeyGenerater.generateCacheKey(prefix, key));
     }
-
+    @Override
+    public void zincrby (CacheKeyPrefix prefix, String key, double score, String member){
+         jedisCluster.zincrby(CacheKeyGenerater.generateCacheKey(prefix, key),score,member);
+    }
+    @Override
+    public Set<Tuple> zrevrangeWithScores (CacheKeyPrefix prefix, String key, long start, long end){
+        return jedisCluster.zrevrangeWithScores(CacheKeyGenerater.generateCacheKey(prefix, key),start,end);
+    }
 }
