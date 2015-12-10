@@ -27,7 +27,11 @@
     <property name="typeAliasesPackage" value="com.zizaike.recommend.domain" />
     <!-- 检查类型转换包 -->
     <property name="typeHandlersPackage" value="com.zizaike.recommend.dao.handler" />
-    <property name="mapperLocations"  value="classpath:com/zizaike/recommend/dao/*.xml" />
+	<property name="mapperLocations">
+			<list>
+				<value>classpath:com/zizaike/recommend/dao/*.xml</value>
+			</list>
+		</property>
   </bean>
 
 

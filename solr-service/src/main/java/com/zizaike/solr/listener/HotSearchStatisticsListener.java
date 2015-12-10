@@ -7,16 +7,17 @@
  *  
 */  
   
-package com.zizaike.redis.listener;  
+package com.zizaike.solr.listener;  
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.SearchStatistics;
 import com.zizaike.is.redis.SearchStatisticsRedisService;
-import com.zizaike.redis.domain.event.SearchApplicationEvent;
+import com.zizaike.solr.domain.event.HotSearchApplicationEvent;
 
 /**  
  * ClassName:HotSearchStatisticsListener <br/>  
@@ -28,15 +29,19 @@ import com.zizaike.redis.domain.event.SearchApplicationEvent;
  * @see        
  */
 @Component
-public class HotSearchStatisticsListener implements ApplicationListener<SearchApplicationEvent>{
+public class HotSearchStatisticsListener implements ApplicationListener<HotSearchApplicationEvent>{
     @Autowired
     private SearchStatisticsRedisService searchStatisticsRedisService;
     @Async
     @Override
-    public void onApplicationEvent(SearchApplicationEvent event) {
+    public void onApplicationEvent(HotSearchApplicationEvent event) {
           
         SearchStatistics searchStatistics =  (SearchStatistics) event.getSource();
-        System.err.println(searchStatistics.toString());
+        try {
+            searchStatisticsRedisService.zincrHotSearch(searchStatistics);
+        } catch (ZZKServiceException e) {
+            e.printStackTrace();  
+        }
     }
 
 }

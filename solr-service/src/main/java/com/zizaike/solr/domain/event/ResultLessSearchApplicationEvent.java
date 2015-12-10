@@ -7,7 +7,7 @@
  *  
 */  
   
-package com.zizaike.redis.domain.event;  
+package com.zizaike.solr.domain.event;  
 
 import org.springframework.context.ApplicationEvent;
 
@@ -22,11 +22,11 @@ import com.zizaike.entity.recommend.SearchStatistics;
  * @since    JDK 1.7  
  * @see        
  */
-public class SearchApplicationEvent extends ApplicationEvent {
+public class ResultLessSearchApplicationEvent extends ApplicationEvent {
 
     private static final long serialVersionUID = -933948565885914692L;
     
-    public SearchApplicationEvent(SearchStatistics searchStatistics) {
+    public ResultLessSearchApplicationEvent(SearchStatistics searchStatistics) {
         super(searchStatistics);  
     }
 

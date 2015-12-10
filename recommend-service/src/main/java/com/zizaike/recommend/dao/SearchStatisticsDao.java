@@ -44,5 +44,16 @@ public interface SearchStatisticsDao {
      */
     @Master
      void addBatch (List<SearchStatistics> list)throws ZZKServiceException;
+    /**
+     * 
+     * deleteDay:删除如果当天有数据则先删除再同步最新数据. <br/>  
+     *  
+     * @author snow.zhang  
+     * @param list
+     * @throws ZZKServiceException  
+     * @since JDK 1.7
+     */
+    @Master
+    void deleteDay (SearchStatistics searchStatistics)throws ZZKServiceException;
 }
   

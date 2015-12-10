@@ -49,7 +49,7 @@ public class RoomTest extends AbstractSolrIntegrationTest {
     public void testSearchSolr() throws ZZKServiceException {
         SearchWordsVo sv=new SearchWordsVo();
         sv.setDestId(10);
-        sv.setKeyWords("爱的物语");
+        sv.setKeyWords("垦丁");
         sv.setPage(1);
         //sv.setSearchid(2986);
         sv.setCheckInDate("2015-12-09");

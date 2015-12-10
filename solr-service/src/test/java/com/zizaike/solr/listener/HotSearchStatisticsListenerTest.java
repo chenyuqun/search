@@ -1,4 +1,4 @@
-package com.zizaike.redis.listener;
+package com.zizaike.solr.listener;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,9 +6,10 @@ import org.springframework.context.ApplicationContext;
 import org.testng.annotations.Test;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
+import com.zizaike.entity.base.ChannelType;
 import com.zizaike.entity.recommend.SearchStatistics;
-import com.zizaike.redis.basetest.BaseTest;
-import com.zizaike.redis.domain.event.SearchApplicationEvent;
+import com.zizaike.solr.basetest.BaseTest;
+import com.zizaike.solr.domain.event.HotSearchApplicationEvent;
 
 /**
  * 
@@ -27,6 +28,7 @@ public class HotSearchStatisticsListenerTest extends BaseTest {
     public void get() throws ZZKServiceException {
         SearchStatistics searchStatistics = new SearchStatistics();
         searchStatistics.setKeyWords("test");
-        applicationContext.publishEvent(new SearchApplicationEvent(searchStatistics));
+        searchStatistics.setChannel(ChannelType.APP);
+        applicationContext.publishEvent(new HotSearchApplicationEvent(searchStatistics));
     }
 }

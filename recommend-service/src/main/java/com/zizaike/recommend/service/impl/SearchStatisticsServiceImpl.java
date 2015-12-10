@@ -14,6 +14,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.SearchStatistics;
 import com.zizaike.is.recommend.SearchStatisticsService;
@@ -34,7 +35,26 @@ public class SearchStatisticsServiceImpl implements SearchStatisticsService {
     private SearchStatisticsDao searchStatisticsDao;
     @Override
     public void addBatch(List<SearchStatistics> list) throws ZZKServiceException {
-        searchStatisticsDao.addBatch(list);
+        if(list.size()!=0){
+            deleteDay(list.get(0));
+            searchStatisticsDao.addBatch(list);
+        }
+    }
+    @Override
+    public void deleteDay(SearchStatistics searchStatistics) throws ZZKServiceException {
+         if(searchStatistics==null){
+             throw new  IllegalParamterException("searchStatistics is null");
+         }
+         if(searchStatistics.getChannel()==null){
+             throw new  IllegalParamterException("searchStatistics  channel is null");
+         }
+         if(searchStatistics.getSearchType()==null){
+             throw new  IllegalParamterException("searchStatistics  searchType is null");
+         }
+         if(searchStatistics.getStatisticsType()==null){
+             throw new  IllegalParamterException("searchStatistics  statisticsType is null");
+         }
+        searchStatisticsDao.deleteDay(searchStatistics);
     }
 
 }

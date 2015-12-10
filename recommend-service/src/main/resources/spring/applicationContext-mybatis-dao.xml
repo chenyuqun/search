@@ -19,23 +19,27 @@
 			http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd 
 			http://www.springframework.org/schema/util 
 			http://www.springframework.org/schema/util/spring-util-4.0.xsd">
-			
+
 	<!-- Spring iBatis SqlMapClient -->
-  <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-    <property name="dataSource" ref="dataSource" />
-    <!--映射的包路径 -->
-    <property name="typeAliasesPackage" value="com.zizaike.recommend.domain" />
-    <!-- 检查类型转换包 -->
-    <property name="typeHandlersPackage" value="com.zizaike.recommend.dao.handler" />
-    <property name="mapperLocations"  value="classpath:com/zizaike/recommend/dao/*.xml" />
-  </bean>
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!--映射的包路径 -->
+		<property name="typeAliasesPackage" value="com.zizaike.recommend.domain" />
+		<!-- 检查类型转换包 -->
+		<property name="typeHandlersPackage" value="com.zizaike.recommend.dao.handler" />
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:com/zizaike/recommend/dao/*.xml</value>
+			</list>
+		</property>
+	</bean>
 
 
 	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
 		<constructor-arg ref="sqlSessionFactory" />
 	</bean>
 
-  <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">  
-      <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />  
-  </bean>
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
 </beans>

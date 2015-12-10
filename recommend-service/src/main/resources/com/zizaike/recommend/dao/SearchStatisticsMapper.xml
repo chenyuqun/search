@@ -112,7 +112,7 @@
         #{count,jdbcType=BIGINT},
       </if>
       <if test="channel != null" >
-        #{channel,typeHandler=com.zizaike.recommend.dao.handler.ChannelTypeHandler,javaType=com.zizaike.entity.base.ChannelType
+        #{channel,typeHandler=com.zizaike.recommend.dao.handler.ChannelTypeHandler,javaType=com.zizaike.entity.base.ChannelType},
       </if>
       <if test="searchType != null" >
         #{searchType,typeHandler=com.zizaike.recommend.dao.handler.SearchTypeHandler,javaType=com.zizaike.entity.recommend.SearchType}, 
@@ -147,7 +147,7 @@
         count = #{count,jdbcType=BIGINT},
       </if>
       <if test="channel != null" >
-        channel = #{channel,typeHandler=com.zizaike.recommend.dao.handler.ChannelTypeHandler,javaType=com.zizaike.entity.base.ChannelType
+        channel = #{channel,typeHandler=com.zizaike.recommend.dao.handler.ChannelTypeHandler,javaType=com.zizaike.entity.base.ChannelType},
       </if>
       <if test="searchType != null" >
         search_type = #{searchType,typeHandler=com.zizaike.recommend.dao.handler.SearchTypeHandler,javaType=com.zizaike.entity.recommend.SearchType}, 
@@ -173,7 +173,7 @@
       loc_id = #{locId,jdbcType=INTEGER},
       poi_id = #{poiId,jdbcType=INTEGER},
       count = #{count,jdbcType=BIGINT},
-      channel = #{channel,typeHandler=com.zizaike.recommend.dao.handler.ChannelTypeHandler,javaType=com.zizaike.entity.base.ChannelType
+      channel = #{channel,typeHandler=com.zizaike.recommend.dao.handler.ChannelTypeHandler,javaType=com.zizaike.entity.base.ChannelType},
       search_type = #{searchType,typeHandler=com.zizaike.recommend.dao.handler.SearchTypeHandler,javaType=com.zizaike.entity.recommend.SearchType}, 
       statistics_type = #{statisticsType,typeHandler=com.zizaike.recommend.dao.handler.StatisticsTypeHandler,javaType=com.zizaike.entity.recommend.StatisticsType}, 
       active = #{active,jdbcType=INTEGER},
@@ -181,4 +181,11 @@
       update_at = #{updateAt,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <delete id="deleteDay" parameterType="com.zizaike.entity.recommend.SearchStatistics" >
+    delete from t_search_statistics
+    where channel = #{channel,typeHandler=com.zizaike.recommend.dao.handler.ChannelTypeHandler,javaType=com.zizaike.entity.base.ChannelType}
+    and  search_type = #{searchType,typeHandler=com.zizaike.recommend.dao.handler.SearchTypeHandler,javaType=com.zizaike.entity.recommend.SearchType}
+    and  statistics_type = #{statisticsType,typeHandler=com.zizaike.recommend.dao.handler.StatisticsTypeHandler,javaType=com.zizaike.entity.recommend.StatisticsType} 
+  	and DATE_FORMAT(create_at,'%m-%d-%Y') = DATE_FORMAT(now(),'%m-%d-%Y')
+  </delete>
 </mapper>

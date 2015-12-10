@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.zizaike.is.common.HanLPService;
+
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -32,6 +33,8 @@ import org.apache.solr.common.params.GroupParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
@@ -42,6 +45,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.DestConfig;
+import com.zizaike.entity.recommend.SearchStatistics;
 import com.zizaike.entity.solr.Place;
 import com.zizaike.entity.solr.Room;
 import com.zizaike.entity.solr.RoomList;
@@ -52,6 +56,8 @@ import com.zizaike.entity.solr.model.SolrSearchableRoomFields;
 import com.zizaike.is.recommend.DestConfigService;
 import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.RoomSolrService;
+import com.zizaike.solr.domain.event.HotSearchApplicationEvent;
+import com.zizaike.solr.domain.event.ResultLessSearchApplicationEvent;
 //import com.zizaike.solr.tools.SolrDoucmentTools;
 
 /**  
@@ -74,6 +80,8 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
     public DestConfigService destConfigService;
     @Autowired
     private HanLPService hanLPService;
+    @Autowired
+    ApplicationContext applicationContext;
     //图片地址
     private static final String IMAGE_HOST = "http://img1.zzkcdn.com";
     private static final Integer pageSize=10;
@@ -110,6 +118,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
     @Override
     public RoomSolr searchSolr(SearchWordsVo searchWordsVo) throws ZZKServiceException{
         long start = System.currentTimeMillis();
+        SearchStatistics searchStatistics = new SearchStatistics();
+        searchStatistics.setChannel(searchWordsVo.getChannel());
+        searchStatistics.setKeyWords(searchWordsVo.getKeyWords());
         /**
          * search 1普通查询 地点关联 2 poi查询 坐标关联
          */
@@ -119,8 +130,14 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 ||searchWordsVo.getSearchType()==SearchType.SCENIC_SPOTS
                 ||searchWordsVo.getSearchType()==SearchType.SPORTVAN
                 ){
+            searchStatistics.setPoiId(searchWordsVo.getSearchid());
             searchType=2;
+        }else{
+            searchStatistics.setLocId(searchWordsVo.getSearchid());
         }
+        //发布热搜统计
+        applicationContext.publishEvent(new HotSearchApplicationEvent(searchStatistics));
+       
         /**
          * 获取坐标信息
          */
@@ -447,6 +464,10 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 Collections.reverse(lg);
             }
             List<RoomList> lsRoomList=new ArrayList<RoomList>();
+            //无结果统计
+            if(matches == 0){
+                applicationContext.publishEvent(new ResultLessSearchApplicationEvent(searchStatistics));
+            }
             if(matches>0){
                
             
@@ -486,7 +507,6 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                      */                   
                     int minPrice=lr.get(0).getIntPrice();
                     int minPriceTW=lr.get(0).getIntPriceTW();
-                  
                     for(int j=1;j<lr.size();j++){
                         if(lr.get(j).getIntPrice()<minPrice){
                             minPrice=lr.get(j).getIntPrice();                  
@@ -585,7 +605,8 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                         Double rate2=target.getExchangeRate();
                         String currencyCode=target.getCurrencyCode();
                         Double minPriceAct=((double)minPriceTW)/rate1*rate2;
-                        roomList.setMinPrice(minPriceAct.intValue());
+                        //向上取整
+                        roomList.setMinPrice((int)Math.ceil(minPriceAct));
                         roomList.setCurrencyCode(currencyCode);
                     }
                     lsRoomList.add(roomList);
@@ -599,8 +620,6 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
         LOG.info("when call searchSolr, use: {}ms", System.currentTimeMillis() - start);
         return roomSolr;
     }
-    
-    
     
     
 }     

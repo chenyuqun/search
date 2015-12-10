@@ -20,4 +20,7 @@
 	<!-- 地址与热推 -->
    <dubbo:service interface="com.zizaike.is.redis.RecommendAreaRedisService" version="1.0.0" ref="recommendAreaRedisService"  group="${dubbo.group}" />  
 	<bean id="recommendAreaRedisService" class="com.zizaike.redis.service.impl.RecommendAreaRedisServiceImpl" />
+	<!-- 搜索统计 -->
+   <dubbo:service interface="com.zizaike.is.redis.SearchStatisticsRedisService" version="1.0.0" ref="searchStatisticsRedisService"  group="${dubbo.group}" />  
+	<bean id="searchStatisticsRedisService" class="com.zizaike.redis.service.impl.SearchStatisticsRedisServiceImpl" />
 </beans>

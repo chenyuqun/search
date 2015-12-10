@@ -17,7 +17,6 @@ import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.core.framework.mybatis.impl.GenericMyIbatisDao;
 import com.zizaike.entity.recommend.DestConfig;
 import com.zizaike.entity.recommend.SearchStatistics;
-import com.zizaike.recommend.dao.DestConfigDao;
 import com.zizaike.recommend.dao.SearchStatisticsDao;
 
 /**  
@@ -36,6 +35,11 @@ public class SearchStatisticsDaoImpl extends GenericMyIbatisDao<DestConfig, Inte
     @Override
     public void addBatch(List<SearchStatistics> list) throws ZZKServiceException {
         this.getSqlSession().insert(NAMESPACE+"insertBatch", list);
+    }
+
+    @Override
+    public void deleteDay(SearchStatistics searchStatistics) throws ZZKServiceException {
+        this.getSqlSession().insert(NAMESPACE+"deleteDay", searchStatistics);
     }
 }
   
