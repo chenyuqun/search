@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.zizaike.is.common.HanLPService;
+
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -32,6 +33,8 @@ import org.apache.solr.common.params.GroupParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
@@ -42,6 +45,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.DestConfig;
+import com.zizaike.entity.recommend.SearchStatistics;
 import com.zizaike.entity.solr.Place;
 import com.zizaike.entity.solr.Room;
 import com.zizaike.entity.solr.RoomList;
@@ -52,6 +56,8 @@ import com.zizaike.entity.solr.model.SolrSearchableRoomFields;
 import com.zizaike.is.recommend.DestConfigService;
 import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.RoomSolrService;
+import com.zizaike.solr.domain.event.HotSearchApplicationEvent;
+import com.zizaike.solr.domain.event.ResultLessSearchApplicationEvent;
 //import com.zizaike.solr.tools.SolrDoucmentTools;
 
 /**  
@@ -74,6 +80,8 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
     public DestConfigService destConfigService;
     @Autowired
     private HanLPService hanLPService;
+    @Autowired
+    ApplicationContext applicationContext;
     //图片地址
     private static final String IMAGE_HOST = "http://img1.zzkcdn.com";
     private static final Integer pageSize=10;
@@ -110,6 +118,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
     @Override
     public RoomSolr searchSolr(SearchWordsVo searchWordsVo) throws ZZKServiceException{
         long start = System.currentTimeMillis();
+        SearchStatistics searchStatistics = new SearchStatistics();
+        searchStatistics.setChannel(searchWordsVo.getChannel());
+        searchStatistics.setKeyWords(searchWordsVo.getKeyWords());
         /**
          * search 1普通查询 地点关联 2 poi查询 坐标关联
          */
@@ -119,18 +130,33 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 ||searchWordsVo.getSearchType()==SearchType.SCENIC_SPOTS
                 ||searchWordsVo.getSearchType()==SearchType.SPORTVAN
                 ){
+            searchStatistics.setPoiId(searchWordsVo.getSearchid());
             searchType=2;
+        }else{
+            searchStatistics.setLocId(searchWordsVo.getSearchid());
         }
+        //发布热搜统计
+        applicationContext.publishEvent(new HotSearchApplicationEvent(searchStatistics));
+       
         /**
          * 获取坐标信息
          */
         String geoSort="";
         String geoFq="";
         String geoFl="";
+        //促销  1为促销
+        Integer promotion=0 ;
         if(searchType==2){
             Place place=placeSolrService.queryPlaceById(searchWordsVo.getSearchid());
             geoSort="div(score_f, map(geodist(latlng_p,"+place.getGoogleMapLat()+","+place.getGoogleMapLng()+"),0,1,1))";
-            geoFq="{!geofilt pt="+place.getGoogleMapLat()+","+place.getGoogleMapLng()+" sfield=latlng_p d=10}";
+            geoFq="{!geofilt pt="
+                    +place.getGoogleMapLat()+","+place.getGoogleMapLng()
+                    +" sfield=latlng_p d="
+                    /**
+                     * 如果搜索半径不为空的话则用搜索半径,如果为空则用poi默认的搜索半径
+                     */
+                    + (searchWordsVo.getSearchRadius() != null ? searchWordsVo.getSearchRadius(): place.getSearchRadius())
+                    +"}";
             geoFl="*, distance:geodist(latlng_p, "+place.getGoogleMapLat()+","+place.getGoogleMapLng()+")";
         }
         if(searchWordsVo.getKeyWords()==""||searchWordsVo.getKeyWords()==null||searchWordsVo.getKeyWords().isEmpty()){
@@ -173,7 +199,14 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
              * 好评优先
              */
             solrquery.addSort("hs_comments_num_i", ORDER.desc);
+        }else if(searchWordsVo.getOrder()==5){
+            solrquery.addSort("distance", ORDER.asc);
+        }else if(searchWordsVo.getOrder()==6){
+            solrquery.addSort("distance", ORDER.desc);
         }
+        
+        
+        
         /*
          * 2种搜索方式
          */
@@ -292,8 +325,15 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
           if(map.get("park")!=null&&map.get("park")!=""&&map.get("park").equals("1")){
               filterQueries.append(" AND roomsetting:免费停车位");
           }
+          /*
+           * 是否促销
+           */
+          if(map.get("promotion")!=null&&map.get("promotion")!=""&&map.get("promotion").equals("1")){
+              promotion = 1;
+          }
           
         }
+        List<String> dataList = new ArrayList<String>();
         /*
          * 日期
          */
@@ -301,6 +341,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
             &&searchWordsVo.getCheckInDate()!=""&&searchWordsVo.getCheckOutDate()!=""
             &&searchWordsVo.getCheckInDate().isEmpty()==false&&searchWordsVo.getCheckOutDate().isEmpty()==false){
             StringBuffer sb=new StringBuffer();
+            StringBuffer promotionSB=new StringBuffer();
             try {
                 Date date1;
                 Date date2;  
@@ -314,12 +355,16 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 }
                 int s = (int) ((date2.getTime() - date1.getTime())/ (24 * 60 * 60 * 1000));             
                 sb.append(new SimpleDateFormat("MMdd").format(date1));
+                promotionSB.append(new SimpleDateFormat("MMdd").format(date1));
+                dataList.add(new SimpleDateFormat("MMdd").format(date1));
                 if(s>1){
                     int i=1;
                     do{
                         long todayDate = date1.getTime() + i * 24 * 60 * 60 * 1000;
                         Date tmDate = new Date(todayDate);
                         sb.append(" OR "+new SimpleDateFormat("MMdd").format(tmDate));
+                        promotionSB.append(" AND "+new SimpleDateFormat("MMdd").format(tmDate));
+                        dataList.add(new SimpleDateFormat("MMdd").format(tmDate));
                         i++;
                     }while(i<s);
                         
@@ -329,6 +374,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
            }
            
             filterQueries.append(" AND (*:* AND NOT soldout_room_dates_ss:("+sb+"))");
+            if(promotion==1){
+                filterQueries.append(" AND discount_room_dates_ss:("+promotionSB+")");
+            }
         }
         if(searchType==1&&searchWordsVo.getSearchid()!=0){
             filterQueries.append(" AND location_typeid:"+searchWordsVo.getSearchid()+"");
@@ -416,6 +464,10 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 Collections.reverse(lg);
             }
             List<RoomList> lsRoomList=new ArrayList<RoomList>();
+            //无结果统计
+            if(matches == 0){
+                applicationContext.publishEvent(new ResultLessSearchApplicationEvent(searchStatistics));
+            }
             if(matches>0){
                
             
@@ -444,6 +496,8 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                     String userPoiName=lr.get(0).getUserpoiUserName();
                     //认证id
                     int userPoiId=lr.get(0).getUserpoiId();
+                    //促销日期
+                    List<String> discountRoomDataList = lr.get(0).getDiscountRoomDatesSs();
                     if(searchType==2){
                         Double distance =lr.get(0).getDistance();
                         roomList.setDistance(distance);
@@ -453,7 +507,6 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                      */                   
                     int minPrice=lr.get(0).getIntPrice();
                     int minPriceTW=lr.get(0).getIntPriceTW();
-                  
                     for(int j=1;j<lr.size();j++){
                         if(lr.get(j).getIntPrice()<minPrice){
                             minPrice=lr.get(j).getIntPrice();                  
@@ -471,6 +524,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                     roomList.setIsSpeed(isSpeed);
                     roomList.setMinPrice(minPrice);
                     roomList.setUsername(username);
+                    if(discountRoomDataList!=null && dataList !=null &&discountRoomDataList.containsAll(dataList)){
+                        roomList.setIsPromotion(1);
+                    }
                     if(homeStayImage!=null&&homeStayImage.contains("public/zzk_")){
                         roomList.setHomeStayImage(IMAGE_HOST+"/"+homeStayImage.substring(7)+"-homepic800x600.jpg");
                     }else if(homeStayImage!=""){
@@ -549,7 +605,8 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                         Double rate2=target.getExchangeRate();
                         String currencyCode=target.getCurrencyCode();
                         Double minPriceAct=((double)minPriceTW)/rate1*rate2;
-                        roomList.setMinPrice(minPriceAct.intValue());
+                        //向上取整
+                        roomList.setMinPrice((int)Math.ceil(minPriceAct));
                         roomList.setCurrencyCode(currencyCode);
                     }
                     lsRoomList.add(roomList);
@@ -557,14 +614,12 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
             }
             roomSolr.setRoomGroup(lsRoomList);
         } catch (SolrServerException e) {             
-            // TODO Auto-generated catch block  
-            e.printStackTrace();            
+            e.printStackTrace();
+            LOG.error("when call searchSolr error SolrServerException :{}", e.toString());
         }
         LOG.info("when call searchSolr, use: {}ms", System.currentTimeMillis() - start);
         return roomSolr;
     }
-    
-    
     
     
 }     

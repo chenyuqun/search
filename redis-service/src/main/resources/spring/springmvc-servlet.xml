@@ -4,6 +4,7 @@
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:dwr="http://www.directwebremoting.org/schema/spring-dwr"
+	xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans  
             http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
             http://www.springframework.org/schema/aop 
@@ -15,19 +16,35 @@
             http://www.springframework.org/schema/jdbc  
             http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd 
             http://www.springframework.org/schema/mvc 
-			http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
-	<mvc:annotation-driven content-negotiation-manager="contentNegotiationManager">
+			http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+			http://www.springframework.org/schema/task 
+			http://www.springframework.org/schema/task/spring-task-4.0.xsd"
+	default-lazy-init="true">
+	<mvc:annotation-driven
+		content-negotiation-manager="contentNegotiationManager">
 		<mvc:message-converters register-defaults="false">
 			<!-- 将StringHttpMessageCOnverter的默认编码设为UTF-8 -->
 			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
 				<constructor-arg value="UTF-8" />
 			</bean>
-			<bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter" />
+			<bean
+				class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter" />
 		</mvc:message-converters>
 	</mvc:annotation-driven>
-	<bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+	<!-- 定时任务 -->
+	<task:executor id="executor" pool-size="5" />
+
+	<task:scheduler id="scheduler" pool-size="10" />
+
+	<task:annotation-driven executor="executor"
+		scheduler="scheduler" />
+
+	<bean id="contentNegotiationManager"
+		class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
 		<property name="favorPathExtension" value="false" />
 		<property name="favorParameter" value="false" />
 	</bean>
-	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource" p:basename="i18n/messages" />
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource"
+		p:basename="i18n/messages" />
 </beans>

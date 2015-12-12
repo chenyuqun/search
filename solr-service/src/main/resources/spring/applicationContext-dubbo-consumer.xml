@@ -10,4 +10,6 @@
     <dubbo:reference id="destConfigService" interface="com.zizaike.is.recommend.DestConfigService" version="1.0.0" group="${dubbo.group}"  check="false"/>
     <!-- 翻译服务 -->
     <dubbo:reference id="hanLPService" interface="com.zizaike.is.common.HanLPService" version="1.0.0" group="${dubbo.group}"  check="false"/>
+    <!-- 搜索统计 -->
+    <dubbo:reference id="searchStatisticsRedisService" interface="com.zizaike.is.redis.SearchStatisticsRedisService" version="1.0.0" group="${dubbo.group}"  check="false"/>
 </beans>

@@ -14,7 +14,6 @@
    <dubbo:consumer timeout="${dubbo.timeout}"/>
    <dubbo:monitor protocol="registry"/>
     
-    <!-- 声明需要暴露的服务接口 -->     
    <dubbo:service interface="com.zizaike.is.recommend.HotRecommendService" version="1.0.0" ref="hotRecommendService"  group="${dubbo.group}" />  
 	<bean id="hotRecommendService" class="com.zizaike.recommend.service.impl.HotRecommendServiceImpl" />
 	
@@ -23,7 +22,10 @@
 	
 	<dubbo:service interface="com.zizaike.is.recommend.RecommendAreaService" version="1.0.0" ref="recommendAreaService"  group="${dubbo.group}" />  
 	<bean id="recommendAreaService" class="com.zizaike.recommend.service.impl.RecommendAreaServiceImpl" />
-	
+	<!-- 国家服务 -->
 	<dubbo:service interface="com.zizaike.is.recommend.DestConfigService" version="1.0.0" ref="destConfigService"  group="${dubbo.group}" />  
 	<bean id="destConfigService" class="com.zizaike.recommend.service.impl.DestConfigServiceImpl" />
+	<!-- 搜索统计 -->
+	<dubbo:service interface="com.zizaike.is.recommend.SearchStatisticsService" version="1.0.0" ref="searchStatisticsService"  group="${dubbo.group}" />  
+	<bean id="searchStatisticsService" class="com.zizaike.recommend.service.impl.SearchStatisticsServiceImpl" />
 </beans>

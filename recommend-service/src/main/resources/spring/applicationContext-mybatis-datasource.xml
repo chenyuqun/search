@@ -3,13 +3,17 @@
 	xmlns="http://www.springframework.org/schema/beans" 
 	xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="
             http://www.springframework.org/schema/beans 
             http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
 			http://www.springframework.org/schema/aop 
 			http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
 			http://www.springframework.org/schema/context 
-			http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+			http://www.springframework.org/schema/context/spring-context-4.0.xsd
+			http://www.springframework.org/schema/tx 
+			http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+			">
 	
 	 <!-- bean config for database and c3p0 -->
   <bean id="zizaikeParentDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
@@ -50,4 +54,33 @@
   <aop:config>
     <aop:advisor advice-ref="dataSourceAdvice" pointcut="execution(* com.zizaike.recommend.dao..*Dao.*(..))"/>
   </aop:config>
+  
+  
+  <!-- aop事物配置 -->
+    <tx:annotation-driven proxy-target-class="true"/>
+    <aop:config>
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* *..service.*ServiceImpl.*(..))" order="100"/>
+    </aop:config>
+
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="save*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="Throwable"/>
+            <tx:method name="bind*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="Throwable"/>
+            <tx:method name="subtract*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="Throwable"/>
+            <tx:method name="submit*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="Throwable"/>
+            <tx:method name="process*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="Throwable"/>
+            <tx:method name="add*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="Throwable"/>
+            <tx:method name="update*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="Throwable"/>
+            <tx:method name="remove*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="Throwable"/>
+            <tx:method name="del*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="Throwable"/>
+            <tx:method name="delete*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="Throwable"/>
+             <tx:method name="edit*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="Throwable"/>
+            <tx:method name="*" propagation="SUPPORTS" read-only="true" rollback-for="Throwable"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    
 </beans>

@@ -8,6 +8,7 @@
 
 	<context:property-placeholder location="classpath:test.properties"/>
 	<import resource="applicationContext-base.xml"/>
+	<import resource="applicationContext-service.xml"/>
 	<import resource="applicationContext-dubbo-consumer.xml"/>
 	<import resource="applicationContext-redis.xml" />
 </beans>
