@@ -171,18 +171,20 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
          * DisMax Conditions
          */
         solrquery.set(DisMaxParams.MM, "1");
-        solrquery.set(DisMaxParams.PF, "username^1000 user_address^3000");
-        solrquery.set(DisMaxParams.QF, "username^10 user_address^30");
+        solrquery.set(DisMaxParams.PF, "username^2000 user_address^2000");
+        solrquery.set(DisMaxParams.QF, "username^20 user_address^20");
         solrquery.set("defType","edismax");
         /*
          * Sort Conditions
          */
         solrquery.setSort("verified_by_zzk", ORDER.desc);
         if(searchWordsVo.getOrder()==1||searchWordsVo.getOrder()==0){
-            /*
-             * 默认排序
-             */
-            solrquery.addSort("speed_room",ORDER.desc);
+            if(searchWordsVo.getKeyWords().equals("*:*")){
+                /*
+                 * 默认排序
+                 */
+                solrquery.addSort("speed_room",ORDER.desc);
+            }
             solrquery.addSort("score", ORDER.desc);
         }else if(searchWordsVo.getOrder()==2){
             /*
