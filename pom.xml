@@ -40,8 +40,8 @@
 		<mysql.version>5.1.26</mysql.version>
 		<!-- -->
 		<zizaike.core.version>1.0.3-RELEASE</zizaike.core.version>
-		<zizaike.entity.version>1.0.3-RELEASE</zizaike.entity.version>
-		<zizaike.is.version>1.0.3-RELEASE</zizaike.is.version>
+		<zizaike.entity.version>1.0.4-SNAPSHOT</zizaike.entity.version>
+		<zizaike.is.version>1.0.4-SNAPSHOT</zizaike.is.version>
 		<!-- solr -->
 		<solr.version>4.7.0</solr.version>
 		<spring.data.solr.version>1.5.0.RELEASE</spring.data.solr.version>

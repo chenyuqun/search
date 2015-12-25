@@ -144,7 +144,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
         String geoSort="";
         String geoFq="";
         String geoFl="";
-        //促销  1为促销
+        //促销  1为促销  优惠,促销,打折 只要有一个就可以显示
         Integer promotion=0 ;
         if(searchType==2){
             Place place=placeSolrService.queryPlaceById(searchWordsVo.getSearchid());
@@ -377,7 +377,11 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
            
             filterQueries.append(" AND (*:* AND NOT soldout_room_dates_ss:("+sb+"))");
             if(promotion==1){
-                filterQueries.append(" AND discount_room_dates_ss:("+promotionSB+")");
+                filterQueries.append(" AND (discount_room_dates_ss:("+promotionSB+") OR is_bnb_cuxiao_i:1 OR is_bnb_first_order_i:1)") ;
+            }
+        }else{
+            if(promotion==1){
+                filterQueries.append(" AND ( is_bnb_cuxiao_i:1 OR is_bnb_first_order_i:1 )") ;
             }
         }
         if(searchType==1&&searchWordsVo.getSearchid()!=0){
