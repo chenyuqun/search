@@ -148,7 +148,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
         Integer promotion=0 ;
         if(searchType==2){
             Place place=placeSolrService.queryPlaceById(searchWordsVo.getSearchid());
-            geoSort="div(score_f, map(geodist(latlng_p,"+place.getGoogleMapLat()+","+place.getGoogleMapLng()+"),0,1,1))";
+            //修改距离排序条件
+            //geoSort="div(score_f, map(geodist(latlng_p,"+place.getGoogleMapLat()+","+place.getGoogleMapLng()+"),0,1,1))";
+            geoSort="geodist(latlng_p,"+place.getGoogleMapLat()+","+place.getGoogleMapLng()+")";
             geoFq="{!geofilt pt="
                     +place.getGoogleMapLat()+","+place.getGoogleMapLng()
                     +" sfield=latlng_p d="
@@ -202,9 +204,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
              */
             solrquery.addSort("hs_comments_num_i", ORDER.desc);
         }else if(searchWordsVo.getOrder()==5){
-            solrquery.addSort("distance", ORDER.asc);
+            solrquery.addSort(geoSort, ORDER.asc);
         }else if(searchWordsVo.getOrder()==6){
-            solrquery.addSort("distance", ORDER.desc);
+            solrquery.addSort(geoSort, ORDER.desc);
         }
         
         
@@ -214,7 +216,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
          */
         if(searchType==2
                 ){
-            solrquery.addSort(geoSort, ORDER.desc);
+            //POI默认排序规则和普通查询一致按照评分来，距离有单独的排序规则
+            //solrquery.addSort(geoSort, ORDER.desc);
+            solrquery.addSort("score_f", ORDER.desc);
         }else{
             solrquery.addSort("score_f", ORDER.desc);
         }
@@ -529,10 +533,10 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                     roomList.setIsBnbFirstOrderI(lr.get(0).getBnbFirstOrderI());
                     String promotionInfo = null;
                     //优惠逻辑
-                    if(roomList.getIsBnbCuxiaoI()==true || roomList.getIsPromotion()==1){
+                    if(roomList.getIsBnbCuxiaoI()!=null&&roomList.getIsBnbCuxiaoI()==true || roomList.getIsPromotion()==1){
                         promotionInfo  = "感恩特惠";
                     }
-                    if(roomList.getIsBnbFirstOrderI()==true){
+                    if(roomList.getIsBnbCuxiaoI()!=null&&roomList.getIsBnbFirstOrderI()==true){
                         promotionInfo  = "首单立减30元";
                     }
                     roomList.setPromotionInfo(promotionInfo);
