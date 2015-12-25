@@ -524,6 +524,18 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                     
                 
                     roomList.setAddress(address);
+                    //增加促销字段
+                    roomList.setIsBnbCuxiaoI(lr.get(0).getBnbCuxiaoI());
+                    roomList.setIsBnbFirstOrderI(lr.get(0).getBnbFirstOrderI());
+                    String promotionInfo = null;
+                    //优惠逻辑
+                    if(roomList.getIsBnbCuxiaoI()==true || roomList.getIsPromotion()==1){
+                        promotionInfo  = "感恩特惠";
+                    }
+                    if(roomList.getIsBnbFirstOrderI()==true){
+                        promotionInfo  = "首单立减30元";
+                    }
+                    roomList.setPromotionInfo(promotionInfo);
                     roomList.setCommentNum(commentNum);
                     roomList.setHsRatingAvg(new BigDecimal(hsRatingAvgI/20.00).setScale(1, BigDecimal.ROUND_HALF_UP).floatValue());
                     
