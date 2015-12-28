@@ -529,8 +529,8 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 
                     roomList.setAddress(address);
                     //增加促销字段
-                    roomList.setIsBnbCuxiaoI(lr.get(0).getBnbCuxiaoI());
-                    roomList.setIsBnbFirstOrderI(lr.get(0).getBnbFirstOrderI());
+                    roomList.setIsBnbCuxiaoI(lr.get(0).getIsBnbCuxiaoI()==1 ? true:false);
+                    roomList.setIsBnbFirstOrderI((lr.get(0).getIsBnbFirstOrderI()==1) ? true:false);
                     String promotionInfo = null;
                     //优惠逻辑
                     if(roomList.getIsBnbCuxiaoI()!=null&&roomList.getIsBnbCuxiaoI()==true || roomList.getIsPromotion()==1){
