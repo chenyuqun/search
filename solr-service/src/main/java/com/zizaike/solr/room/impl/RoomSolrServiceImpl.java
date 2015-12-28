@@ -430,9 +430,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
             groupSort.append(", hs_comments_num_i desc, ");
         }  
         if(searchType==2){
-            solrquery.set(GroupParams.GROUP_SORT, groupSort+geoSort+" desc, changed desc");
+            solrquery.set(GroupParams.GROUP_SORT, groupSort+","+geoSort+" desc, changed desc");
         }else{
-            solrquery.set(GroupParams.GROUP_SORT, groupSort+", score_f desc, changed desc");
+            solrquery.set(GroupParams.GROUP_SORT, groupSort+","+"score_f desc, changed desc");
         }
         /*
          * fl
