@@ -428,7 +428,11 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
              * 好评优先
              */
             groupSort.append(", hs_comments_num_i desc, ");
-        }  
+        }else if(searchWordsVo.getOrder()==5||searchWordsVo.getOrder()==6) {
+            groupSort.append(", score desc, ");
+        }else{
+            groupSort.append(", score desc, ");
+        }
         if(searchType==2){
             solrquery.set(GroupParams.GROUP_SORT, groupSort+geoSort+" desc, changed desc");
         }else{
