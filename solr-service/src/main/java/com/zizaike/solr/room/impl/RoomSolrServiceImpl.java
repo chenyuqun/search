@@ -144,11 +144,13 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
         String geoSort="";
         String geoFq="";
         String geoFl="";
-        //促销  1为促销
+        //促销  1为促销  优惠,促销,打折 只要有一个就可以显示
         Integer promotion=0 ;
         if(searchType==2){
             Place place=placeSolrService.queryPlaceById(searchWordsVo.getSearchid());
-            geoSort="div(score_f, map(geodist(latlng_p,"+place.getGoogleMapLat()+","+place.getGoogleMapLng()+"),0,1,1))";
+            //修改距离排序条件
+            //geoSort="div(score_f, map(geodist(latlng_p,"+place.getGoogleMapLat()+","+place.getGoogleMapLng()+"),0,1,1))";
+            geoSort="geodist(latlng_p,"+place.getGoogleMapLat()+","+place.getGoogleMapLng()+")";
             geoFq="{!geofilt pt="
                     +place.getGoogleMapLat()+","+place.getGoogleMapLng()
                     +" sfield=latlng_p d="
@@ -201,10 +203,12 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
              * 好评优先
              */
             solrquery.addSort("hs_comments_num_i", ORDER.desc);
-        }else if(searchWordsVo.getOrder()==5){
-            solrquery.addSort("distance", ORDER.asc);
-        }else if(searchWordsVo.getOrder()==6){
-            solrquery.addSort("distance", ORDER.desc);
+        }
+        //如果是景点按距离排序
+        if(searchType==2 && searchWordsVo.getOrder()==5){
+            solrquery.addSort(geoSort, ORDER.asc);
+        }else if(searchType==2 && searchWordsVo.getOrder()==6){
+            solrquery.addSort(geoSort, ORDER.desc);
         }
         
         
@@ -214,7 +218,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
          */
         if(searchType==2
                 ){
-            solrquery.addSort(geoSort, ORDER.desc);
+            //POI默认排序规则和普通查询一致按照评分来，距离有单独的排序规则
+            //solrquery.addSort(geoSort, ORDER.desc);
+            solrquery.addSort("score_f", ORDER.desc);
         }else{
             solrquery.addSort("score_f", ORDER.desc);
         }
@@ -377,7 +383,11 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
            
             filterQueries.append(" AND (*:* AND NOT soldout_room_dates_ss:("+sb+"))");
             if(promotion==1){
-                filterQueries.append(" AND discount_room_dates_ss:("+promotionSB+")");
+                filterQueries.append(" AND (discount_room_dates_ss:("+promotionSB+") OR is_bnb_cuxiao_i:1 OR is_bnb_first_order_i:1)") ;
+            }
+        }else{
+            if(promotion==1){
+                filterQueries.append(" AND ( is_bnb_cuxiao_i:1 OR is_bnb_first_order_i:1 )") ;
             }
         }
         if(searchType==1&&searchWordsVo.getSearchid()!=0){
@@ -418,11 +428,15 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
              * 好评优先
              */
             groupSort.append(", hs_comments_num_i desc, ");
-        }  
+        }else if(searchWordsVo.getOrder()==5||searchWordsVo.getOrder()==6) {
+            groupSort.append(", score desc, ");
+        }else{
+            groupSort.append(", score desc, ");
+        }
         if(searchType==2){
             solrquery.set(GroupParams.GROUP_SORT, groupSort+geoSort+" desc, changed desc");
         }else{
-            solrquery.set(GroupParams.GROUP_SORT, groupSort+"score_f desc, changed desc");
+            solrquery.set(GroupParams.GROUP_SORT, groupSort+","+"score_f desc, changed desc");
         }
         /*
          * fl
@@ -441,6 +455,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 * 需要获得全部页码
                 */
                 QueryResponse qr=getSolrOperations().getSolrServer().query(solrquery);
+                LOG.debug("solrquery:{}",solrquery);
                 GroupResponse gr=qr.getGroupResponse();
                 //匹配民宿数目
                 int uids=gr.getValues().get(0).getNGroups();
@@ -520,6 +535,19 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                     
                 
                     roomList.setAddress(address);
+                    //增加促销字段
+                    roomList.setIsSalesPromotion(lr.get(0).getIsBnbCuxiaoI()==1 ? 1:0);
+                    //
+                    roomList.setIsSubtract((lr.get(0).getIsBnbFirstOrderI()==1) ? 1:0);
+                    String promotionInfo = null;
+                    //优惠逻辑
+                    if(roomList.getIsSalesPromotion()==1 || roomList.getIsPromotion()==1){
+                        promotionInfo  = "感恩特惠";
+                    }
+                    if(roomList.getIsSubtract()==1){
+                        promotionInfo  = "首单立减30元";
+                    }
+                    roomList.setPromotionInfo(promotionInfo);
                     roomList.setCommentNum(commentNum);
                     roomList.setHsRatingAvg(new BigDecimal(hsRatingAvgI/20.00).setScale(1, BigDecimal.ROUND_HALF_UP).floatValue());
                     
