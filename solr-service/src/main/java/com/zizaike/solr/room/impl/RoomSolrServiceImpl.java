@@ -430,7 +430,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
             groupSort.append(", hs_comments_num_i desc, ");
         }  
         if(searchType==2){
-            solrquery.set(GroupParams.GROUP_SORT, groupSort+","+geoSort+" desc, changed desc");
+            solrquery.set(GroupParams.GROUP_SORT, groupSort+geoSort+" desc, changed desc");
         }else{
             solrquery.set(GroupParams.GROUP_SORT, groupSort+","+"score_f desc, changed desc");
         }
@@ -451,6 +451,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 * 需要获得全部页码
                 */
                 QueryResponse qr=getSolrOperations().getSolrServer().query(solrquery);
+                LOG.debug("solrquery:{}",solrquery);
                 GroupResponse gr=qr.getGroupResponse();
                 //匹配民宿数目
                 int uids=gr.getValues().get(0).getNGroups();
