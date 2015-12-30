@@ -554,7 +554,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                     roomList.setIsSpeed(isSpeed);
                     roomList.setMinPrice(minPrice);
                     roomList.setUsername(username);
-                    if(discountRoomDataList!=null && dataList !=null &&discountRoomDataList.containsAll(dataList)){
+                    if(discountRoomDataList!=null && dataList !=null && ((dataList.size()!=0 && discountRoomDataList.containsAll(dataList)) || (dataList.size()==0 && discountRoomDataList.size()!=0))){
                         roomList.setIsPromotion(1);
                     }
                     if(homeStayImage!=null&&homeStayImage.contains("public/zzk_")){
