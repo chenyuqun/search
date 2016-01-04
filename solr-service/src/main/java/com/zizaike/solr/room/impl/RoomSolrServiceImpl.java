@@ -542,10 +542,10 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                     String promotionInfo = null;
                     //优惠逻辑
                     //目前繁体用户看不到 促和减的信息
-                    if((roomList.getIsSalesPromotion()==1&&searchWordsVo.getMultilang()==10) || (roomList.getIsPromotion()==1)){
+                    if((roomList.getIsSalesPromotion()==1&&searchWordsVo.getMultilang()==12) || (roomList.getIsPromotion()==1)){
                         promotionInfo  = "感恩特惠";
                     }
-                    if(roomList.getIsSubtract()==1&&searchWordsVo.getMultilang()==10){
+                    if(roomList.getIsSubtract()==1&&searchWordsVo.getMultilang()==12){
                         promotionInfo  = "首单立减30元";
                     }
                     roomList.setPromotionInfo(promotionInfo);
