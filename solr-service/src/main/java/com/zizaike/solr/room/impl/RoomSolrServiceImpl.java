@@ -541,10 +541,11 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                     roomList.setIsSubtract((lr.get(0).getIsBnbFirstOrderI()==1) ? 1:0);
                     String promotionInfo = null;
                     //优惠逻辑
-                    if(roomList.getIsSalesPromotion()==1 || roomList.getIsPromotion()==1){
+                    //目前繁体用户看不到 促和减的信息
+                    if((roomList.getIsSalesPromotion()==1&&searchWordsVo.getMultilang()==10) || (roomList.getIsPromotion()==1)){
                         promotionInfo  = "感恩特惠";
                     }
-                    if(roomList.getIsSubtract()==1){
+                    if(roomList.getIsSubtract()==1&&searchWordsVo.getMultilang()==10){
                         promotionInfo  = "首单立减30元";
                     }
                     roomList.setPromotionInfo(promotionInfo);
