@@ -183,9 +183,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
         if(searchWordsVo.getOrder()==1||searchWordsVo.getOrder()==0){
             if(searchWordsVo.getKeyWords().equals("*:*")){
                 /*
-                 * 默认排序
+                 * 默认排序 现在速订加入打分系统 排序暂时不要这个字段
                  */
-                solrquery.addSort("speed_room",ORDER.desc);
+                //solrquery.addSort("speed_room",ORDER.desc);
             }
             solrquery.addSort("score", ORDER.desc);
         }else if(searchWordsVo.getOrder()==2){
@@ -545,7 +545,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                         promotionInfo  = "感恩特惠";
                     }
                     if(roomList.getIsSubtract()==1){
-                        promotionInfo  = "首单立减30元";
+                        promotionInfo  = "抢鲜减30元";
                     }
                     roomList.setPromotionInfo(promotionInfo);
                     roomList.setCommentNum(commentNum);
