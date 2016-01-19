@@ -563,11 +563,11 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                     }else if(homeStayImage!=""){
                         roomList.setHomeStayImage(IMAGE_HOST+"/"+homeStayImage+"/2000x1500.jpg-homepic800x600.jpg");
                     }
-                    
+                    //头像取小图
                     if(userPhoto!=null&&userPhoto.contains("public/zzk_")){
-                        roomList.setUserPhoto(IMAGE_HOST+"/"+userPhoto.substring(7)+"-homepic800x600.jpg");
+                        roomList.setUserPhoto(IMAGE_HOST+"/"+userPhoto.substring(7)+"-userphoto.jpg");
                     }else if(userPhoto!=""){
-                        roomList.setUserPhoto(IMAGE_HOST+"/"+userPhoto+"/2000x1500.jpg-homepic800x600.jpg");
+                        roomList.setUserPhoto(IMAGE_HOST+"/"+userPhoto+"/2000x1500.jpg-userphoto.jpg");
                     }
               
                     if(homeStayImage==""||userPhoto==""){
