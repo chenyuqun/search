@@ -390,6 +390,13 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 filterQueries.append(" AND ( is_bnb_cuxiao_i:1 OR is_bnb_first_order_i:1 )") ;
             }
         }
+        /**
+         * 台湾用户是否显示
+         */
+        if(searchWordsVo.getMultilang()==10){
+            filterQueries.append(" AND display_in_taiwan_i:1");
+        }
+        
         if(searchType==1&&searchWordsVo.getSearchid()!=0){
             filterQueries.append(" AND location_typeid:"+searchWordsVo.getSearchid()+"");
         }
