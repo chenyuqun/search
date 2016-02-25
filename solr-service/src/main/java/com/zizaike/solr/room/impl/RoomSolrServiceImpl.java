@@ -544,9 +544,12 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                     if(roomList.getIsSalesPromotion()==1 || (roomList.getIsPromotion()==1)){
                         promotionInfo  = "感恩特惠";
                     }
-                    if(roomList.getIsSubtract()==1){
+                    /**
+                     * 删除活动
+                     */
+                    /** if(roomList.getIsSubtract()==1){
                         promotionInfo  = "抢鲜减30元";
-                    }
+                    }**/
                     roomList.setPromotionInfo(promotionInfo);
                     roomList.setCommentNum(commentNum);
                     roomList.setHsRatingAvg(new BigDecimal(hsRatingAvgI/20.00).setScale(1, BigDecimal.ROUND_HALF_UP).floatValue());
