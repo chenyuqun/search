@@ -18,8 +18,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.zizaike.is.common.HanLPService;
-
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -34,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
@@ -46,6 +43,7 @@ import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.DestConfig;
 import com.zizaike.entity.recommend.SearchStatistics;
+import com.zizaike.entity.recommend.TeacherShare;
 import com.zizaike.entity.solr.Place;
 import com.zizaike.entity.solr.Room;
 import com.zizaike.entity.solr.RoomList;
@@ -53,7 +51,9 @@ import com.zizaike.entity.solr.RoomSolr;
 import com.zizaike.entity.solr.SearchType;
 import com.zizaike.entity.solr.SearchWordsVo;
 import com.zizaike.entity.solr.model.SolrSearchableRoomFields;
+import com.zizaike.is.common.HanLPService;
 import com.zizaike.is.recommend.DestConfigService;
+import com.zizaike.is.recommend.TeacherShareService;
 import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.RoomSolrService;
 import com.zizaike.solr.domain.event.HotSearchApplicationEvent;
@@ -83,7 +83,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
     @Autowired
     ApplicationContext applicationContext;
     @Autowired
-    public TeacherService teacherService;
+    public TeacherShareService teacherShareService;
     //图片地址
     private static final String IMAGE_HOST = "http://img1.zzkcdn.com";
     private static final Integer pageSize=10;
@@ -498,16 +498,26 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 /**
                  * 打上标签看是否是民宿培训
                  */
-
+                List<TeacherShare> teacherShareList=teacherShareService.query();
+                List<Integer> teacherList=new ArrayList<Integer>();
+                for(int i=0;i<teacherShareList.size();i++){
+                    teacherList.add(teacherShareList.get(i).getUserId());
+                }          
                 for(int i=0;i<lg.size();i++){
 
                     RoomList roomList=new RoomList();
                     //民宿uid
                     roomList.setUid(Integer.parseInt(lg.get(i).getGroupValue()));
+                    //培训标签             
+                    int isTeacherShare=0;
+                    if(teacherList.contains(Integer.parseInt(lg.get(i).getGroupValue()))){
+                        isTeacherShare=1;
+                    }       
+                    roomList.setIsTeacherShare(isTeacherShare);
                     //每个民宿对应的房间信息
                     List<Room> lr=binder.getBeans(Room.class, lg.get(i).getResult());
                     //速订
-                    int isSpeed=lr.get(0).getHsSpeedRoomI();
+                    int isSpeed=lr.get(0).getHsSpeedRoomI();                
                     //评分
                     int hsRatingAvgI=lr.get(0).getHsRatingAvgI();
                     //评论
@@ -543,8 +553,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                             minPriceTW=lr.get(j).getIntPriceTW();                  
                             }
                         }
-                    
-                
+                    roomList.setOtherServiceI(lr.get(0).getOtherServiceI());
                     roomList.setAddress(address);
                     //增加促销字段  目前繁体用户看不到 促和减的信息
                     roomList.setIsSalesPromotion((lr.get(0).getIsBnbCuxiaoI()==1&&searchWordsVo.getMultilang()==12)? 1:0);

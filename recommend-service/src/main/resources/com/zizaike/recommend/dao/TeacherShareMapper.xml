@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zizaike.entity.solr.TeacherShareMapper" >
-  <resultMap id="BaseResultMap" type="com.zizaike.entity.solr.TeacherShare" >
+<mapper namespace="com.zizaike.recommend.dao.TeacherShareMapper" >
+  <resultMap id="BaseResultMap" type="com.zizaike.entity.recommend.TeacherShare" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="user_id" property="userId" jdbcType="INTEGER" />
     <result column="active" property="active" jdbcType="INTEGER" />
@@ -23,7 +23,7 @@
     delete from t_teacher_share
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.zizaike.entity.solr.TeacherShare" >
+  <insert id="insert" parameterType="com.zizaike.entity.recommend.TeacherShare" >
     insert into t_teacher_share (id, user_id, active, 
       create_at, create_u_id, update_u_id, 
       update_at)
@@ -31,7 +31,7 @@
       #{createAt,jdbcType=TIMESTAMP}, #{createUId,jdbcType=INTEGER}, #{updateUId,jdbcType=INTEGER}, 
       #{updateAt,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.zizaike.entity.solr.TeacherShare" >
+  <insert id="insertSelective" parameterType="com.zizaike.entity.recommend.TeacherShare" >
     insert into t_teacher_share
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -80,7 +80,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zizaike.entity.solr.TeacherShare" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.zizaike.entity.recommend.TeacherShare" >
     update t_teacher_share
     <set >
       <if test="userId != null" >
@@ -104,7 +104,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zizaike.entity.solr.TeacherShare" >
+  <update id="updateByPrimaryKey" parameterType="com.zizaike.entity.recommend.TeacherShare" >
     update t_teacher_share
     set user_id = #{userId,jdbcType=INTEGER},
       active = #{active,jdbcType=INTEGER},
@@ -114,9 +114,10 @@
       update_at = #{updateAt,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <select id="query" resultMap="java.util.List" parameterType="java.lang.Integer" >
+  
+  <select id="query" resultMap="BaseResultMap"  parameterType="java.lang.Integer" >
     select
-    user_id
+    <include refid="Base_Column_List" />
     from t_teacher_share
     where active=1
   </select>
