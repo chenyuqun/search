@@ -28,4 +28,7 @@
 	<!-- 搜索统计 -->
 	<dubbo:service interface="com.zizaike.is.recommend.SearchStatisticsService" version="1.0.0" ref="searchStatisticsService"  group="${dubbo.group}" />  
 	<bean id="searchStatisticsService" class="com.zizaike.recommend.service.impl.SearchStatisticsServiceImpl" />
+	<!-- 培训服务 -->
+	<dubbo:service interface="com.zizaike.is.recommend.TeacherService" version="1.0.0" ref="teacherService"  group="${dubbo.group}" />
+	<bean id="teacherService" class="com.zizaike.recommend.service.impl.TeacherServiceImpl" />
 </beans>

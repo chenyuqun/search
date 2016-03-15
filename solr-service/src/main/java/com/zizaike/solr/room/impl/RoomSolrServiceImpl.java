@@ -82,6 +82,8 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
     private HanLPService hanLPService;
     @Autowired
     ApplicationContext applicationContext;
+    @Autowired
+    public TeacherService teacherService;
     //图片地址
     private static final String IMAGE_HOST = "http://img1.zzkcdn.com";
     private static final Integer pageSize=10;
@@ -493,8 +495,10 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                 applicationContext.publishEvent(new ResultLessSearchApplicationEvent(searchStatistics));
             }
             if(matches>0){
-               
-            
+                /**
+                 * 打上标签看是否是民宿培训
+                 */
+
                 for(int i=0;i<lg.size();i++){
 
                     RoomList roomList=new RoomList();
