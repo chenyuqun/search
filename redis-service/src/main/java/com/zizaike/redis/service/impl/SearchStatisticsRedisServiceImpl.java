@@ -35,7 +35,7 @@ import com.zizaike.redis.constents.prefix.SearchRedisCacheKeyPrefix;
 public class SearchStatisticsRedisServiceImpl implements SearchStatisticsRedisService {
     private static final Long START = 0L;
     private static final Long END = 20L;
-    private static final Long END_EVERY_DAY = 50L;
+    private static final Long END_EVERY_DAY = 50000L;
     private static final Double INCR = 1.0;
 
     @Autowired

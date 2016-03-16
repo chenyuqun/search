@@ -658,7 +658,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer>  im
                         Double rate1=from.getExchangeRate();
                         Double rate2=target.getExchangeRate();
                         String currencyCode=target.getCurrencyCode();
-                        Double minPriceAct=((double)minPriceTW)/rate1*rate2;
+                        Double minPriceAct=((double)minPriceTW)*(rate2/rate1);
                         //向上取整
                         roomList.setMinPrice((int)Math.ceil(minPriceAct));
                         roomList.setCurrencyCode(currencyCode);
