@@ -10,6 +10,8 @@
 package com.zizaike.redis.service.impl;
 
 
+import com.zizaike.entity.recommend.Loctype;
+import com.zizaike.entity.recommend.vo.CountryArea;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,9 @@ import com.zizaike.is.redis.RecommendAreaRedisService;
 import com.zizaike.redis.constents.TimeType;
 import com.zizaike.redis.constents.prefix.SearchRedisCacheKey;
 import com.zizaike.redis.constents.prefix.SearchRedisCacheKeyPrefix;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ClassName:HotRecommendRedisServiceImpl <br/>
@@ -49,6 +54,24 @@ public class RecommendAreaRedisServiceImpl implements RecommendAreaRedisService 
         }
         
         return recommendArea;
+    }
+
+    @Override
+    public List<Loctype> queryByDest(Integer destId) throws ZZKServiceException {
+        RecommendArea  recommendArea = new RecommendArea();
+        recommendArea = redisCacheDao.get(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.HOT_STATE_CITY.getKey(), RecommendArea.class);
+        if(recommendArea == null){
+            recommendArea = reService.query();
+            save(recommendArea);
+        }
+        List<Loctype> loctypeList=new ArrayList<Loctype>();
+        for(CountryArea countryArea:recommendArea.getCountryAreas()){
+            if(destId==countryArea.getCountry().getDestId()){
+                loctypeList=countryArea.getAreaList();
+                break;
+            }
+        }
+        return loctypeList;
     }
 
     @Override
