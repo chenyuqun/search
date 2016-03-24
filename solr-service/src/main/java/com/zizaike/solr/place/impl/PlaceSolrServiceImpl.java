@@ -194,7 +194,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer>  
             //城市 走database
             Loctype loctype2=new Loctype();
             loctype2.setTypeName(words);
-            List<Loctype> locall=loctypeService.queryLoctype(loctype);
+            List<Loctype> locall=loctypeService.queryLoctype(loctype2);
             for(int i=0;i<locall.size();i++){
                 AssociateWordsDTO  associateWordsDTO=new AssociateWordsDTO();
                 associateWordsDTO.setIsAllDest(1);
