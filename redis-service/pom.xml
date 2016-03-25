@@ -12,6 +12,10 @@
 	<description>redis-service</description>
 	<properties>
 		<project.build.finalname>redis-service</project.build.finalname>
+		<zizaike.core.version>1.0.5-RELEASE</zizaike.core.version>
+		<zizaike.entity.version>1.0.10-RELEASE</zizaike.entity.version>
+		<zizaike.is.version>1.0.11-RELEASE</zizaike.is.version>
+		
 	</properties>
 	
 	<build>
@@ -99,17 +103,20 @@
 	</profiles>
 	<dependencies>
 		<dependency>
-			<groupId>com.zizaike</groupId>
-			<artifactId>zizaike-entity</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.zizaike</groupId>
-			<artifactId>zizaike-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.zizaike</groupId>
-			<artifactId>zizaike-is</artifactId>
-		</dependency>
+				<groupId>com.zizaike</groupId>
+				<artifactId>zizaike-entity</artifactId>
+				<version>${zizaike.entity.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.zizaike</groupId>
+				<artifactId>zizaike-core</artifactId>
+				<version>${zizaike.core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.zizaike</groupId>
+				<artifactId>zizaike-is</artifactId>
+				<version>${zizaike.is.version}</version>
+			</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>

@@ -38,10 +38,6 @@
 		<logback.version>1.0.13</logback.version>
 		<!-- mysql -->
 		<mysql.version>5.1.26</mysql.version>
-		<!-- -->
-		<zizaike.core.version>1.0.5-RELEASE</zizaike.core.version>
-		<zizaike.entity.version>1.0.10-RELEASE</zizaike.entity.version>
-		<zizaike.is.version>1.0.11-RELEASE</zizaike.is.version>
 		<!-- solr -->
 		<solr.version>4.7.0</solr.version>
 		<spring.data.solr.version>1.5.0.RELEASE</spring.data.solr.version>
