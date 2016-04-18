@@ -311,13 +311,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
     public AssociateWordAndSearchCondition queryPlaceByWordsAndLocCodition(String words, Integer destId, Integer locid)
             throws ZZKServiceException {
         AssociateWordAndSearchCondition condition = new AssociateWordAndSearchCondition();
-        Map searchCondition = new HashMap();
-        condition.setSearchCondition(searchCondition);
         condition.setAssociateWords(queryPlaceByWordsAndLoc(words, destId, locid));
-        searchCondition.put("searchid", "");
-        searchCondition.put("searchType","");
-        searchCondition.put("keyWords", "");
-        condition.setSearchCondition(searchCondition);
         if (StringUtils.isEmpty(words)) {
             return condition;
         }
@@ -325,6 +319,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
         if (list == null || list.size() == 0) {
             return condition;
         }
+        Map searchCondition = new HashMap();
         LocPoi locPoi = list.get(0);
         searchCondition.put("searchid", locPoi.getId());
         searchCondition.put("searchType", AssociateType.findByValue(locPoi.getPoiType()));
