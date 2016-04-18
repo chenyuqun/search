@@ -12,8 +12,6 @@ package com.zizaike.recommend.service.impl;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +33,6 @@ import com.zizaike.recommend.dao.LocPoiDao;
  */
 @Service
 public class LocPoiServiceImpl implements LocPoiService {
-    private static final Logger LOG = LoggerFactory.getLogger(LocPoiServiceImpl.class);
     @Autowired
    private LocPoiDao locPoiDao;
     @Override
