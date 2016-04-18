@@ -55,7 +55,7 @@ public class PlaceTest extends AbstractSolrIntegrationTest{
     }
     @Test
     public void queryPlaceByWordsAndLocCodition() throws ZZKServiceException {
-         AssociateWordAndSearchCondition condition =  placeService.queryPlaceByWordsAndLocCodition("日月潭",10,0);
+         AssociateWordAndSearchCondition condition =  placeService.queryPlaceByWordsAndLocCodition("阿里",10,0);
        Assert.assertNotNull(condition, "condition is  not null");
     }
 }

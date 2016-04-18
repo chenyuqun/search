@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
+import com.zizaike.entity.recommend.LocPoi;
 import com.zizaike.entity.recommend.Loctype;
 import com.zizaike.entity.solr.Place;
 import com.zizaike.entity.solr.dto.AssociateType;
@@ -34,6 +36,7 @@ import com.zizaike.entity.solr.dto.PlaceDTO;
 import com.zizaike.entity.solr.model.SolrSearchablePlaceFields;
 import com.zizaike.entity.solr.type.PoiType;
 import com.zizaike.is.common.HanLPService;
+import com.zizaike.is.recommend.LocPoiService;
 import com.zizaike.is.recommend.LoctypeService;
 import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.UserSolrService;
@@ -45,6 +48,8 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
     public UserSolrService userSolrService;
     @Autowired
     public LoctypeService loctypeService;
+    @Autowired
+    public LocPoiService locPoiService;
     @Autowired
     private HanLPService hanLPService;
 
@@ -307,27 +312,19 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
             throws ZZKServiceException {
         AssociateWordAndSearchCondition condition = new AssociateWordAndSearchCondition();
         Map searchCondition = new HashMap();
+        condition.setSearchCondition(searchCondition);
         condition.setAssociateWords(queryPlaceByWordsAndLoc(words, destId, locid));
-
-        SimpleQuery query = new SimpleQuery(new Criteria(SolrSearchablePlaceFields.POI_NAME).is(words));
-        if (destId != 0) {
-            query.addCriteria(new Criteria(SolrSearchablePlaceFields.DEST_ID).is(destId));
+        if (StringUtils.isEmpty(words)) {
+            return condition;
         }
-        // 1为有效
-        query.addCriteria(new Criteria(SolrSearchablePlaceFields.STATUS).is(1));
-        // 加上locId限制
-        if (locid != 0) {
-            query.addCriteria(new Criteria(SolrSearchablePlaceFields.LOCID).is(locid));
+        List<LocPoi> list = locPoiService.queryLocPoi(words);
+        if (list == null || list.size() == 0) {
+            return condition;
         }
-        // 取1记录
-        query.setRows(1);
-        Iterator<Place> poi = getSolrOperations().queryForPage(query, Place.class).iterator();
-        while (poi.hasNext()) {
-            Place place = poi.next();
-            searchCondition.put("searchid", place.getId());
-            searchCondition.put("searchType", AssociateType.findByValue(place.getPoiType()));
-            searchCondition.put("keyWords", "");
-        }
+        LocPoi locPoi = list.get(0);
+        searchCondition.put("searchid", locPoi.getId());
+        searchCondition.put("searchType", AssociateType.findByValue(locPoi.getPoiType()));
+        searchCondition.put("keyWords", "");
         condition.setSearchCondition(searchCondition);
         return condition;
     }
