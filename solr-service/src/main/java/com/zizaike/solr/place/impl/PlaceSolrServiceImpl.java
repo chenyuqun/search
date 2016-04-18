@@ -314,6 +314,10 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
         Map searchCondition = new HashMap();
         condition.setSearchCondition(searchCondition);
         condition.setAssociateWords(queryPlaceByWordsAndLoc(words, destId, locid));
+        searchCondition.put("searchid", "");
+        searchCondition.put("searchType","");
+        searchCondition.put("keyWords", "");
+        condition.setSearchCondition(searchCondition);
         if (StringUtils.isEmpty(words)) {
             return condition;
         }
