@@ -346,6 +346,30 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
             if (map.get("otherService") != null && map.get("otherService") != "" && map.get("otherService").equals("1")) {
                 filterQueries.append(" AND other_service_i:1");
             }
+            /**
+             * 普通话
+             */
+            if (map.get("translation") != null && map.get("translation") != "" && map.get("translation").equals("1")) {
+                filterQueries.append(" AND follow_language_s:普通*");
+            }
+            /**
+             * 户外
+             */
+            if (map.get("outdoors") != null && map.get("outdoors") != "" && map.get("outdoors").equals("1")) {
+                filterQueries.append(" AND huwai_service_i:1");
+            }
+            /**
+             * 代定
+             */
+            if (map.get("booking") != null && map.get("booking") != "" && map.get("booking").equals("1")) {
+                filterQueries.append(" AND daiding_service_i:1");
+            }
+           /**
+            * 餐饮美食
+            */
+            if (map.get("food") != null && map.get("food") != "" && map.get("food").equals("1")) {
+                filterQueries.append(" AND zaocan_service_i:1");
+            }
         }
         List<String> dataList = new ArrayList<String>();
         /*
