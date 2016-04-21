@@ -21,7 +21,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.solr.core.geo.Point;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
@@ -35,6 +38,8 @@ import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.BNBServiceSearchStatistics;
 import com.zizaike.entity.solr.BNBServiceType;
+import com.zizaike.entity.solr.Place;
+import com.zizaike.entity.solr.SearchType;
 import com.zizaike.entity.solr.ServiceSearchVo;
 import com.zizaike.entity.solr.User;
 import com.zizaike.entity.solr.dto.AssociateType;
@@ -42,6 +47,7 @@ import com.zizaike.entity.solr.dto.AssociateWordsDTO;
 import com.zizaike.entity.solr.dto.BNBService;
 import com.zizaike.entity.solr.dto.BNBServiceSolr;
 import com.zizaike.entity.solr.model.SolrSearchableUserFields;
+import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.UserSolrService;
 
 /**
@@ -60,6 +66,8 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
     private static final Logger LOG = LoggerFactory.getLogger(UserSolrServiceImpl.class);
     @Autowired
     ApplicationContext applicationContext;
+    @Autowired
+    public PlaceSolrService placeSolrService;
     private static final Integer PAGE_SIZE = 10;
    //图片地址
     private static final String IMAGE_HOST = "http://img1.zzkcdn.com";
@@ -289,6 +297,12 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         if(serviceSearchVo.getServiceType()==null){
             throw new IllegalParamterException("BnbServiceType is null");
         }
+        if(serviceSearchVo.getSearchType()==null){
+            throw new IllegalParamterException("SearchType is null");
+        }
+        if(serviceSearchVo.getSearchid()==null){
+            throw new IllegalParamterException("searchId is null");
+        }
         BNBServiceSearchStatistics bnbServiceSearchStatistics = new BNBServiceSearchStatistics();
         bnbServiceSearchStatistics.setBnbServiceType(serviceSearchVo.getServiceType());
         bnbServiceSearchStatistics.setChannel(serviceSearchVo.getChannel());
@@ -313,6 +327,17 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             solrQuery.addCriteria(new Criteria(User.BAOCHE_SERVICE_I_FIELD).is(1));
         }else if(serviceSearchVo.getServiceType()==BNBServiceType.OTHER){
             solrQuery.addCriteria(new Criteria(User.OTHER_SERVICE_I_FIELD).is(1));
+        }
+        if (serviceSearchVo.getSearchType() == SearchType.BUSINES_CIRCLE
+                || serviceSearchVo.getSearchType() == SearchType.BUSINESS_AREA
+                || serviceSearchVo.getSearchType() == SearchType.SCENIC_SPOTS
+                || serviceSearchVo.getSearchType() == SearchType.SPORTVAN
+                ) {
+            Place place = placeSolrService.queryPlaceById(serviceSearchVo.getSearchid());
+            Point location = new Point(place.getGoogleMapLat(), place.getGoogleMapLng());
+            solrQuery.addCriteria(new Criteria("latlng_p").near(location, new Distance(serviceSearchVo.getSearchRadius() != null ? serviceSearchVo.getSearchRadius() : place.getSearchRadius(),Metrics.KILOMETERS)));
+        } else {
+            solrQuery.addCriteria(new Criteria(User.LOC_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
         }
         PageList<com.zizaike.entity.solr.dto.User> pageList = new PageList<>();
             Page<com.zizaike.entity.solr.User> userS = getSolrOperations().queryForPage(solrQuery,User.class);

@@ -10,6 +10,7 @@ import com.zizaike.core.common.page.PageList;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.base.ChannelType;
 import com.zizaike.entity.solr.BNBServiceType;
+import com.zizaike.entity.solr.SearchType;
 import com.zizaike.entity.solr.ServiceSearchVo;
 import com.zizaike.entity.solr.User;
 import com.zizaike.entity.solr.dto.AssociateWordsDTO;
@@ -39,6 +40,11 @@ public  class UserTest extends AbstractSolrIntegrationTest {
       serviceSearchVo.setMultilang(1);
       serviceSearchVo.setPage(1);
       serviceSearchVo.setServiceType(BNBServiceType.BOOKING);
+//      serviceSearchVo.setSearchid(2905);
+//      serviceSearchVo.setSearchType(SearchType.CITY);
+      //垦丁
+      serviceSearchVo.setSearchid(919);
+      serviceSearchVo.setSearchType(SearchType.SCENIC_SPOTS);
       PageList<com.zizaike.entity.solr.dto.User> list =  userService.serviceQuery(serviceSearchVo);
       System.err.println(list);
       Assert.assertNotEquals(list.getList().size(), 0);
