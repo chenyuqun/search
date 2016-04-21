@@ -232,7 +232,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         /*
          * app端一页显示10
          */
-        solrquery.setRows(10);
+        solrquery.setRows(pageSize);
         /*
          * Filter Conditions
          */

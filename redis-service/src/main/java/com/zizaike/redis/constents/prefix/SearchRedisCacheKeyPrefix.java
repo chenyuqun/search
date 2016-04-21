@@ -32,7 +32,15 @@ public enum SearchRedisCacheKeyPrefix implements CacheKeyPrefix {
     /**
      * WEB搜索无结果计数业务
      */
-    WEB_RESULT_LESS("search:web:resultLess"),;
+    WEB_RESULT_LESS("search:web:resultLess"),
+    /**
+     * APP bnb搜索无结果计数业务
+     */
+    APP_BNB_SERVICE("search:app:bnbservice"),
+    /**
+     * WEB bnb搜索无结果计数业务
+     */
+    WEB_BNB_SERVICE("search:web:bnbservice"),;
 
     private String prefix;
 

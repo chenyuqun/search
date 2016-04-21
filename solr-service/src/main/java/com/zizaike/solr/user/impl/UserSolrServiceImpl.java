@@ -13,25 +13,39 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.beans.DocumentObjectBinder;
+import org.apache.solr.client.solrj.response.Group;
+import org.apache.solr.client.solrj.response.GroupResponse;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
+import com.zizaike.core.common.page.PageList;
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
+import com.zizaike.entity.recommend.BNBServiceSearchStatistics;
+import com.zizaike.entity.solr.BNBServiceType;
+import com.zizaike.entity.solr.ServiceSearchVo;
 import com.zizaike.entity.solr.User;
 import com.zizaike.entity.solr.dto.AssociateType;
 import com.zizaike.entity.solr.dto.AssociateWordsDTO;
 import com.zizaike.entity.solr.model.SolrSearchableUserFields;
 import com.zizaike.is.solr.UserSolrService;
+import com.zizaike.solr.domain.event.BNBServiceSearchApplicationEvent;
 
 /**
  * ClassName:UserServiceImpl <br/>
- * Function: 用户查询实现. <br/>
- * Reason:用户查询. <br/>
+ * Function: 民宿查询实现. <br/>
+ * Reason:民宿查询. <br/>
  * Date: 2015年10月28日 下午5:01:35 <br/>
  * 
  * @author snow.zhang
@@ -42,6 +56,9 @@ import com.zizaike.is.solr.UserSolrService;
 @NoRepositoryBean
 public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  implements UserSolrService {
     private static final Logger LOG = LoggerFactory.getLogger(UserSolrServiceImpl.class);
+    @Autowired
+    ApplicationContext applicationContext;
+    private static final Integer pageSize = 10;
     @Override
     public User queryUserById(Integer id) throws ZZKServiceException {
         long start = System.currentTimeMillis();
@@ -251,5 +268,66 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
              }
         LOG.info("when call queryUserByWordsAndDest, use: {}ms", System.currentTimeMillis() - start);
         return associateWords;
+    }
+
+    @Override
+    public PageList<com.zizaike.entity.solr.dto.User> serviceQuery(ServiceSearchVo serviceSearchVo) throws ZZKServiceException {
+        long start = System.currentTimeMillis();
+        if(serviceSearchVo==null){
+            throw new IllegalParamterException("serviceSearchVo is null");
+        }
+        if(serviceSearchVo.getChannel()==null){
+            throw new IllegalParamterException("channel is null");
+        }
+        if(serviceSearchVo.getDestId()==null){
+            throw new IllegalParamterException("destId is null");
+        }
+        if(serviceSearchVo.getServiceType()==null){
+            throw new IllegalParamterException("BnbServiceType is null");
+        }
+        com.zizaike.entity.solr.dto.User user = new com.zizaike.entity.solr.dto.User();
+        BNBServiceSearchStatistics bnbServiceSearchStatistics = new BNBServiceSearchStatistics();
+        bnbServiceSearchStatistics.setBnbServiceType(serviceSearchVo.getServiceType());
+        bnbServiceSearchStatistics.setChannel(serviceSearchVo.getChannel());
+        bnbServiceSearchStatistics.setDestId(serviceSearchVo.getDestId());
+        applicationContext.publishEvent(new BNBServiceSearchApplicationEvent(bnbServiceSearchStatistics));
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.addSort("hs_comments_num_i", ORDER.desc);
+        solrQuery.setStart((serviceSearchVo.getPage() - 1) * pageSize);
+        /*
+         * app端一页显示10
+         */
+        solrQuery.setRows(pageSize);
+        StringBuffer filterQueries = new StringBuffer();
+        filterQueries.append("dest_id:"+serviceSearchVo.getDestId());
+        if(serviceSearchVo.getServiceType()==BNBServiceType.OUTDOORS){
+            filterQueries.append("AND huwai_service_i:1");
+        }else if(serviceSearchVo.getServiceType()==BNBServiceType.FOOD){
+            filterQueries.append("AND zaocan_service_i:1");
+        }else if(serviceSearchVo.getServiceType()==BNBServiceType.BOOKING){
+            filterQueries.append("AND daiding_service_i:1");
+        }else if(serviceSearchVo.getServiceType()==BNBServiceType.TRANSFER){
+            filterQueries.append("AND jiesong_service_i:1");
+        }else if(serviceSearchVo.getServiceType()==BNBServiceType.BUS_SERVICE){
+            filterQueries.append("AND baoche_service_i:1");
+        }else if(serviceSearchVo.getServiceType()==BNBServiceType.OTHER){
+            filterQueries.append("AND other_service_i:1");
+        }
+        solrQuery.setFilterQueries(filterQueries.toString());
+        DocumentObjectBinder binder = new DocumentObjectBinder();
+        try {
+            QueryResponse qr = getSolrOperations().getSolrServer().query(solrQuery);
+            GroupResponse gr = qr.getGroupResponse();
+            //匹配房间数目
+            int matches = gr.getValues().get(0).getMatches();
+            //匹配民宿数目
+            int ngroups = gr.getValues().get(0).getNGroups();
+            //内容
+            List<Group> lg = gr.getValues().get(0).getValues();
+        } catch (SolrServerException e) {
+            e.printStackTrace();  
+            LOG.error(" solr exception{}",e);
+        }
+        return null;
     }
 }
