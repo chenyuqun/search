@@ -10,14 +10,12 @@
 package com.zizaike.solr.user.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -30,10 +28,10 @@ import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.zizaike.core.common.page.PageList;
+import com.zizaike.core.framework.event.BusinessOperationBeforeEvent;
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.BNBServiceSearchStatistics;
@@ -49,6 +47,8 @@ import com.zizaike.entity.solr.dto.BNBServiceSolr;
 import com.zizaike.entity.solr.model.SolrSearchableUserFields;
 import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.UserSolrService;
+import com.zizaike.solr.bo.EventPublishService;
+import com.zizaike.solr.domain.SearchBusinessOperation;
 
 /**
  * ClassName:UserServiceImpl <br/>
@@ -65,9 +65,9 @@ import com.zizaike.is.solr.UserSolrService;
 public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  implements UserSolrService {
     private static final Logger LOG = LoggerFactory.getLogger(UserSolrServiceImpl.class);
     @Autowired
-    ApplicationContext applicationContext;
-    @Autowired
     public PlaceSolrService placeSolrService;
+    @Autowired
+    private EventPublishService eventPublishService;
     private static final Integer PAGE_SIZE = 10;
    //图片地址
     private static final String IMAGE_HOST = "http://img1.zzkcdn.com";
@@ -307,11 +307,11 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         bnbServiceSearchStatistics.setBnbServiceType(serviceSearchVo.getServiceType());
         bnbServiceSearchStatistics.setChannel(serviceSearchVo.getChannel());
         bnbServiceSearchStatistics.setDestId(serviceSearchVo.getDestId());
-        // applicationContext.publishEvent(new BNBServiceSearchApplicationEvent(bnbServiceSearchStatistics));
+        //服务查询事件
+        BusinessOperationBeforeEvent<BNBServiceSearchStatistics> beforeEvent = new BusinessOperationBeforeEvent<BNBServiceSearchStatistics>(
+                SearchBusinessOperation.SERVICE_SEARCH, bnbServiceSearchStatistics);
+        eventPublishService.publishEvent(beforeEvent);
         SimpleQuery solrQuery = new SimpleQuery();
-        //solrQuery.se(CommonParams.Q, "*:*");
-        //solrQuery.addSort("hs_comments_num_i", ORDER.desc);
-        //solrQuery.setStart((serviceSearchVo.getPage() - 1) * pageSize);
         solrQuery.addSort(new Sort(Sort.Direction.DESC,User.HS_COMMENTS_NUM_I_FIELD));
         solrQuery.setPageRequest(new PageRequest(serviceSearchVo.getPage(), PAGE_SIZE));
         solrQuery.addCriteria(new Criteria(User.DEST_ID_FIELD).is(serviceSearchVo.getDestId()));
@@ -337,7 +337,9 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             Point location = new Point(place.getGoogleMapLat(), place.getGoogleMapLng());
             solrQuery.addCriteria(new Criteria("latlng_p").near(location, new Distance(serviceSearchVo.getSearchRadius() != null ? serviceSearchVo.getSearchRadius() : place.getSearchRadius(),Metrics.KILOMETERS)));
         } else {
-            solrQuery.addCriteria(new Criteria(User.LOC_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
+            if(serviceSearchVo.getSearchid()!=0){
+                solrQuery.addCriteria(new Criteria(User.LOC_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
+            }
         }
         PageList<com.zizaike.entity.solr.dto.User> pageList = new PageList<>();
             Page<com.zizaike.entity.solr.User> userS = getSolrOperations().queryForPage(solrQuery,User.class);

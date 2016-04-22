@@ -2,14 +2,15 @@ package com.zizaike.solr.listener;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.testng.annotations.Test;
 
+import com.zizaike.core.framework.event.BusinessOperationBeforeEvent;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.base.ChannelType;
 import com.zizaike.entity.recommend.SearchStatistics;
 import com.zizaike.solr.basetest.BaseTest;
-import com.zizaike.solr.domain.event.HotSearchApplicationEvent;
+import com.zizaike.solr.bo.EventPublishService;
+import com.zizaike.solr.domain.SearchBusinessOperation;
 
 /**
  * 
@@ -23,12 +24,15 @@ import com.zizaike.solr.domain.event.HotSearchApplicationEvent;
  */
 public class HotSearchStatisticsListenerTest extends BaseTest {
     @Autowired
-    private ApplicationContext applicationContext;
+    private EventPublishService eventPublishService;
     @Test(description = "监听测试")
     public void get() throws ZZKServiceException {
         SearchStatistics searchStatistics = new SearchStatistics();
         searchStatistics.setKeyWords("test");
         searchStatistics.setChannel(ChannelType.APP);
-        applicationContext.publishEvent(new HotSearchApplicationEvent(searchStatistics));
+        //发布热搜统计
+        BusinessOperationBeforeEvent<SearchStatistics> beforeEvent = new BusinessOperationBeforeEvent<SearchStatistics>(
+                SearchBusinessOperation.SEARCH, searchStatistics);
+        eventPublishService.publishEvent(beforeEvent);
     }
 }
