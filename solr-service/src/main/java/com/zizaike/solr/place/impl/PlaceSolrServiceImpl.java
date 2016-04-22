@@ -326,6 +326,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
         searchCondition.put("searchid", locPoi.getId());
         searchCondition.put("searchType", AssociateType.findByValue(locPoi.getPoiType()));
         searchCondition.put("keyWords", "");
+        searchCondition.put("destId", locPoi.getDestId());
         condition.setSearchCondition(searchCondition);
         return condition;
     }
