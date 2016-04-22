@@ -372,9 +372,14 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                     }
                     userService.setBnbService(bnbServiceList);
                     userService.setLocName(user.getLocTypename());
+                    userService.setName(user.getUsername());
                     userServices.add(userService);
                 }
                 pageList.setList(userServices);
+                com.zizaike.core.common.page.Page page = new com.zizaike.core.common.page.Page();
+                page.setPageNo(userS.getNumber());
+                page.setTotalCount(Integer.parseInt(userS.getTotalElements()+""));
+                pageList.setPage(page);
         LOG.info("when call serviceQuery, use: {}ms", System.currentTimeMillis() - start);
         return pageList;
     }
