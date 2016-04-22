@@ -586,7 +586,12 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                             minPriceTW = lr.get(j).getIntPriceTW();
                         }
                     }
-                    roomList.setOtherServiceI(lr.get(0).getOtherServiceI() | lr.get(0).getHuwaiServiceI()|lr.get(0).getZaocanServiceI()|lr.get(0).getDaidingServiceI() | lr.get(0).getJiesongServiceI() | lr.get(0).getBaocheServiceI());
+                    if(lr.get(0).getOtherServiceI()==1 || lr.get(0).getHuwaiServiceI()==1 ||lr.get(0).getZaocanServiceI()==1 ||lr.get(0).getDaidingServiceI() ==1 || lr.get(0).getJiesongServiceI() ==1 || lr.get(0).getBaocheServiceI()==1){
+                        roomList.setOtherServiceI(1);
+                    }else{
+                        roomList.setOtherServiceI(0);
+                    }
+                    
                     roomList.setAddress(address);
                     //增加促销字段  目前繁体用户看不到 促和减的信息
                     roomList.setIsSalesPromotion((lr.get(0).getIsBnbCuxiaoI() == 1 && searchWordsVo.getMultilang() == 12) ? 1 : 0);
