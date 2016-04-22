@@ -113,6 +113,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
             if (loc.get(i).getLocid() != null) {
                 associateWordsDTO.setLocId(loc.get(i).getLocid());
             }
+            associateWordsDTO.setDestId(loc.get(i).getDestId());
             associateWordsDTO.setName(loc.get(i).getTypeName() == null ? "" : loc.get(i).getTypeName());
             associateWords.add(associateWordsDTO);
         }
@@ -206,6 +207,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
                 if (loc.get(i).getLocid() != null) {
                     associateWordsDTO.setLocId(locall.get(i).getLocid());
                 }
+                associateWordsDTO.setDestId(locall.get(i).getDestId());
                 associateWordsDTO.setName(locall.get(i).getTypeName() == null ? "" : loc.get(i).getTypeName());
                 associateWords.add(associateWordsDTO);
             }
