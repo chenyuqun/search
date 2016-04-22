@@ -30,7 +30,6 @@ import org.apache.solr.common.params.GroupParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
@@ -38,6 +37,9 @@ import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.zizaike.core.framework.event.BusinessOperationBeforeEvent;
+import com.zizaike.core.framework.event.BusinessOperationCompletedEvent;
+import com.zizaike.core.framework.event.BusinessOperationFailedEvent;
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.DestConfig;
@@ -55,9 +57,8 @@ import com.zizaike.is.recommend.DestConfigService;
 import com.zizaike.is.recommend.TeacherShareService;
 import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.RoomSolrService;
-import com.zizaike.solr.domain.event.HotSearchApplicationEvent;
-import com.zizaike.solr.domain.event.ResultLessSearchApplicationEvent;
-//import com.zizaike.solr.tools.SolrDoucmentTools;
+import com.zizaike.solr.bo.EventPublishService;
+import com.zizaike.solr.domain.SearchBusinessOperation;
 
 /**
  * ClassName: RoomSolrServiceImpl <br/>
@@ -79,7 +80,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
     @Autowired
     private HanLPService hanLPService;
     @Autowired
-    ApplicationContext applicationContext;
+    private EventPublishService eventPublishService;
     @Autowired
     public TeacherShareService teacherShareService;
     //图片地址
@@ -136,7 +137,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
             searchStatistics.setLocId(searchWordsVo.getSearchid());
         }
         //发布热搜统计
-        applicationContext.publishEvent(new HotSearchApplicationEvent(searchStatistics));
+        BusinessOperationBeforeEvent<SearchStatistics> beforeEvent = new BusinessOperationBeforeEvent<SearchStatistics>(
+                SearchBusinessOperation.SEARCH, searchStatistics);
+        eventPublishService.publishEvent(beforeEvent);
 
         /**
          * 获取坐标信息
@@ -232,7 +235,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         /*
          * app端一页显示10
          */
-        solrquery.setRows(10);
+        solrquery.setRows(pageSize);
         /*
          * Filter Conditions
          */
@@ -345,6 +348,30 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
            */
             if (map.get("otherService") != null && map.get("otherService") != "" && map.get("otherService").equals("1")) {
                 filterQueries.append(" AND other_service_i:1");
+            }
+            /**
+             * 普通话
+             */
+            if (map.get("translation") != null && map.get("translation") != "" && map.get("translation").equals("1")) {
+                filterQueries.append(" AND follow_language_s:普通*");
+            }
+            /**
+             * 户外
+             */
+            if (map.get("outdoors") != null && map.get("outdoors") != "" && map.get("outdoors").equals("1")) {
+                filterQueries.append(" AND huwai_service_i:1");
+            }
+            /**
+             * 代定
+             */
+            if (map.get("booking") != null && map.get("booking") != "" && map.get("booking").equals("1")) {
+                filterQueries.append(" AND daiding_service_i:1");
+            }
+           /**
+            * 餐饮美食
+            */
+            if (map.get("food") != null && map.get("food") != "" && map.get("food").equals("1")) {
+                filterQueries.append(" AND zaocan_service_i:1");
             }
         }
         List<String> dataList = new ArrayList<String>();
@@ -496,7 +523,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
             List<RoomList> lsRoomList = new ArrayList<RoomList>();
             //无结果统计
             if (matches == 0) {
-                applicationContext.publishEvent(new ResultLessSearchApplicationEvent(searchStatistics));
+                //发布无结果热搜统计
+                BusinessOperationCompletedEvent<SearchStatistics> failedEvent = new BusinessOperationCompletedEvent<SearchStatistics>(SearchBusinessOperation.SEARCH, searchStatistics);
+                eventPublishService.publishEvent(failedEvent);
             }
             if (matches > 0) {
                 /**

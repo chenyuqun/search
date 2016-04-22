@@ -17,6 +17,7 @@ import org.testng.annotations.Test;
 
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.solr.Place;
+import com.zizaike.entity.solr.dto.AssociateWordAndSearchCondition;
 import com.zizaike.entity.solr.dto.AssociateWordsDTO;
 import com.zizaike.entity.solr.dto.PlaceDTO;
 import com.zizaike.is.solr.PlaceSolrService;
@@ -51,6 +52,11 @@ public class PlaceTest extends AbstractSolrIntegrationTest{
     public void queryPlaceByLocId() throws ZZKServiceException {
         List<PlaceDTO> place =  placeService.queryPlaceByLocId(2684);
         Assert.assertNotEquals(place.size(), 0);
+    }
+    @Test
+    public void queryPlaceByWordsAndLocCodition() throws ZZKServiceException {
+         AssociateWordAndSearchCondition condition =  placeService.queryPlaceByWordsAndLocCodition("阿里",10,0);
+       Assert.assertNotNull(condition, "condition is  not null");
     }
 }
   

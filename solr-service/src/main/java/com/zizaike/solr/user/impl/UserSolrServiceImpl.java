@@ -15,23 +15,45 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.solr.core.geo.Point;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
+import com.zizaike.core.common.page.PageList;
+import com.zizaike.core.framework.event.BusinessOperationBeforeEvent;
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
+import com.zizaike.entity.recommend.BNBServiceSearchStatistics;
+import com.zizaike.entity.solr.BNBServiceType;
+import com.zizaike.entity.solr.Place;
+import com.zizaike.entity.solr.SearchType;
+import com.zizaike.entity.solr.ServiceSearchVo;
 import com.zizaike.entity.solr.User;
 import com.zizaike.entity.solr.dto.AssociateType;
 import com.zizaike.entity.solr.dto.AssociateWordsDTO;
+import com.zizaike.entity.solr.dto.BNBService;
+import com.zizaike.entity.solr.dto.BNBServiceSolr;
 import com.zizaike.entity.solr.model.SolrSearchableUserFields;
+import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.UserSolrService;
+import com.zizaike.solr.bo.EventPublishService;
+import com.zizaike.solr.domain.SearchBusinessOperation;
 
 /**
  * ClassName:UserServiceImpl <br/>
- * Function: 用户查询实现. <br/>
- * Reason:用户查询. <br/>
+ * Function: 民宿查询实现. <br/>
+ * Reason:民宿查询. <br/>
  * Date: 2015年10月28日 下午5:01:35 <br/>
  * 
  * @author snow.zhang
@@ -42,6 +64,13 @@ import com.zizaike.is.solr.UserSolrService;
 @NoRepositoryBean
 public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  implements UserSolrService {
     private static final Logger LOG = LoggerFactory.getLogger(UserSolrServiceImpl.class);
+    @Autowired
+    public PlaceSolrService placeSolrService;
+    @Autowired
+    private EventPublishService eventPublishService;
+    private static final Integer PAGE_SIZE = 10;
+   //图片地址
+    private static final String IMAGE_HOST = "http://img1.zzkcdn.com";
     @Override
     public User queryUserById(Integer id) throws ZZKServiceException {
         long start = System.currentTimeMillis();
@@ -251,5 +280,107 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
              }
         LOG.info("when call queryUserByWordsAndDest, use: {}ms", System.currentTimeMillis() - start);
         return associateWords;
+    }
+
+    @Override
+    public PageList<com.zizaike.entity.solr.dto.User> serviceQuery(ServiceSearchVo serviceSearchVo) throws ZZKServiceException {
+        long start = System.currentTimeMillis();
+        if(serviceSearchVo==null){
+            throw new IllegalParamterException("serviceSearchVo is null");
+        }
+        if(serviceSearchVo.getChannel()==null){
+            throw new IllegalParamterException("channel is null");
+        }
+        if(serviceSearchVo.getDestId()==null){
+            throw new IllegalParamterException("destId is null");
+        }
+        if(serviceSearchVo.getServiceType()==null){
+            throw new IllegalParamterException("BnbServiceType is null");
+        }
+        if(serviceSearchVo.getSearchType()==null){
+            throw new IllegalParamterException("SearchType is null");
+        }
+        if(serviceSearchVo.getSearchid()==null){
+            throw new IllegalParamterException("searchId is null");
+        }
+        BNBServiceSearchStatistics bnbServiceSearchStatistics = new BNBServiceSearchStatistics();
+        bnbServiceSearchStatistics.setBnbServiceType(serviceSearchVo.getServiceType());
+        bnbServiceSearchStatistics.setChannel(serviceSearchVo.getChannel());
+        bnbServiceSearchStatistics.setDestId(serviceSearchVo.getDestId());
+        //服务查询事件
+        BusinessOperationBeforeEvent<BNBServiceSearchStatistics> beforeEvent = new BusinessOperationBeforeEvent<BNBServiceSearchStatistics>(
+                SearchBusinessOperation.SERVICE_SEARCH, bnbServiceSearchStatistics);
+        eventPublishService.publishEvent(beforeEvent);
+        SimpleQuery solrQuery = new SimpleQuery();
+        solrQuery.addSort(new Sort(Sort.Direction.DESC,User.HS_COMMENTS_NUM_I_FIELD));
+        solrQuery.setPageRequest(new PageRequest(serviceSearchVo.getPage(), PAGE_SIZE));
+        solrQuery.addCriteria(new Criteria(User.DEST_ID_FIELD).is(serviceSearchVo.getDestId()));
+        if(serviceSearchVo.getServiceType()==BNBServiceType.OUTDOORS){
+            solrQuery.addCriteria(new Criteria(User.HUWAI_SERVICE_I_FIELD).is(1));
+        }else if(serviceSearchVo.getServiceType()==BNBServiceType.FOOD){
+            solrQuery.addCriteria(new Criteria(User.ZAOCAN_SERVICE_I_FIELD).is(1));
+        }else if(serviceSearchVo.getServiceType()==BNBServiceType.BOOKING){
+            solrQuery.addCriteria(new Criteria(User.DAIDING_SERVICE_I_FIELD).is(1));
+        }else if(serviceSearchVo.getServiceType()==BNBServiceType.TRANSFER){
+            solrQuery.addCriteria(new Criteria(User.JIESONG_SERVICE_I_FIELD).is(1));
+        }else if(serviceSearchVo.getServiceType()==BNBServiceType.BUS_SERVICE){
+            solrQuery.addCriteria(new Criteria(User.BAOCHE_SERVICE_I_FIELD).is(1));
+        }else if(serviceSearchVo.getServiceType()==BNBServiceType.OTHER){
+            solrQuery.addCriteria(new Criteria(User.OTHER_SERVICE_I_FIELD).is(1));
+        }
+        if (serviceSearchVo.getSearchType() == SearchType.BUSINES_CIRCLE
+                || serviceSearchVo.getSearchType() == SearchType.BUSINESS_AREA
+                || serviceSearchVo.getSearchType() == SearchType.SCENIC_SPOTS
+                || serviceSearchVo.getSearchType() == SearchType.SPORTVAN
+                ) {
+            Place place = placeSolrService.queryPlaceById(serviceSearchVo.getSearchid());
+            Point location = new Point(place.getGoogleMapLat(), place.getGoogleMapLng());
+            solrQuery.addCriteria(new Criteria("latlng_p").near(location, new Distance(serviceSearchVo.getSearchRadius() != null ? serviceSearchVo.getSearchRadius() : place.getSearchRadius(),Metrics.KILOMETERS)));
+        } else {
+            if(serviceSearchVo.getSearchid()!=0){
+                solrQuery.addCriteria(new Criteria(User.LOC_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
+            }
+        }
+        PageList<com.zizaike.entity.solr.dto.User> pageList = new PageList<>();
+            Page<com.zizaike.entity.solr.User> userS = getSolrOperations().queryForPage(solrQuery,User.class);
+            LOG.debug("solrquery:{}", solrQuery);
+            //内容
+            List<com.zizaike.entity.solr.dto.User> userServices = new ArrayList<com.zizaike.entity.solr.dto.User>();
+                for(User user: userS.getContent()){
+                    com.zizaike.entity.solr.dto.User userService = new com.zizaike.entity.solr.dto.User();
+                    userService.setId(user.getId());
+                    String userPhoto = user.getUserPhotoFile();
+                    //头像取小图
+                    if (userPhoto!= null && userPhoto.contains("public/zzk_")) {
+                        userService.setImage(IMAGE_HOST + "/" + userPhoto.substring(7) + "-userphotomedium.jpg");
+                    } else if (userPhoto != "") {
+                        userService.setImage(IMAGE_HOST + "/" + userPhoto + "/2000x1500.jpg-userphotomedium.jpg");
+                    }
+                    //取服务
+                    JSONObject allServiceObject = JSON.parseObject(user.getAllServiceListS());
+                    List<BNBServiceSolr> serviceList =  JSON.parseObject(allServiceObject.get(BNBServiceType.findSolrServiceName(serviceSearchVo.getServiceType())).toString(), new TypeReference<ArrayList<BNBServiceSolr>>(){});
+                    List<BNBService> bnbServiceList = new ArrayList<BNBService>();
+                    for (BNBServiceSolr bnbServiceSolr : serviceList) {
+                        BNBService bnbService = new BNBService();
+                        bnbService.setContent(bnbServiceSolr.getContent());
+                        bnbService.setId(bnbServiceSolr.getId());
+                        bnbService.setImages(bnbServiceSolr.getImages());
+                        bnbService.setPrice(bnbServiceSolr.getPrice());
+                        bnbService.setServiceType(BNBServiceType.findBySolrStr(bnbServiceSolr.getServiceCategory()));
+                        bnbService.setServiceName(bnbServiceSolr.getTitle());
+                        bnbServiceList.add(bnbService);
+                    }
+                    userService.setBnbService(bnbServiceList);
+                    userService.setLocName(user.getLocTypename());
+                    userService.setName(user.getUsername());
+                    userServices.add(userService);
+                }
+                pageList.setList(userServices);
+                com.zizaike.core.common.page.Page page = new com.zizaike.core.common.page.Page();
+                page.setPageNo(userS.getNumber());
+                page.setTotalCount(Integer.parseInt(userS.getTotalElements()+""));
+                pageList.setPage(page);
+        LOG.info("when call serviceQuery, use: {}ms", System.currentTimeMillis() - start);
+        return pageList;
     }
 }

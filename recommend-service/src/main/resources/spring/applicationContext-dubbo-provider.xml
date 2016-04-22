@@ -31,4 +31,7 @@
 	<!-- 培训服务 -->
 	<dubbo:service interface="com.zizaike.is.recommend.TeacherShareService" version="1.0.0" ref="teacherShareService"  group="${dubbo.group}" />
 	<bean id="teacherShareService" class="com.zizaike.recommend.service.impl.TeacherShareServiceImpl" />
+	<!-- 景点服务 -->
+	<dubbo:service interface="com.zizaike.is.recommend.LocPoiService" version="1.0.0" ref="locPoiService"  group="${dubbo.group}" />  
+	<bean id="locPoiService" class="com.zizaike.recommend.service.impl.LocPoiServiceImpl" />
 </beans>

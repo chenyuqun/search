@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zizaike.recommend.dao.LocPoiMapper" >
+  <resultMap id="BaseResultMap" type="com.zizaike.entity.recommend.LocPoi" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="dest_id" property="destId" jdbcType="INTEGER" />
+    <result column="locid" property="locid" jdbcType="INTEGER" />
+    <result column="poi_type" property="poiType" jdbcType="INTEGER" />
+    <result column="poi_rank" property="poiRank" jdbcType="INTEGER" />
+    <result column="poi_name" property="poiName" jdbcType="VARCHAR" />
+    <result column="google_map_lat" property="googleMapLat" jdbcType="DOUBLE" />
+    <result column="google_map_lng" property="googleMapLng" jdbcType="DOUBLE" />
+    <result column="google_map_address" property="googleMapAddress" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="BIT" />
+    <result column="auto_error" property="autoError" jdbcType="BIT" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="admin_uid" property="adminUid" jdbcType="INTEGER" />
+    <result column="search_radius" property="searchRadius" jdbcType="REAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, dest_id, locid, poi_type, poi_rank, poi_name, google_map_lat, google_map_lng, 
+    google_map_address, status, auto_error, create_time, update_time, admin_uid, search_radius
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_loc_poi
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_loc_poi
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zizaike.entity.recommend.LocPoi" >
+    insert into t_loc_poi (id, dest_id, locid, 
+      poi_type, poi_rank, poi_name, 
+      google_map_lat, google_map_lng, google_map_address, 
+      status, auto_error, create_time, 
+      update_time, admin_uid, search_radius
+      )
+    values (#{id,jdbcType=INTEGER}, #{destId,jdbcType=INTEGER}, #{locid,jdbcType=INTEGER}, 
+      #{poiType,jdbcType=INTEGER}, #{poiRank,jdbcType=INTEGER}, #{poiName,jdbcType=VARCHAR}, 
+      #{googleMapLat,jdbcType=DOUBLE}, #{googleMapLng,jdbcType=DOUBLE}, #{googleMapAddress,jdbcType=VARCHAR}, 
+      #{status,jdbcType=BIT}, #{autoError,jdbcType=BIT}, #{createTime,jdbcType=INTEGER}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{adminUid,jdbcType=INTEGER}, #{searchRadius,jdbcType=REAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.zizaike.entity.recommend.LocPoi" >
+    insert into t_loc_poi
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="destId != null" >
+        dest_id,
+      </if>
+      <if test="locid != null" >
+        locid,
+      </if>
+      <if test="poiType != null" >
+        poi_type,
+      </if>
+      <if test="poiRank != null" >
+        poi_rank,
+      </if>
+      <if test="poiName != null" >
+        poi_name,
+      </if>
+      <if test="googleMapLat != null" >
+        google_map_lat,
+      </if>
+      <if test="googleMapLng != null" >
+        google_map_lng,
+      </if>
+      <if test="googleMapAddress != null" >
+        google_map_address,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="autoError != null" >
+        auto_error,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="adminUid != null" >
+        admin_uid,
+      </if>
+      <if test="searchRadius != null" >
+        search_radius,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="destId != null" >
+        #{destId,jdbcType=INTEGER},
+      </if>
+      <if test="locid != null" >
+        #{locid,jdbcType=INTEGER},
+      </if>
+      <if test="poiType != null" >
+        #{poiType,jdbcType=INTEGER},
+      </if>
+      <if test="poiRank != null" >
+        #{poiRank,jdbcType=INTEGER},
+      </if>
+      <if test="poiName != null" >
+        #{poiName,jdbcType=VARCHAR},
+      </if>
+      <if test="googleMapLat != null" >
+        #{googleMapLat,jdbcType=DOUBLE},
+      </if>
+      <if test="googleMapLng != null" >
+        #{googleMapLng,jdbcType=DOUBLE},
+      </if>
+      <if test="googleMapAddress != null" >
+        #{googleMapAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=BIT},
+      </if>
+      <if test="autoError != null" >
+        #{autoError,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adminUid != null" >
+        #{adminUid,jdbcType=INTEGER},
+      </if>
+      <if test="searchRadius != null" >
+        #{searchRadius,jdbcType=REAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zizaike.entity.recommend.LocPoi" >
+    update t_loc_poi
+    <set >
+      <if test="destId != null" >
+        dest_id = #{destId,jdbcType=INTEGER},
+      </if>
+      <if test="locid != null" >
+        locid = #{locid,jdbcType=INTEGER},
+      </if>
+      <if test="poiType != null" >
+        poi_type = #{poiType,jdbcType=INTEGER},
+      </if>
+      <if test="poiRank != null" >
+        poi_rank = #{poiRank,jdbcType=INTEGER},
+      </if>
+      <if test="poiName != null" >
+        poi_name = #{poiName,jdbcType=VARCHAR},
+      </if>
+      <if test="googleMapLat != null" >
+        google_map_lat = #{googleMapLat,jdbcType=DOUBLE},
+      </if>
+      <if test="googleMapLng != null" >
+        google_map_lng = #{googleMapLng,jdbcType=DOUBLE},
+      </if>
+      <if test="googleMapAddress != null" >
+        google_map_address = #{googleMapAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=BIT},
+      </if>
+      <if test="autoError != null" >
+        auto_error = #{autoError,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adminUid != null" >
+        admin_uid = #{adminUid,jdbcType=INTEGER},
+      </if>
+      <if test="searchRadius != null" >
+        search_radius = #{searchRadius,jdbcType=REAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zizaike.entity.recommend.LocPoi" >
+    update t_loc_poi
+    set dest_id = #{destId,jdbcType=INTEGER},
+      locid = #{locid,jdbcType=INTEGER},
+      poi_type = #{poiType,jdbcType=INTEGER},
+      poi_rank = #{poiRank,jdbcType=INTEGER},
+      poi_name = #{poiName,jdbcType=VARCHAR},
+      google_map_lat = #{googleMapLat,jdbcType=DOUBLE},
+      google_map_lng = #{googleMapLng,jdbcType=DOUBLE},
+      google_map_address = #{googleMapAddress,jdbcType=VARCHAR},
+      status = #{status,jdbcType=BIT},
+      auto_error = #{autoError,jdbcType=BIT},
+      create_time = #{createTime,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      admin_uid = #{adminUid,jdbcType=INTEGER},
+      search_radius = #{searchRadius,jdbcType=REAL}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+   <select id="queryLocPoiByPoiName" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_loc_poi
+    where poi_name = #{poi_name,jdbcType=VARCHAR}
+  </select>
+</mapper>

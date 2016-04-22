@@ -23,4 +23,7 @@
 	<!-- 搜索统计 -->
    <dubbo:service interface="com.zizaike.is.redis.SearchStatisticsRedisService" version="1.0.0" ref="searchStatisticsRedisService"  group="${dubbo.group}" />  
 	<bean id="searchStatisticsRedisService" class="com.zizaike.redis.service.impl.SearchStatisticsRedisServiceImpl" />
+   <!-- 服务搜索统计 -->
+   <dubbo:service interface="com.zizaike.is.redis.BNBServiceStatisticsRedisService" version="1.0.0" ref="bnbServiceStatisticsRedisService"  group="${dubbo.group}" />  
+	<bean id="bnbServiceStatisticsRedisService" class="com.zizaike.redis.service.impl.BNBServiceStatisticsRedisServiceImpl" />
 </beans>
