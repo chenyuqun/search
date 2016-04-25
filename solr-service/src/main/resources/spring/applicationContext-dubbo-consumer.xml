@@ -17,5 +17,7 @@
     <dubbo:reference id="locPoiService" interface="com.zizaike.is.recommend.LocPoiService" version="1.0.0" group="${dubbo.group}"  check="false"/>
     <!-- 服务搜索统计 -->
     <dubbo:reference id="bnbServiceStatisticsRedisService" interface="com.zizaike.is.redis.BNBServiceStatisticsRedisService" version="1.0.0" group="${dubbo.group}"  check="false"/>
+    <!-- 收藏服务 -->
+    <dubbo:reference id="collectService" interface="com.zizaike.is.recommend.CollectService" version="1.0.0" group="${dubbo.group}"  check="false"/>
     
 </beans>

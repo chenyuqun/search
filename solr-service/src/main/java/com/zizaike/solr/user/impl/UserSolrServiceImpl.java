@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ import com.zizaike.entity.solr.dto.AssociateWordsDTO;
 import com.zizaike.entity.solr.dto.BNBService;
 import com.zizaike.entity.solr.dto.BNBServiceSolr;
 import com.zizaike.entity.solr.model.SolrSearchableUserFields;
+import com.zizaike.is.recommend.CollectService;
 import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.UserSolrService;
 import com.zizaike.solr.bo.EventPublishService;
@@ -66,6 +68,8 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
     private static final Logger LOG = LoggerFactory.getLogger(UserSolrServiceImpl.class);
     @Autowired
     public PlaceSolrService placeSolrService;
+    @Autowired
+    public CollectService collectService;
     @Autowired
     private EventPublishService eventPublishService;
     private static final Integer PAGE_SIZE = 10;
@@ -346,8 +350,17 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             LOG.debug("solrquery:{}", solrQuery);
             //内容
             List<com.zizaike.entity.solr.dto.User> userServices = new ArrayList<com.zizaike.entity.solr.dto.User>();
+            String bnbCollect = null;
+            if(serviceSearchVo.getUserId()!=null && serviceSearchVo.getUserId()!=0){
+                 bnbCollect = collectService.bnbCollection(serviceSearchVo.getUserId());
+            }
                 for(User user: userS.getContent()){
                     com.zizaike.entity.solr.dto.User userService = new com.zizaike.entity.solr.dto.User();
+                    if(StringUtils.isNotEmpty(bnbCollect) &&  bnbCollect.contains(user.getId()+"")){
+                        userService.setIsCollect(true);
+                    }else{
+                        userService.setIsCollect(false);
+                    }
                     userService.setId(user.getId());
                     String userPhoto = user.getUserPhotoFile();
                     //头像取小图

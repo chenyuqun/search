@@ -13,8 +13,8 @@
 	<properties>
 		<project.build.finalname>recommend-service</project.build.finalname>
 		<zizaike.core.version>1.0.5-RELEASE</zizaike.core.version>
-		<zizaike.entity.version>1.0.13-RELEASE</zizaike.entity.version>
-		<zizaike.is.version>1.0.14-RELEASE</zizaike.is.version>
+		<zizaike.entity.version>1.0.15-SNAPSHOT</zizaike.entity.version>
+		<zizaike.is.version>1.0.15-SNAPSHOT</zizaike.is.version>
 		
 	</properties>
 	<build>
