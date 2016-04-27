@@ -53,7 +53,7 @@ public  class UserTest extends AbstractSolrIntegrationTest {
   public void serviceRecommend() throws ZZKServiceException {
       ServiceSearchVo serviceSearchVo = new ServiceSearchVo();
       serviceSearchVo.setMultiprice(12);
-      List<com.zizaike.entity.solr.dto.User> list =  userService.serviceRecommend(serviceSearchVo);
-      Assert.assertNotEquals(list.size(), 0);
+      PageList<com.zizaike.entity.solr.dto.User> list =  userService.serviceRecommend(serviceSearchVo);
+      Assert.assertNotEquals(list.getList().size(), 0);
   }
 }

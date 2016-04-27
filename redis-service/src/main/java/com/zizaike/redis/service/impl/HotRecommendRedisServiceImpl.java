@@ -69,22 +69,5 @@ public class HotRecommendRedisServiceImpl implements HotRecommendRedisService {
                 TimeType.DAY.getValue());
     }
 
-    @Override
-    public List<com.zizaike.entity.solr.dto.User> serviceRecommend(ServiceSearchVo serviceSearchVo) throws ZZKServiceException {
-          
-        List<com.zizaike.entity.solr.dto.User> list = null;
-        list = redisCacheDao.get(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.SERVICE.getKey(),
-                new TypeReference<ArrayList<com.zizaike.entity.solr.dto.User>>() {
-                });
-        if (list == null) {
-            list = userSolrService.serviceRecommend(serviceSearchVo);
-            saveService(list);
-        }
-        return list;
-    }
-    private void saveService(List<com.zizaike.entity.solr.dto.User> value) throws ZZKServiceException {
-        redisCacheDao.setEx(SearchRedisCacheKeyPrefix.RECOMMEND, SearchRedisCacheKey.SERVICE.getKey(), value,
-                TimeType.DAY.getValue());
-    }
 
 }

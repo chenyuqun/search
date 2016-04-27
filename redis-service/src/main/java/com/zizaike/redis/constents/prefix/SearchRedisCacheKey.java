@@ -33,10 +33,6 @@ public enum SearchRedisCacheKey implements CacheKey {
      * 每天
      */
     ERVERY_DAY("day"),
-    /**
-     * 服务
-     */
-    SERVICE("service")
     ;
     private String key;
 
