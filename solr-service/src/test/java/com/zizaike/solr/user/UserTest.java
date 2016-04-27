@@ -47,7 +47,6 @@ public  class UserTest extends AbstractSolrIntegrationTest {
       serviceSearchVo.setSearchid(919);
       serviceSearchVo.setSearchType(SearchType.SCENIC_SPOTS);
       PageList<com.zizaike.entity.solr.dto.User> list =  userService.serviceQuery(serviceSearchVo);
-      System.err.println(list);
       Assert.assertNotEquals(list.getList().size(), 0);
   }
   @Test
@@ -55,7 +54,6 @@ public  class UserTest extends AbstractSolrIntegrationTest {
       ServiceSearchVo serviceSearchVo = new ServiceSearchVo();
       serviceSearchVo.setMultiprice(12);
       List<com.zizaike.entity.solr.dto.User> list =  userService.serviceRecommend(serviceSearchVo);
-      System.err.println(list);
       Assert.assertNotEquals(list.size(), 0);
   }
 }

@@ -12,4 +12,6 @@
     <dubbo:reference id="recommendAreaService" interface="com.zizaike.is.recommend.RecommendAreaService" version="1.0.0" group="${dubbo.group}"  check="false"/>
     <!-- 插入 -->
     <dubbo:reference id="searchStatisticsService" interface="com.zizaike.is.recommend.SearchStatisticsService" version="1.0.0" group="${dubbo.group}"  check="false"/>
+    <!-- userSolr -->
+    <dubbo:reference id="userSolrService" interface="com.zizaike.is.solr.UserSolrService" version="1.0.0" group="${dubbo.group}"  check="false"/>
 </beans>

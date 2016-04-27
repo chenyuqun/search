@@ -25,6 +25,7 @@ import org.springframework.data.geo.Metrics;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.core.geo.Point;
 import org.springframework.data.solr.core.query.Criteria;
+import org.springframework.data.solr.core.query.Query.Operator;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
@@ -420,8 +421,9 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             serviceIds.append(searchServiceRecommend.getServiceIds()).append(",");
         }
         SimpleQuery solrQuery = new SimpleQuery();
-        solrQuery.addSort(new Sort(Sort.Direction.DESC,User.HS_COMMENTS_NUM_I_FIELD));
-        solrQuery.addCriteria(new Criteria(User.DEST_ID_FIELD).in(uidList));
+        //solrQuery.addSort(new Sort(Sort.Direction.DESC,User.HS_COMMENTS_NUM_I_FIELD));
+        solrQuery.addCriteria(new Criteria(User.ID_FIELD).in(uidList));
+        solrQuery.setDefaultOperator(Operator.OR);
         org.springframework.data.domain.Page<com.zizaike.entity.solr.User> userS =  getSolrOperations().queryForPage(solrQuery,User.class);
         
         //内容
@@ -433,7 +435,6 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             for(User user: userS.getContent()){
                 com.zizaike.entity.solr.dto.User userService = new com.zizaike.entity.solr.dto.User();
             userService =  solrUserToUser(user,serviceSearchVo.getMultiprice(),null,serviceIds.toString());
-            userServices.add(userService);
             if(StringUtils.isNotEmpty(bnbCollect) &&  bnbCollect.contains(user.getId()+"")){
                 userService.setIsCollect(true);
             }else{
@@ -455,7 +456,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         }
         //取服务
         JSONObject allServiceObject = JSON.parseObject(user.getAllServiceListS());
-        List<BNBServiceSolr> serviceList = null;
+        List<BNBServiceSolr> serviceList = new ArrayList<BNBServiceSolr>();
         if(serviceType!=null){
             serviceList =  JSON.parseObject(allServiceObject.get(BNBServiceType.findSolrServiceName(serviceType)).toString(), new TypeReference<ArrayList<BNBServiceSolr>>(){});
         }
