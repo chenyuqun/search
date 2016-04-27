@@ -12,12 +12,12 @@ package com.zizaike.solr.user.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.Distance;
@@ -36,6 +36,8 @@ import com.zizaike.core.framework.event.BusinessOperationBeforeEvent;
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.BNBServiceSearchStatistics;
+import com.zizaike.entity.recommend.DestConfig;
+import com.zizaike.entity.recommend.SearchServiceRecommend;
 import com.zizaike.entity.solr.BNBServiceType;
 import com.zizaike.entity.solr.Place;
 import com.zizaike.entity.solr.SearchType;
@@ -47,6 +49,8 @@ import com.zizaike.entity.solr.dto.BNBService;
 import com.zizaike.entity.solr.dto.BNBServiceSolr;
 import com.zizaike.entity.solr.model.SolrSearchableUserFields;
 import com.zizaike.is.recommend.CollectService;
+import com.zizaike.is.recommend.DestConfigService;
+import com.zizaike.is.recommend.SearchServiceRecommendService;
 import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.UserSolrService;
 import com.zizaike.solr.bo.EventPublishService;
@@ -72,6 +76,10 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
     public CollectService collectService;
     @Autowired
     private EventPublishService eventPublishService;
+    @Autowired
+    private DestConfigService destConfigService;
+    @Autowired
+    private SearchServiceRecommendService searchServiceRecommendService;
     private static final Integer PAGE_SIZE = 10;
    //图片地址
     private static final String IMAGE_HOST = "http://img1.zzkcdn.com";
@@ -346,7 +354,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             }
         }
         PageList<com.zizaike.entity.solr.dto.User> pageList = new PageList<>();
-            Page<com.zizaike.entity.solr.User> userS = getSolrOperations().queryForPage(solrQuery,User.class);
+            org.springframework.data.domain.Page<com.zizaike.entity.solr.User> userS = getSolrOperations().queryForPage(solrQuery,User.class);
             LOG.debug("solrquery:{}", solrQuery);
             //内容
             List<com.zizaike.entity.solr.dto.User> userServices = new ArrayList<com.zizaike.entity.solr.dto.User>();
@@ -356,36 +364,40 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             }
                 for(User user: userS.getContent()){
                     com.zizaike.entity.solr.dto.User userService = new com.zizaike.entity.solr.dto.User();
+                   
+//                    userService.setId(user.getId());
+//                    String userPhoto = user.getUserPhotoFile();
+//                    //头像取小图
+//                    if (userPhoto!= null && userPhoto.contains("public/zzk_")) {
+//                        userService.setImage(IMAGE_HOST + "/" + userPhoto.substring(7) + "-userphotomedium.jpg");
+//                    } else if (userPhoto != "") {
+//                        userService.setImage(IMAGE_HOST + "/" + userPhoto + "/2000x1500.jpg-userphotomedium.jpg");
+//                    }
+//                    //取服务
+//                    JSONObject allServiceObject = JSON.parseObject(user.getAllServiceListS());
+//                    List<BNBServiceSolr> serviceList =  JSON.parseObject(allServiceObject.get(BNBServiceType.findSolrServiceName(serviceSearchVo.getServiceType())).toString(), new TypeReference<ArrayList<BNBServiceSolr>>(){});
+//                    List<BNBService> bnbServiceList = new ArrayList<BNBService>();
+//                    for (BNBServiceSolr bnbServiceSolr : serviceList) {
+//                        BNBService bnbService = new BNBService();
+//                        bnbService.setContent(bnbServiceSolr.getContent());
+//                        bnbService.setId(bnbServiceSolr.getId());
+//                        bnbService.setImages(bnbServiceSolr.getImages());
+//                        bnbService.setServiceType(BNBServiceType.findByValue(bnbServiceSolr.getServiceCategory()));
+//                        bnbService.setServiceName(bnbServiceSolr.getTitle());
+//                        DestConfig destConfig = destConfigService.priceConvert(user.getDestId(),serviceSearchVo.getMultiprice(), bnbServiceSolr.getPrice());
+//                        bnbService.setPrice(destConfig.getPrice());
+//                        bnbService.setCurrencyCode(destConfig.getCurrencyCode());
+//                        bnbServiceList.add(bnbService);
+//                    }
+//                    userService.setBnbService(bnbServiceList);
+//                    userService.setLocName(user.getLocTypename());
+//                    userService.setName(user.getUsername());
+                    userService =  solrUserToUser(user,serviceSearchVo.getMultiprice(),serviceSearchVo.getServiceType(),null);
                     if(StringUtils.isNotEmpty(bnbCollect) &&  bnbCollect.contains(user.getId()+"")){
                         userService.setIsCollect(true);
                     }else{
                         userService.setIsCollect(false);
                     }
-                    userService.setId(user.getId());
-                    String userPhoto = user.getUserPhotoFile();
-                    //头像取小图
-                    if (userPhoto!= null && userPhoto.contains("public/zzk_")) {
-                        userService.setImage(IMAGE_HOST + "/" + userPhoto.substring(7) + "-userphotomedium.jpg");
-                    } else if (userPhoto != "") {
-                        userService.setImage(IMAGE_HOST + "/" + userPhoto + "/2000x1500.jpg-userphotomedium.jpg");
-                    }
-                    //取服务
-                    JSONObject allServiceObject = JSON.parseObject(user.getAllServiceListS());
-                    List<BNBServiceSolr> serviceList =  JSON.parseObject(allServiceObject.get(BNBServiceType.findSolrServiceName(serviceSearchVo.getServiceType())).toString(), new TypeReference<ArrayList<BNBServiceSolr>>(){});
-                    List<BNBService> bnbServiceList = new ArrayList<BNBService>();
-                    for (BNBServiceSolr bnbServiceSolr : serviceList) {
-                        BNBService bnbService = new BNBService();
-                        bnbService.setContent(bnbServiceSolr.getContent());
-                        bnbService.setId(bnbServiceSolr.getId());
-                        bnbService.setImages(bnbServiceSolr.getImages());
-                        bnbService.setPrice(bnbServiceSolr.getPrice());
-                        bnbService.setServiceType(BNBServiceType.findBySolrStr(bnbServiceSolr.getServiceCategory()));
-                        bnbService.setServiceName(bnbServiceSolr.getTitle());
-                        bnbServiceList.add(bnbService);
-                    }
-                    userService.setBnbService(bnbServiceList);
-                    userService.setLocName(user.getLocTypename());
-                    userService.setName(user.getUsername());
                     userServices.add(userService);
                 }
                 pageList.setList(userServices);
@@ -396,4 +408,86 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         LOG.info("when call serviceQuery, use: {}ms", System.currentTimeMillis() - start);
         return pageList;
     }
+
+    @Override
+    public List<com.zizaike.entity.solr.dto.User> serviceRecommend(ServiceSearchVo serviceSearchVo)
+            throws ZZKServiceException {
+        List<SearchServiceRecommend> list = searchServiceRecommendService.queryAll();
+        List<String> uidList = new ArrayList<String>();
+        StringBuffer serviceIds = new StringBuffer();
+        for (SearchServiceRecommend searchServiceRecommend : list) {
+            uidList.add(searchServiceRecommend.getUid()+"");
+            serviceIds.append(searchServiceRecommend.getServiceIds()).append(",");
+        }
+        SimpleQuery solrQuery = new SimpleQuery();
+        solrQuery.addSort(new Sort(Sort.Direction.DESC,User.HS_COMMENTS_NUM_I_FIELD));
+        solrQuery.addCriteria(new Criteria(User.DEST_ID_FIELD).in(uidList));
+        org.springframework.data.domain.Page<com.zizaike.entity.solr.User> userS =  getSolrOperations().queryForPage(solrQuery,User.class);
+        
+        //内容
+        List<com.zizaike.entity.solr.dto.User> userServices = new ArrayList<com.zizaike.entity.solr.dto.User>();
+        String bnbCollect = null;
+        if(serviceSearchVo.getUserId()!=null && serviceSearchVo.getUserId()!=0){
+             bnbCollect = collectService.bnbCollection(serviceSearchVo.getUserId());
+        }
+            for(User user: userS.getContent()){
+                com.zizaike.entity.solr.dto.User userService = new com.zizaike.entity.solr.dto.User();
+            userService =  solrUserToUser(user,serviceSearchVo.getMultiprice(),null,serviceIds.toString());
+            userServices.add(userService);
+            if(StringUtils.isNotEmpty(bnbCollect) &&  bnbCollect.contains(user.getId()+"")){
+                userService.setIsCollect(true);
+            }else{
+                userService.setIsCollect(false);
+            }
+            userServices.add(userService);
+        }
+        return userServices;
+    }
+    private com.zizaike.entity.solr.dto.User solrUserToUser(User user,Integer  multiprice,BNBServiceType serviceType,String serviceIds) throws ZZKServiceException{
+        com.zizaike.entity.solr.dto.User userService = new com.zizaike.entity.solr.dto.User();
+        userService.setId(user.getId());
+        String userPhoto = user.getUserPhotoFile();
+        //头像取小图
+        if (userPhoto!= null && userPhoto.contains("public/zzk_")) {
+            userService.setImage(IMAGE_HOST + "/" + userPhoto.substring(7) + "-userphotomedium.jpg");
+        } else if (userPhoto != "") {
+            userService.setImage(IMAGE_HOST + "/" + userPhoto + "/2000x1500.jpg-userphotomedium.jpg");
+        }
+        //取服务
+        JSONObject allServiceObject = JSON.parseObject(user.getAllServiceListS());
+        List<BNBServiceSolr> serviceList = null;
+        if(serviceType!=null){
+            serviceList =  JSON.parseObject(allServiceObject.get(BNBServiceType.findSolrServiceName(serviceType)).toString(), new TypeReference<ArrayList<BNBServiceSolr>>(){});
+        }
+        if(StringUtils.isNotEmpty(serviceIds)){
+            Map<String,ArrayList<BNBServiceSolr>> map =  JSON.parseObject(allServiceObject.toString(), new TypeReference<Map<String,ArrayList<BNBServiceSolr>>>(){});
+            for (String key : map.keySet()) {
+                ArrayList<BNBServiceSolr> serviceL =  map.get(key);
+                for (BNBServiceSolr bnbServiceSolr : serviceL) {
+                    if(serviceIds.contains(bnbServiceSolr.getId()+"")){
+                        serviceList.add(bnbServiceSolr);
+                    }
+                }
+            }
+        }
+        List<BNBService> bnbServiceList = new ArrayList<BNBService>();
+        for (BNBServiceSolr bnbServiceSolr : serviceList) {
+            BNBService bnbService = new BNBService();
+            bnbService.setContent(bnbServiceSolr.getContent());
+            bnbService.setId(bnbServiceSolr.getId());
+            bnbService.setImages(bnbServiceSolr.getImages());
+            bnbService.setServiceType(BNBServiceType.findByValue(bnbServiceSolr.getServiceCategory()));
+            bnbService.setServiceName(bnbServiceSolr.getTitle());
+            DestConfig destConfig = destConfigService.priceConvert(user.getDestId(),multiprice, bnbServiceSolr.getPrice());
+            bnbService.setPrice(destConfig.getPrice());
+            bnbService.setCurrencyCode(destConfig.getCurrencyCode());
+            bnbServiceList.add(bnbService);
+        }
+        userService.setBnbService(bnbServiceList);
+        userService.setLocName(user.getLocTypename());
+        userService.setName(user.getUsername());
+        return userService;
+    }
+
+
 }

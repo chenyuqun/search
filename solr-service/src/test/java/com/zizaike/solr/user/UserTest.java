@@ -38,6 +38,7 @@ public  class UserTest extends AbstractSolrIntegrationTest {
       serviceSearchVo.setChannel(ChannelType.APP);
       serviceSearchVo.setDestId(10);
       serviceSearchVo.setMultilang(1);
+      serviceSearchVo.setMultiprice(12);
       serviceSearchVo.setPage(1);
       serviceSearchVo.setServiceType(BNBServiceType.BOOKING);
 //      serviceSearchVo.setSearchid(2905);
@@ -48,5 +49,13 @@ public  class UserTest extends AbstractSolrIntegrationTest {
       PageList<com.zizaike.entity.solr.dto.User> list =  userService.serviceQuery(serviceSearchVo);
       System.err.println(list);
       Assert.assertNotEquals(list.getList().size(), 0);
+  }
+  @Test
+  public void serviceRecommend() throws ZZKServiceException {
+      ServiceSearchVo serviceSearchVo = new ServiceSearchVo();
+      serviceSearchVo.setMultiprice(12);
+      List<com.zizaike.entity.solr.dto.User> list =  userService.serviceRecommend(serviceSearchVo);
+      System.err.println(list);
+      Assert.assertNotEquals(list.size(), 0);
   }
 }

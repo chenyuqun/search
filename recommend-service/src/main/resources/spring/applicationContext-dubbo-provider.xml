@@ -37,4 +37,7 @@
 	<!-- 收藏服务 -->
 	<dubbo:service interface="com.zizaike.is.recommend.CollectService" version="1.0.0" ref="collectService"  group="${dubbo.group}" />  
 	<bean id="collectService" class="com.zizaike.recommend.service.impl.CollectServiceImpl" />
+	<!-- 服务推荐 -->
+	<dubbo:service interface="com.zizaike.is.recommend.SearchServiceRecommendService" version="1.0.0" ref="searchServiceRecommendService"  group="${dubbo.group}" />  
+	<bean id="searchServiceRecommendService" class="com.zizaike.recommend.service.impl.SearchServiceRecommendServiceImpl" />
 </beans>
