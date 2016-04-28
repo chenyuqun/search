@@ -364,6 +364,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             if(serviceSearchVo.getUserId()!=null && serviceSearchVo.getUserId()!=0){
                  bnbCollect = collectService.bnbCollection(serviceSearchVo.getUserId());
             }
+            if(userS!=null){
                 for(User user: userS.getContent()){
                     com.zizaike.entity.solr.dto.User userService = new com.zizaike.entity.solr.dto.User();
                     LOG.debug("user {}",user);
@@ -380,6 +381,8 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                 page.setPageNo(userS.getNumber());
                 page.setTotalCount(Integer.parseInt(userS.getTotalElements()+""));
                 pageList.setPage(page);
+            }
+                
         LOG.info("when call serviceQuery, use: {}ms", System.currentTimeMillis() - start);
         return pageList;
     }
