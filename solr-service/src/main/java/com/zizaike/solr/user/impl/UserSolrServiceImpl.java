@@ -355,7 +355,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                 solrQuery.addCriteria(new Criteria(User.LOC_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
             }
         }
-        PageList<com.zizaike.entity.solr.dto.User> pageList = new PageList<>();
+        PageList<com.zizaike.entity.solr.dto.User> pageList = new PageList<com.zizaike.entity.solr.dto.User>();
             org.springframework.data.domain.Page<com.zizaike.entity.solr.User> userS = getSolrOperations().queryForPage(solrQuery,User.class);
             LOG.debug("solrquery:{}", solrQuery);
             //内容
@@ -366,34 +366,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             }
                 for(User user: userS.getContent()){
                     com.zizaike.entity.solr.dto.User userService = new com.zizaike.entity.solr.dto.User();
-                   
-//                    userService.setId(user.getId());
-//                    String userPhoto = user.getUserPhotoFile();
-//                    //头像取小图
-//                    if (userPhoto!= null && userPhoto.contains("public/zzk_")) {
-//                        userService.setImage(IMAGE_HOST + "/" + userPhoto.substring(7) + "-userphotomedium.jpg");
-//                    } else if (userPhoto != "") {
-//                        userService.setImage(IMAGE_HOST + "/" + userPhoto + "/2000x1500.jpg-userphotomedium.jpg");
-//                    }
-//                    //取服务
-//                    JSONObject allServiceObject = JSON.parseObject(user.getAllServiceListS());
-//                    List<BNBServiceSolr> serviceList =  JSON.parseObject(allServiceObject.get(BNBServiceType.findSolrServiceName(serviceSearchVo.getServiceType())).toString(), new TypeReference<ArrayList<BNBServiceSolr>>(){});
-//                    List<BNBService> bnbServiceList = new ArrayList<BNBService>();
-//                    for (BNBServiceSolr bnbServiceSolr : serviceList) {
-//                        BNBService bnbService = new BNBService();
-//                        bnbService.setContent(bnbServiceSolr.getContent());
-//                        bnbService.setId(bnbServiceSolr.getId());
-//                        bnbService.setImages(bnbServiceSolr.getImages());
-//                        bnbService.setServiceType(BNBServiceType.findByValue(bnbServiceSolr.getServiceCategory()));
-//                        bnbService.setServiceName(bnbServiceSolr.getTitle());
-//                        DestConfig destConfig = destConfigService.priceConvert(user.getDestId(),serviceSearchVo.getMultiprice(), bnbServiceSolr.getPrice());
-//                        bnbService.setPrice(destConfig.getPrice());
-//                        bnbService.setCurrencyCode(destConfig.getCurrencyCode());
-//                        bnbServiceList.add(bnbService);
-//                    }
-//                    userService.setBnbService(bnbServiceList);
-//                    userService.setLocName(user.getLocTypename());
-//                    userService.setName(user.getUsername());
+                    LOG.debug("user {}",user);
                     userService =  solrUserToUser(user,serviceSearchVo.getMultiprice(),serviceSearchVo.getServiceType(),null);
                     if(StringUtils.isNotEmpty(bnbCollect) &&  bnbCollect.contains(user.getId()+"")){
                         userService.setIsCollect(true);
@@ -467,7 +440,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         //取服务
         JSONObject allServiceObject = JSON.parseObject(user.getAllServiceListS());
         List<BNBServiceSolr> serviceList = new ArrayList<BNBServiceSolr>();
-        if(serviceType!=null){
+        if(serviceType!=null&& allServiceObject!=null){
             serviceList =  JSON.parseObject(allServiceObject.get(BNBServiceType.findSolrServiceName(serviceType)).toString(), new TypeReference<ArrayList<BNBServiceSolr>>(){});
         }
         if(StringUtils.isNotEmpty(serviceIds)){
