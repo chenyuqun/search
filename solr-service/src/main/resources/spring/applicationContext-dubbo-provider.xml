@@ -16,9 +16,6 @@
     
     <!-- 声明需要暴露的服务接口 -->     
    <dubbo:service interface="com.zizaike.is.solr.UserSolrService" version="1.0.0" ref="userSolrService"  group="${dubbo.group}" /> 
-	<bean id="userSolrService" class="com.zizaike.solr.user.impl.UserSolrServiceImpl"/>
    <dubbo:service interface="com.zizaike.is.solr.PlaceSolrService" version="1.0.0" ref="placeSolrService"  group="${dubbo.group}" /> 
-   <bean id="placeSolrService" class="com.zizaike.solr.place.impl.PlaceSolrServiceImpl"/>
    <dubbo:service interface="com.zizaike.is.solr.RoomSolrService" version="1.0.0" ref="roomSolrService"  group="${dubbo.group}" /> 
-   <bean id="roomSolrService" class="com.zizaike.solr.room.impl.RoomSolrServiceImpl"/>
 </beans>
