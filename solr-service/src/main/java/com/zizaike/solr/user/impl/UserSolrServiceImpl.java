@@ -329,19 +329,20 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         solrQuery.addSort(new Sort(Sort.Direction.DESC,User.HS_COMMENTS_NUM_I_FIELD));
         solrQuery.setPageRequest(new PageRequest(serviceSearchVo.getPage(), PAGE_SIZE));
         solrQuery.addCriteria(new Criteria(User.DEST_ID_FIELD).is(serviceSearchVo.getDestId()));
-        if(serviceSearchVo.getServiceType()==BNBServiceType.OUTDOORS){
-            solrQuery.addCriteria(new Criteria(User.HUWAI_SERVICE_I_FIELD).is(1));
-        }else if(serviceSearchVo.getServiceType()==BNBServiceType.FOOD){
-            solrQuery.addCriteria(new Criteria(User.ZAOCAN_SERVICE_I_FIELD).is(1));
-        }else if(serviceSearchVo.getServiceType()==BNBServiceType.BOOKING){
-            solrQuery.addCriteria(new Criteria(User.DAIDING_SERVICE_I_FIELD).is(1));
-        }else if(serviceSearchVo.getServiceType()==BNBServiceType.TRANSFER){
-            solrQuery.addCriteria(new Criteria(User.JIESONG_SERVICE_I_FIELD).is(1));
-        }else if(serviceSearchVo.getServiceType()==BNBServiceType.BUS_SERVICE){
-            solrQuery.addCriteria(new Criteria(User.BAOCHE_SERVICE_I_FIELD).is(1));
-        }else if(serviceSearchVo.getServiceType()==BNBServiceType.OTHER){
-            solrQuery.addCriteria(new Criteria(User.OTHER_SERVICE_I_FIELD).is(1));
-        }
+//        if(serviceSearchVo.getServiceType()==BNBServiceType.OUTDOORS){
+//            solrQuery.addCriteria(new Criteria(User.HUWAI_SERVICE_I_FIELD).is(1));
+//        }else if(serviceSearchVo.getServiceType()==BNBServiceType.FOOD){
+//            solrQuery.addCriteria(new Criteria(User.ZAOCAN_SERVICE_I_FIELD).is(1));
+//        }else if(serviceSearchVo.getServiceType()==BNBServiceType.BOOKING){
+//            solrQuery.addCriteria(new Criteria(User.DAIDING_SERVICE_I_FIELD).is(1));
+//        }else if(serviceSearchVo.getServiceType()==BNBServiceType.TRANSFER){
+//            solrQuery.addCriteria(new Criteria(User.JIESONG_SERVICE_I_FIELD).is(1));
+//        }else if(serviceSearchVo.getServiceType()==BNBServiceType.BUS_SERVICE){
+//            solrQuery.addCriteria(new Criteria(User.BAOCHE_SERVICE_I_FIELD).is(1));
+//        }else if(serviceSearchVo.getServiceType()==BNBServiceType.OTHER){
+//            solrQuery.addCriteria(new Criteria(User.OTHER_SERVICE_I_FIELD).is(1));
+//        }
+        solrQuery.addCriteria(new Criteria(User.ALL_SERVICE_LIST_S_FIELD).contains(BNBServiceType.findSolrServiceName(serviceSearchVo.getServiceType())));
         if (serviceSearchVo.getSearchType() == SearchType.BUSINES_CIRCLE
                 || serviceSearchVo.getSearchType() == SearchType.BUSINESS_AREA
                 || serviceSearchVo.getSearchType() == SearchType.SCENIC_SPOTS
@@ -443,7 +444,11 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         JSONObject allServiceObject = JSON.parseObject(user.getAllServiceListS());
         List<BNBServiceSolr> serviceList = new ArrayList<BNBServiceSolr>();
         if(serviceType!=null&& allServiceObject!=null){
-            serviceList =  JSON.parseObject(allServiceObject.get(BNBServiceType.findSolrServiceName(serviceType)).toString(), new TypeReference<ArrayList<BNBServiceSolr>>(){});
+            Object service = allServiceObject.get(BNBServiceType.findSolrServiceName(serviceType));
+            if(service!=null){
+                serviceList =  JSON.parseObject(service.toString(), new TypeReference<ArrayList<BNBServiceSolr>>(){});
+            }
+            
         }
         if(StringUtils.isNotEmpty(serviceIds)){
             Map<String,ArrayList<BNBServiceSolr>> map =  JSON.parseObject(allServiceObject.toString(), new TypeReference<Map<String,ArrayList<BNBServiceSolr>>>(){});
