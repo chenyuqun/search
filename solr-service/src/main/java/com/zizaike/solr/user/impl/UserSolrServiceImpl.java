@@ -357,7 +357,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             }
         }
         PageList<com.zizaike.entity.solr.dto.User> pageList = new PageList<com.zizaike.entity.solr.dto.User>();
-            org.springframework.data.domain.Page<com.zizaike.entity.solr.User> userS = getSolrOperations().queryForPage(solrQuery,User.class);
+            org.springframework.data.domain.Page<User> userS = getSolrOperations().queryForPage(solrQuery,User.class);
             //内容
             List<com.zizaike.entity.solr.dto.User> userServices = new ArrayList<com.zizaike.entity.solr.dto.User>();
             String bnbCollect = null;
