@@ -450,16 +450,17 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             }
             
         }
-        if(StringUtils.isNotEmpty(serviceIds)){
-            Map<String,ArrayList<BNBServiceSolr>> map =  JSON.parseObject(allServiceObject.toString(), new TypeReference<Map<String,ArrayList<BNBServiceSolr>>>(){});
-            for (String key : map.keySet()) {
-                ArrayList<BNBServiceSolr> serviceL =  map.get(key);
-                for (BNBServiceSolr bnbServiceSolr : serviceL) {
-                    if(serviceIds.contains(bnbServiceSolr.getId()+"")){
-                        serviceList.add(bnbServiceSolr);
-                    }
+        if(StringUtils.isNotEmpty(serviceIds) && allServiceObject!=null){
+                Map<String,ArrayList<BNBServiceSolr>> map =  JSON.parseObject(allServiceObject.toString(), new TypeReference<Map<String,ArrayList<BNBServiceSolr>>>(){});
+                for (String key : map.keySet()) {
+                    ArrayList<BNBServiceSolr> serviceL =  map.get(key);
+                    for (BNBServiceSolr bnbServiceSolr : serviceL) {
+                        if(serviceIds.contains(bnbServiceSolr.getId()+"")){
+                            serviceList.add(bnbServiceSolr);
+                        }
                 }
             }
+           
         }
         List<BNBService> bnbServiceList = new ArrayList<BNBService>();
         for (BNBServiceSolr bnbServiceSolr : serviceList) {
