@@ -29,7 +29,7 @@ public class BNBServiceStatisticsRedisServiceImplTest extends BaseTest {
         BNBServiceSearchStatistics bnbServiceSearchStatistics = new BNBServiceSearchStatistics();
         for (int i = 0;i<100;i++){
             bnbServiceSearchStatistics = new BNBServiceSearchStatistics();
-            bnbServiceSearchStatistics.setBnbServiceType(BNBServiceType.findByValue(i%5+1));
+            bnbServiceSearchStatistics.setBnbServiceType(BNBServiceType.findByValue("huwai"));
             bnbServiceSearchStatistics.setChannel(ChannelType.APP);
            bnbServiceStatisticsRedisService.zincrBNBServiceSearch(bnbServiceSearchStatistics);
         }

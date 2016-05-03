@@ -32,7 +32,7 @@ public enum SearchRedisCacheKey implements CacheKey {
     /**
      * 每天
      */
-    ERVERY_DAY("day")
+    ERVERY_DAY("day"),
     ;
     private String key;
 

@@ -32,7 +32,7 @@ public class ServiceSearchMQServiceImpl implements MQService {
 
     @Override
     public void sendMsg(SearchApplicationEvent event) throws IllegalParamterException {
-        if (SearchBusinessOperation.SEARCH != event.getOperation()) {
+        if (SearchBusinessOperation.SERVICE_SEARCH != event.getOperation()) {
             return;
         }
         BNBServiceSearchStatistics bnbServiceSearchStatistics =  (BNBServiceSearchStatistics) event.getSource();

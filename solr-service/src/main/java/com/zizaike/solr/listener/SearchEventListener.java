@@ -64,7 +64,7 @@ public class SearchEventListener implements ApplicationListener<SearchApplicatio
             case SEARCH:
                 mqService = searchMQService;
                 break;
-                case SERVICE_SEARCH:
+            case SERVICE_SEARCH:
                 mqService = serviceSearchMQService;
             default:
                 break;

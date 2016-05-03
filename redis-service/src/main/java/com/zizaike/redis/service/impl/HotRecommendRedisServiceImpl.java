@@ -65,4 +65,5 @@ public class HotRecommendRedisServiceImpl implements HotRecommendRedisService {
                 TimeType.DAY.getValue());
     }
 
+
 }
