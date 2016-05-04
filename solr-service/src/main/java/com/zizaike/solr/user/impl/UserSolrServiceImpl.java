@@ -318,6 +318,9 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         if(serviceSearchVo.getSearchid()==null){
             throw new IllegalParamterException("searchId is null");
         }
+        if(serviceSearchVo.getPage()<=0){
+            throw new IllegalParamterException("page is not <= 0");
+        }
         BNBServiceSearchStatistics bnbServiceSearchStatistics = new BNBServiceSearchStatistics();
         bnbServiceSearchStatistics.setBnbServiceType(serviceSearchVo.getServiceType());
         bnbServiceSearchStatistics.setChannel(serviceSearchVo.getChannel());
@@ -382,11 +385,15 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         if(serviceSearchVo.getPage()<=0){
             throw new IllegalParamterException("page not < 0");
         }
-        Page page = new Page();
-        page.setPageNo(serviceSearchVo.getPage());
+        Page page = new Page(serviceSearchVo.getPage(),PAGE_SIZE);
         PageList<SearchServiceRecommend> list = searchServiceRecommendService.query(page,null);
         List<String> uidList = new ArrayList<String>();
         StringBuffer serviceIds = new StringBuffer();
+        PageList<com.zizaike.entity.solr.dto.User> userPageList = new PageList<com.zizaike.entity.solr.dto.User>();
+        userPageList.setPage(list.getPage());
+        if(list.getList().size()==0){
+            return userPageList;
+        }
         for (SearchServiceRecommend searchServiceRecommend : list.getList()) {
             uidList.add(searchServiceRecommend.getUid()+"");
             serviceIds.append(searchServiceRecommend.getServiceIds()).append(",");
@@ -395,7 +402,6 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         solrQuery.addCriteria(new Criteria(User.ID_FIELD).in(uidList));
         solrQuery.setDefaultOperator(Operator.OR);
         org.springframework.data.domain.Page<com.zizaike.entity.solr.User> userS =  getSolrOperations().queryForPage(solrQuery,User.class);
-        PageList<com.zizaike.entity.solr.dto.User> userPageList = new PageList<com.zizaike.entity.solr.dto.User>();
         //内容
         List<com.zizaike.entity.solr.dto.User> userServices = new ArrayList<com.zizaike.entity.solr.dto.User>();
         String bnbCollect = null;
@@ -413,7 +419,6 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             userServices.add(userService);
         }
             userPageList.setList(userServices);
-            userPageList.setPage(list.getPage());
         return userPageList;
     }
     private com.zizaike.entity.solr.dto.User solrUserToUser(User user,Integer  multiprice,BNBServiceType serviceType,String serviceIds) throws ZZKServiceException{
