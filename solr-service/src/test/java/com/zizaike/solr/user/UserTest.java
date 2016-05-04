@@ -36,17 +36,19 @@ public  class UserTest extends AbstractSolrIntegrationTest {
   public void serviceQuery() throws ZZKServiceException {
       ServiceSearchVo serviceSearchVo = new ServiceSearchVo();
       serviceSearchVo.setChannel(ChannelType.APP);
-      serviceSearchVo.setDestId(10);
+      serviceSearchVo.setDestId(12);
       serviceSearchVo.setMultilang(1);
       serviceSearchVo.setMultiprice(12);
-      serviceSearchVo.setPage(1);
-      serviceSearchVo.setServiceType(BNBServiceType.BOOKING);
+      serviceSearchVo.setPage(2);
+      serviceSearchVo.setServiceType(BNBServiceType.BUS_SERVICE);
 //      serviceSearchVo.setSearchid(2905);
 //      serviceSearchVo.setSearchType(SearchType.CITY);
       //垦丁
-      serviceSearchVo.setSearchid(919);
-      serviceSearchVo.setSearchType(SearchType.SCENIC_SPOTS);
+      serviceSearchVo.setSearchid(0);
+      serviceSearchVo.setSearchType(SearchType.CITY);
       PageList<com.zizaike.entity.solr.dto.User> list =  userService.serviceQuery(serviceSearchVo);
+      System.err.println(list.getList());
+      System.err.println(list.getPage());
       Assert.assertNotEquals(list.getList().size(), 0);
   }
   @Test

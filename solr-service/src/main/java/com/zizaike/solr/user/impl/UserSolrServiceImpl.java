@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
@@ -327,22 +328,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         eventPublishService.publishEvent(beforeEvent);
         SimpleQuery solrQuery = new SimpleQuery();
         solrQuery.addSort(new Sort(Sort.Direction.DESC,User.HS_COMMENTS_NUM_I_FIELD));
-        solrQuery.setPageRequest(new PageRequest(serviceSearchVo.getPage(), PAGE_SIZE));
-        solrQuery.addCriteria(new Criteria(User.DEST_ID_FIELD).is(serviceSearchVo.getDestId()));
-//        if(serviceSearchVo.getServiceType()==BNBServiceType.OUTDOORS){
-//            solrQuery.addCriteria(new Criteria(User.HUWAI_SERVICE_I_FIELD).is(1));
-//        }else if(serviceSearchVo.getServiceType()==BNBServiceType.FOOD){
-//            solrQuery.addCriteria(new Criteria(User.ZAOCAN_SERVICE_I_FIELD).is(1));
-//        }else if(serviceSearchVo.getServiceType()==BNBServiceType.BOOKING){
-//            solrQuery.addCriteria(new Criteria(User.DAIDING_SERVICE_I_FIELD).is(1));
-//        }else if(serviceSearchVo.getServiceType()==BNBServiceType.TRANSFER){
-//            solrQuery.addCriteria(new Criteria(User.JIESONG_SERVICE_I_FIELD).is(1));
-//        }else if(serviceSearchVo.getServiceType()==BNBServiceType.BUS_SERVICE){
-//            solrQuery.addCriteria(new Criteria(User.BAOCHE_SERVICE_I_FIELD).is(1));
-//        }else if(serviceSearchVo.getServiceType()==BNBServiceType.OTHER){
-//            solrQuery.addCriteria(new Criteria(User.OTHER_SERVICE_I_FIELD).is(1));
-//        }
-        solrQuery.addCriteria(new Criteria(User.ALL_SERVICE_LIST_S_FIELD).contains(BNBServiceType.findSolrServiceName(serviceSearchVo.getServiceType())));
+        solrQuery.addCriteria(new Criteria(User.DEST_ID_FIELD).is(serviceSearchVo.getDestId())).addCriteria(new Criteria(User.ALL_SERVICE_LIST_S_FIELD).contains(BNBServiceType.findSolrServiceName(serviceSearchVo.getServiceType())));
         if (serviceSearchVo.getSearchType() == SearchType.BUSINES_CIRCLE
                 || serviceSearchVo.getSearchType() == SearchType.BUSINESS_AREA
                 || serviceSearchVo.getSearchType() == SearchType.SCENIC_SPOTS
@@ -356,6 +342,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                 solrQuery.addCriteria(new Criteria(User.LOC_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
             }
         }
+      solrQuery.setPageRequest(new PageRequest(serviceSearchVo.getPage(), PAGE_SIZE));
         PageList<com.zizaike.entity.solr.dto.User> pageList = new PageList<com.zizaike.entity.solr.dto.User>();
             org.springframework.data.domain.Page<User> userS = getSolrOperations().queryForPage(solrQuery,User.class);
             //内容
