@@ -342,7 +342,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                 solrQuery.addCriteria(new Criteria(User.LOC_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
             }
         }
-      solrQuery.setPageRequest(new PageRequest(serviceSearchVo.getPage(), PAGE_SIZE));
+      solrQuery.setPageRequest(new PageRequest(serviceSearchVo.getPage()-1, PAGE_SIZE));
         PageList<com.zizaike.entity.solr.dto.User> pageList = new PageList<com.zizaike.entity.solr.dto.User>();
             org.springframework.data.domain.Page<User> userS = getSolrOperations().queryForPage(solrQuery,User.class);
             //内容
@@ -364,8 +364,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                     userServices.add(userService);
                 }
                 pageList.setList(userServices);
-                com.zizaike.core.common.page.Page page = new com.zizaike.core.common.page.Page();
-                page.setPageNo(userS.getNumber());
+                com.zizaike.core.common.page.Page page = new com.zizaike.core.common.page.Page(userS.getNumber(),PAGE_SIZE);
                 page.setTotalCount(Integer.parseInt(userS.getTotalElements()+""));
                 pageList.setPage(page);
             }
