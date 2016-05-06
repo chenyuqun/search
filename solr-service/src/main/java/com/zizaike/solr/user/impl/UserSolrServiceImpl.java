@@ -26,6 +26,9 @@ import org.springframework.data.geo.Metrics;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.core.geo.Point;
 import org.springframework.data.solr.core.query.Criteria;
+import org.springframework.data.solr.core.query.FilterQuery;
+import org.springframework.data.solr.core.query.SimpleFilterQuery;
+import org.springframework.data.solr.core.query.SimpleStringCriteria;
 import org.springframework.data.solr.core.query.Query.Operator;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
@@ -329,8 +332,11 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         BusinessOperationBeforeEvent<BNBServiceSearchStatistics> beforeEvent = new BusinessOperationBeforeEvent<BNBServiceSearchStatistics>(
                 SearchBusinessOperation.SERVICE_SEARCH, bnbServiceSearchStatistics);
         eventPublishService.publishEvent(beforeEvent);
-        SimpleQuery solrQuery = new SimpleQuery();
+        SimpleQuery solrQuery = new SimpleQuery(new SimpleStringCriteria("*:*"));
+        solrQuery.addCriteria(new Criteria(User.STATUS_FIELD).is(1));
         solrQuery.addSort(new Sort(Sort.Direction.DESC,User.HS_COMMENTS_NUM_I_FIELD));
+        FilterQuery filterQuery = new SimpleFilterQuery();
+        filterQuery.addCriteria(new SimpleStringCriteria("-id:(66 OR 40080 OR 40793 OR 292734 OR 57638 OR 405053 OR 65679 OR 27909)"));
         solrQuery.addCriteria(new Criteria(User.DEST_ID_FIELD).is(serviceSearchVo.getDestId())).addCriteria(new Criteria(User.ALL_SERVICE_LIST_S_FIELD).contains(BNBServiceType.findSolrServiceName(serviceSearchVo.getServiceType())));
         if (serviceSearchVo.getSearchType() == SearchType.BUSINES_CIRCLE
                 || serviceSearchVo.getSearchType() == SearchType.BUSINESS_AREA
@@ -342,11 +348,13 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             solrQuery.addCriteria(new Criteria("latlng_p").near(location, new Distance(serviceSearchVo.getSearchRadius() != null ? serviceSearchVo.getSearchRadius() : place.getSearchRadius(),Metrics.KILOMETERS)));
         } else {
             if(serviceSearchVo.getSearchid()!=0){
-                solrQuery.addCriteria(new Criteria(User.LOC_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
+                solrQuery.addCriteria(new Criteria(User.LOCATION_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
             }
         }
+        solrQuery.addFilterQuery(filterQuery);
       solrQuery.setPageRequest(new PageRequest(serviceSearchVo.getPage()-1, PAGE_SIZE));
         PageList<com.zizaike.entity.solr.dto.User> pageList = new PageList<com.zizaike.entity.solr.dto.User>();
+       LOG.error("solrQuery : {}",solrQuery.getCriteria());
             org.springframework.data.domain.Page<User> userS = getSolrOperations().queryForPage(solrQuery,User.class);
             //内容
             List<com.zizaike.entity.solr.dto.User> userServices = new ArrayList<com.zizaike.entity.solr.dto.User>();
@@ -422,7 +430,11 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         return userPageList;
     }
     private com.zizaike.entity.solr.dto.User solrUserToUser(User user,Integer  multiprice,BNBServiceType serviceType,String serviceIds) throws ZZKServiceException{
+       
+            
+       
         com.zizaike.entity.solr.dto.User userService = new com.zizaike.entity.solr.dto.User();
+        try {
         userService.setId(user.getId());
         String userPhoto = user.getUserPhotoFile();
         //头像取小图
@@ -469,6 +481,9 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         userService.setBnbService(bnbServiceList);
         userService.setLocName(user.getLocTypename());
         userService.setName(user.getUsername());
+        } catch (Exception e) {
+            LOG.error("solrUserToUser Exception{}",e);
+        }
         return userService;
     }
 
