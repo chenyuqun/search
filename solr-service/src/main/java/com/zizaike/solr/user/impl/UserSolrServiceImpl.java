@@ -333,6 +333,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                 SearchBusinessOperation.SERVICE_SEARCH, bnbServiceSearchStatistics);
         eventPublishService.publishEvent(beforeEvent);
         SimpleQuery solrQuery = new SimpleQuery(new SimpleStringCriteria("*:*"));
+        solrQuery.addCriteria(new Criteria(User.STATUS_FIELD).is(1));
         solrQuery.addSort(new Sort(Sort.Direction.DESC,User.HS_COMMENTS_NUM_I_FIELD));
         FilterQuery filterQuery = new SimpleFilterQuery();
         filterQuery.addCriteria(new SimpleStringCriteria("-id:(66 OR 40080 OR 40793 OR 292734 OR 57638 OR 405053 OR 65679 OR 27909)"));
