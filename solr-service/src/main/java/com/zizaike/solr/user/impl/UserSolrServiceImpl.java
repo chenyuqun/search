@@ -26,6 +26,8 @@ import org.springframework.data.geo.Metrics;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.core.geo.Point;
 import org.springframework.data.solr.core.query.Criteria;
+import org.springframework.data.solr.core.query.FilterQuery;
+import org.springframework.data.solr.core.query.SimpleFilterQuery;
 import org.springframework.data.solr.core.query.SimpleStringCriteria;
 import org.springframework.data.solr.core.query.Query.Operator;
 import org.springframework.data.solr.core.query.SimpleQuery;
@@ -330,8 +332,10 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         BusinessOperationBeforeEvent<BNBServiceSearchStatistics> beforeEvent = new BusinessOperationBeforeEvent<BNBServiceSearchStatistics>(
                 SearchBusinessOperation.SERVICE_SEARCH, bnbServiceSearchStatistics);
         eventPublishService.publishEvent(beforeEvent);
-        SimpleQuery solrQuery = new SimpleQuery();
+        SimpleQuery solrQuery = new SimpleQuery(new SimpleStringCriteria("*:*"));
         solrQuery.addSort(new Sort(Sort.Direction.DESC,User.HS_COMMENTS_NUM_I_FIELD));
+        FilterQuery filterQuery = new SimpleFilterQuery();
+        filterQuery.addCriteria(new SimpleStringCriteria("-id:(66 OR 40080 OR 40793 OR 292734 OR 57638 OR 405053 OR 65679 OR 27909)"));
         solrQuery.addCriteria(new Criteria(User.DEST_ID_FIELD).is(serviceSearchVo.getDestId())).addCriteria(new Criteria(User.ALL_SERVICE_LIST_S_FIELD).contains(BNBServiceType.findSolrServiceName(serviceSearchVo.getServiceType())));
         if (serviceSearchVo.getSearchType() == SearchType.BUSINES_CIRCLE
                 || serviceSearchVo.getSearchType() == SearchType.BUSINESS_AREA
@@ -346,7 +350,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                 solrQuery.addCriteria(new Criteria(User.LOCATION_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
             }
         }
-        solrQuery.addCriteria(new SimpleStringCriteria("-id:(66 40080 40793 292734 57638 405053 65679 27909)"));
+        solrQuery.addFilterQuery(filterQuery);
       solrQuery.setPageRequest(new PageRequest(serviceSearchVo.getPage()-1, PAGE_SIZE));
         PageList<com.zizaike.entity.solr.dto.User> pageList = new PageList<com.zizaike.entity.solr.dto.User>();
        LOG.error("solrQuery : {}",solrQuery.getCriteria());
