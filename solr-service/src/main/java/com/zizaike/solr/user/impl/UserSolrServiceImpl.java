@@ -342,7 +342,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             solrQuery.addCriteria(new Criteria("latlng_p").near(location, new Distance(serviceSearchVo.getSearchRadius() != null ? serviceSearchVo.getSearchRadius() : place.getSearchRadius(),Metrics.KILOMETERS)));
         } else {
             if(serviceSearchVo.getSearchid()!=0){
-                solrQuery.addCriteria(new Criteria(User.LOC_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
+                solrQuery.addCriteria(new Criteria(User.LOCATION_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
             }
         }
       solrQuery.setPageRequest(new PageRequest(serviceSearchVo.getPage()-1, PAGE_SIZE));
