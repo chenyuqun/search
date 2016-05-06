@@ -26,6 +26,7 @@ import org.springframework.data.geo.Metrics;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.solr.core.geo.Point;
 import org.springframework.data.solr.core.query.Criteria;
+import org.springframework.data.solr.core.query.SimpleStringCriteria;
 import org.springframework.data.solr.core.query.Query.Operator;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
@@ -345,8 +346,10 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                 solrQuery.addCriteria(new Criteria(User.LOCATION_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
             }
         }
+        solrQuery.addCriteria(new SimpleStringCriteria("- id:(66 40080 40793 292734 57638 405053 65679 27909) "));
       solrQuery.setPageRequest(new PageRequest(serviceSearchVo.getPage()-1, PAGE_SIZE));
         PageList<com.zizaike.entity.solr.dto.User> pageList = new PageList<com.zizaike.entity.solr.dto.User>();
+       LOG.error("solrQuery : {}",solrQuery.getCriteria());
             org.springframework.data.domain.Page<User> userS = getSolrOperations().queryForPage(solrQuery,User.class);
             //内容
             List<com.zizaike.entity.solr.dto.User> userServices = new ArrayList<com.zizaike.entity.solr.dto.User>();

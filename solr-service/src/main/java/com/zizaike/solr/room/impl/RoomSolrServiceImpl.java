@@ -242,7 +242,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
          * Filter Conditions
          */
         StringBuffer filterQueries = new StringBuffer();
-        filterQueries.append("status:1 AND id:[0 TO 200000000] AND verified_by_zzk:1 AND -uid:(66 40080 40793 292734)");
+        filterQueries.append("status:1 AND id:[0 TO 200000000] AND verified_by_zzk:1 AND -uid:(66 40080 40793 292734 57638 405053 65679 27909)");
         if (searchWordsVo.getDestId() != 0) {
             filterQueries.append(" AND dest_id:" + searchWordsVo.getDestId() + "");
         }
