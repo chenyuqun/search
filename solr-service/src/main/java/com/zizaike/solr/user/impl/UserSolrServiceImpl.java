@@ -346,7 +346,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                 solrQuery.addCriteria(new Criteria(User.LOCATION_TYPEID_FIELD).is(serviceSearchVo.getSearchid()));
             }
         }
-        solrQuery.addCriteria(new SimpleStringCriteria("- id:(66 40080 40793 292734 57638 405053 65679 27909) "));
+        solrQuery.addCriteria(new SimpleStringCriteria("-id:(66 40080 40793 292734 57638 405053 65679 27909)"));
       solrQuery.setPageRequest(new PageRequest(serviceSearchVo.getPage()-1, PAGE_SIZE));
         PageList<com.zizaike.entity.solr.dto.User> pageList = new PageList<com.zizaike.entity.solr.dto.User>();
        LOG.error("solrQuery : {}",solrQuery.getCriteria());
