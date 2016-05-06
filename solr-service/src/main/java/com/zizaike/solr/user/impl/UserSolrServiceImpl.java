@@ -422,7 +422,11 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         return userPageList;
     }
     private com.zizaike.entity.solr.dto.User solrUserToUser(User user,Integer  multiprice,BNBServiceType serviceType,String serviceIds) throws ZZKServiceException{
+       
+            
+       
         com.zizaike.entity.solr.dto.User userService = new com.zizaike.entity.solr.dto.User();
+        try {
         userService.setId(user.getId());
         String userPhoto = user.getUserPhotoFile();
         //头像取小图
@@ -469,6 +473,9 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
         userService.setBnbService(bnbServiceList);
         userService.setLocName(user.getLocTypename());
         userService.setName(user.getUsername());
+        } catch (Exception e) {
+            LOG.error("solrUserToUser Exception{}",e);
+        }
         return userService;
     }
 
