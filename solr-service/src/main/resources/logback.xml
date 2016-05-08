@@ -31,7 +31,16 @@
 		</encoder>
 	</appender>
 
-
+	<!-- <appender name="STASH" class="net.logstash.logback.appender.LogstashSocketAppender">
+    <host>${log.stash.host}</host>
+    <port>${log.stash.port}</port>
+  </appender> -->
+  <appender name="STASH" class="net.logstash.logback.appender.LogstashAccessTcpSocketAppender">
+      <destination>${log.stash.host}:${log.stash.port}</destination>
+      <!-- encoder is required -->
+      <encoder class="net.logstash.logback.encoder.LogstashAccessEncoder" />
+  </appender>
+  
 	 <!-- project default level -->
     <logger name="com.ziziake" level="INFO"/>
     <logger name="org.springframework" level="WARN"/>
@@ -39,6 +48,7 @@
     <logger name="jdbc.sqltiming" level="INFO"/>
     
     <root level="${log.level}">
+    	 <appender-ref ref="STASH" />
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>
