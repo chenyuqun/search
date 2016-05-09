@@ -35,10 +35,10 @@
     <host>${log.stash.host}</host>
     <port>${log.stash.port}</port>
   </appender> -->
-  <appender name="STASH" class="net.logstash.logback.appender.LogstashAccessTcpSocketAppender">
+  <appender name="STASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
       <destination>${log.stash.host}:${log.stash.port}</destination>
       <!-- encoder is required -->
-      <encoder class="net.logstash.logback.encoder.LogstashAccessEncoder" />
+      <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
   </appender>
   
 	 <!-- project default level -->
@@ -48,8 +48,8 @@
     <logger name="jdbc.sqltiming" level="INFO"/>
     
     <root level="${log.level}">
-    	 <appender-ref ref="STASH" />
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
+        <appender-ref ref="STASH" />
     </root>
 </configuration>
