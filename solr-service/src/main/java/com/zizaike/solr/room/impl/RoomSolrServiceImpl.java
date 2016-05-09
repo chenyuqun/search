@@ -215,9 +215,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
             //solrquery.addSort(geoSort, ORDER.desc);
             solrquery.addSort("score", ORDER.desc);
         }
-        
-        
-        
+
+
+
         /*
          * 2种搜索方式
          */
@@ -249,13 +249,18 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         /*
          * 房型
          */
-        if (searchWordsVo.getRoomModel() == 1 || searchWordsVo.getRoomModel() == 2
-                || searchWordsVo.getRoomModel() == 3 || searchWordsVo.getRoomModel() == 4
+        if ( searchWordsVo.getRoomModel() == 2
                 ) {
             filterQueries.append(" AND room_model:" + searchWordsVo.getRoomModel() + "");
-        } else if (searchWordsVo.getRoomModel() == 5) {
+        }else if (searchWordsVo.getRoomModel() == 1 ) {
+            filterQueries.append(" AND room_model:[1 TO 2]");
+        }else if (searchWordsVo.getRoomModel() == 3 ) {
+            filterQueries.append(" AND room_model:[3 TO 4]");
+        }else if (searchWordsVo.getRoomModel() == 4 ) {
+            filterQueries.append(" AND room_model:[4 TO *]");
+        }else if (searchWordsVo.getRoomModel() == 5) {
             filterQueries.append(" AND room_model:[5 TO *]");
-        } else if (searchWordsVo.getRoomModel() == 0) {
+        }else if (searchWordsVo.getRoomModel() == 0) {
             /*
              * 默认值
              */
@@ -543,7 +548,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                     RoomList roomList = new RoomList();
                     //民宿uid
                     roomList.setUid(Integer.parseInt(lg.get(i).getGroupValue()));
-                    //培训标签             
+                    //培训标签
                     int isTeacherShare = 0;
                     if (teacherList.contains(Integer.parseInt(lg.get(i).getGroupValue()))) {
                         isTeacherShare = 1;
@@ -593,7 +598,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                     }else{
                         roomList.setOtherServiceI(0);
                     }
-                    
+
                     roomList.setAddress(address);
                     //增加促销字段  目前繁体用户看不到 促和减的信息
                     roomList.setIsSalesPromotion((lr.get(0).getIsBnbCuxiaoI() == 1 && searchWordsVo.getMultilang() == 12) ? 1 : 0);
@@ -684,7 +689,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                     roomList.setUserPoiId(userPoiId);
                     roomList.setUserPoiName(userPoiName);
                     /*
-                     * 需要转换币种  
+                     * 需要转换币种
                      */
                     if (searchWordsVo.getMultiprice() != 0) {
                         DestConfig target = destConfigService.queryByDestId(searchWordsVo.getMultiprice());
@@ -716,4 +721,4 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
     }
 
 
-}     
+}
