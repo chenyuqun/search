@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.zizaike.entity.base.ChannelType;
+import com.zizaike.entity.solr.*;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -46,12 +47,6 @@ import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.DestConfig;
 import com.zizaike.entity.recommend.SearchStatistics;
 import com.zizaike.entity.recommend.TeacherShare;
-import com.zizaike.entity.solr.Place;
-import com.zizaike.entity.solr.Room;
-import com.zizaike.entity.solr.RoomList;
-import com.zizaike.entity.solr.RoomSolr;
-import com.zizaike.entity.solr.SearchType;
-import com.zizaike.entity.solr.SearchWordsVo;
 import com.zizaike.entity.solr.model.SolrSearchableRoomFields;
 import com.zizaike.is.common.HanLPService;
 import com.zizaike.is.recommend.DestConfigService;
@@ -602,12 +597,27 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                      */
                     int minPrice = lr.get(0).getIntPrice();
                     int minPriceTW = lr.get(0).getIntPriceTW();
+                    List<RoomInfo> roomInfoList=new ArrayList<RoomInfo>();
                     for (int j = 1; j < lr.size(); j++) {
                         if (lr.get(j).getIntPrice() < minPrice) {
                             minPrice = lr.get(j).getIntPrice();
                         }
                         if (lr.get(j).getIntPriceTW() < minPriceTW) {
                             minPriceTW = lr.get(j).getIntPriceTW();
+                        }
+                        /**
+                         * WEB需要返回房间信息
+                         */
+                        if(searchWordsVo.getChannel()==ChannelType.WEB){
+                            RoomInfo roomInfo=new RoomInfo();
+                            roomInfo.setChuangxing(lr.get(j).getChuangxing());
+                            roomInfo.setRoomModel(lr.get(j).getRoomModel());
+                            roomInfo.setBreakfast(lr.get(j).getBreakfast());
+                            roomInfo.setIsSpeed(lr.get(j).getSpeedRoom());
+                            roomInfo.setPrice(lr.get(j).getIntPrice());
+                            roomInfo.setWifiI(lr.get(j).getWifiI());
+                            roomInfo.setTitle(lr.get(j).getTitle());
+                            roomInfoList.add(roomInfo);
                         }
                     }
                     if(lr.get(0).getOtherServiceI()==1 || lr.get(0).getHuwaiServiceI()==1 ||lr.get(0).getZaocanServiceI()==1 ||lr.get(0).getDaidingServiceI() ==1 || lr.get(0).getJiesongServiceI() ==1 || lr.get(0).getBaocheServiceI()==1){
@@ -729,7 +739,6 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                      * 后来web需要额外返回的字段
                      */
                     if(searchWordsVo.getChannel()==ChannelType.WEB){
-                        roomList.setWifiI(lr.get(0).getWifiI());
                         roomList.setLatestSuccessTimeS(lr.get(0).getLatestSuccessTimeS()==null?lr.get(0).getLatestSuccessTimeS():"");
                         roomList.setDestId(lr.get(0).getDestId());
                         roomList.setHasStoryI(lr.get(0).getHasStoryI());
@@ -739,8 +748,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                         roomList.setHuwaiServiceI(lr.get(0).getHuwaiServiceI());
                         roomList.setZaocanServiceI(lr.get(0).getZaocanServiceI());
                         roomList.setFollowLanguageS(lr.get(0).getFollowLanguageS());
-                        roomList.setRoomModel(lr.get(0).getRoomModel());
-                        roomList.setChuangxing(lr.get(0).getChuangxing());
+                        roomList.setRoomInfoList(roomInfoList);
                     }
                     lsRoomList.add(roomList);
                 }
