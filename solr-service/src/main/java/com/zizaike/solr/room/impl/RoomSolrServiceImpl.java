@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import com.zizaike.entity.base.ChannelType;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -86,7 +87,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
     //图片地址
     private static final String IMAGE_HOST = "http://img1.zzkcdn.com";
     private static final Integer pageSize = 10;
-
+    private static final Integer pageSize4Web = 25;
     @Override
     public List<Room> queryRoomByWords(String words, int locTypeid) throws ZZKServiceException {
         long start = System.currentTimeMillis();
@@ -233,11 +234,18 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         /*
          * Page Conditions
          */
-        solrquery.setStart((searchWordsVo.getPage() - 1) * pageSize);
-        /*
-         * app端一页显示10
-         */
-        solrquery.setRows(pageSize);
+        if(searchWordsVo.getChannel()== ChannelType.WEB){
+            solrquery.setStart((searchWordsVo.getPage() - 1) * pageSize4Web);
+            solrquery.setRows(pageSize4Web);
+        }else{
+            solrquery.setStart((searchWordsVo.getPage() - 1) * pageSize);
+            /*
+             * app端一页显示10
+             */
+            solrquery.setRows(pageSize);
+
+        }
+
         /*
          * Filter Conditions
          */
@@ -427,7 +435,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
             }
         } else {
             if (promotion == 1) {
-                filterQueries.append(" AND ( is_bnb_cuxiao_i:1 OR is_bnb_first_order_i:1 )");
+                filterQueries.append(" AND (discount_room_dates_ss:[0101 TO 1231] OR is_bnb_cuxiao_i:1 OR is_bnb_first_order_i:1 )");
             }
         }
         /**
@@ -506,11 +514,20 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                 GroupResponse gr = qr.getGroupResponse();
                 //匹配民宿数目
                 int uids = gr.getValues().get(0).getNGroups();
-                if ((uids - (searchWordsVo.getPage()) * pageSize) > 0) {
-                    solrquery.setStart(uids - (searchWordsVo.getPage()) * pageSize);
-                } else {
-                    solrquery.setStart(0);
-                    solrquery.setRows((uids - (searchWordsVo.getPage()) * pageSize) + pageSize);
+                if(searchWordsVo.getChannel()==ChannelType.WEB){
+                    if ((uids - (searchWordsVo.getPage()) * pageSize4Web) > 0) {
+                        solrquery.setStart(uids - (searchWordsVo.getPage()) * pageSize4Web);
+                    } else {
+                        solrquery.setStart(0);
+                        solrquery.setRows((uids - (searchWordsVo.getPage()) * pageSize4Web) + pageSize4Web);
+                    }
+                }else{
+                    if ((uids - (searchWordsVo.getPage()) * pageSize) > 0) {
+                        solrquery.setStart(uids - (searchWordsVo.getPage()) * pageSize);
+                    } else {
+                        solrquery.setStart(0);
+                        solrquery.setRows((uids - (searchWordsVo.getPage()) * pageSize) + pageSize);
+                    }
                 }
             }
             QueryResponse qr = getSolrOperations().getSolrServer().query(solrquery);
@@ -707,6 +724,23 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                         //向上取整
                         roomList.setMinPrice((int) Math.ceil(minPriceAct));
                         roomList.setCurrencyCode(currencyCode);
+                    }
+                    /**
+                     * 后来web需要额外返回的字段
+                     */
+                    if(searchWordsVo.getChannel()==ChannelType.WEB){
+                        roomList.setWifiI(lr.get(0).getWifiI());
+                        roomList.setLatestSuccessTimeS(lr.get(0).getLatestSuccessTimeS()==null?lr.get(0).getLatestSuccessTimeS():"");
+                        roomList.setDestId(lr.get(0).getDestId());
+                        roomList.setHasStoryI(lr.get(0).getHasStoryI());
+                        roomList.setBaocheServiceI(lr.get(0).getBaocheServiceI());
+                        roomList.setJiesongServiceI(lr.get(0).getJiesongServiceI());
+                        roomList.setDaidingServiceI(lr.get(0).getDaidingServiceI());
+                        roomList.setHuwaiServiceI(lr.get(0).getHuwaiServiceI());
+                        roomList.setZaocanServiceI(lr.get(0).getZaocanServiceI());
+                        roomList.setFollowLanguageS(lr.get(0).getFollowLanguageS());
+                        roomList.setRoomModel(lr.get(0).getRoomModel());
+                        roomList.setChuangxing(lr.get(0).getChuangxing());
                     }
                     lsRoomList.add(roomList);
                 }
