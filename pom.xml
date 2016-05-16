@@ -478,24 +478,15 @@
 			<dependency>
 				<groupId>net.logstash.logback</groupId>
 				<artifactId>logstash-logback-encoder</artifactId>
-				<version>4.4</version>
+				<version>4.7</version>
+				<exclusions>
+				<dependency>  
+		            <groupId>com.fasterxml.jackson.core</groupId>  
+		            <artifactId>jackson-databind</artifactId>  
+		            <version>2.6.5</version>  
+	        	</dependency>
+				</exclusions>
 			</dependency>
-			<!-- jackson -->
-			<dependency>  
-            <groupId>com.fasterxml.jackson.core</groupId>  
-            <artifactId>jackson-core</artifactId>  
-            <version>2.1.0</version>  
-        </dependency>  
-        <dependency>  
-            <groupId>com.fasterxml.jackson.core</groupId>  
-            <artifactId>jackson-databind</artifactId>  
-            <version>2.1.0</version>  
-        </dependency>  
-        <dependency>  
-            <groupId>com.fasterxml.jackson.core</groupId>  
-            <artifactId>jackson-annotations</artifactId>  
-            <version>2.1.0</version>  
-        </dependency>
 		</dependencies>
 	</dependencyManagement>
 </project>
