@@ -32,10 +32,8 @@
 	</appender>
 
   <appender name="STASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-      <!-- remoteHost and port are optional (default values shown) -->
       <remoteHost>${log.stash.host}</remoteHost>
       <port>${log.stash.port}</port>
-      <!-- encoder is required -->
       <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
   </appender>
   
