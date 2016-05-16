@@ -610,6 +610,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                          */
                         if(searchWordsVo.getChannel()==ChannelType.WEB){
                             RoomInfo roomInfo=new RoomInfo();
+                            roomInfo.setRoomId(lr.get(j).getId());
                             roomInfo.setChuangxing(lr.get(j).getChuangxing());
                             roomInfo.setRoomModel(lr.get(j).getRoomModel());
                             roomInfo.setBreakfast(lr.get(j).getBreakfast());
@@ -748,6 +749,8 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                         roomList.setHuwaiServiceI(lr.get(0).getHuwaiServiceI());
                         roomList.setZaocanServiceI(lr.get(0).getZaocanServiceI());
                         roomList.setFollowLanguageS(lr.get(0).getFollowLanguageS());
+                        roomList.setSlat(lr.get(0).getSlat());
+                        roomList.setSlng(lr.get(0).getSlng());
                         roomList.setRoomInfoList(roomInfoList);
                     }
                     lsRoomList.add(roomList);
