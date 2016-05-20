@@ -15,7 +15,6 @@
 		<zizaike.core.version>1.0.8-SNAPSHOT</zizaike.core.version>
 		<zizaike.entity.version>1.0.16-SNAPSHOT</zizaike.entity.version>
 		<zizaike.is.version>1.0.16-SNAPSHOT</zizaike.is.version>
-		
 	</properties>
 	<build>
 		<finalName>${project.build.finalname}</finalName>
@@ -284,6 +283,11 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+		<!-- logstash -->
+        <dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
 		</dependency>
 	</dependencies>
 </project>
