@@ -21,7 +21,7 @@
 		<zizaike.is.version>1.0.17-SNAPSHOT</zizaike.is.version>
 		
 	</properties>
-	
+
 	
 <build>
 		<finalName>${project.build.finalname}</finalName>

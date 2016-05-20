@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.zizaike.entity.solr.dto.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +30,6 @@ import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.LocPoi;
 import com.zizaike.entity.recommend.Loctype;
 import com.zizaike.entity.solr.Place;
-import com.zizaike.entity.solr.dto.AssociateType;
-import com.zizaike.entity.solr.dto.AssociateWordAndSearchCondition;
-import com.zizaike.entity.solr.dto.AssociateWordsDTO;
-import com.zizaike.entity.solr.dto.PlaceDTO;
 import com.zizaike.entity.solr.model.SolrSearchablePlaceFields;
 import com.zizaike.entity.solr.type.PoiType;
 import com.zizaike.is.common.HanLPService;
@@ -114,6 +111,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
                 associateWordsDTO.setLocId(loc.get(i).getLocid());
             }
             associateWordsDTO.setDestId(loc.get(i).getDestId());
+            associateWordsDTO.setDestDesc(Dest.findText(loc.get(i).getDestId()));
             associateWordsDTO.setName(loc.get(i).getTypeName() == null ? "" : loc.get(i).getTypeName());
             associateWords.add(associateWordsDTO);
         }
@@ -143,6 +141,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
             associateWordsDTO.setAssociateType(AssociateType.BUSINESS_AREA);
             if (place.getDestId() != null) {
                 associateWordsDTO.setDestId(place.getDestId());
+                associateWordsDTO.setDestDesc(Dest.findText(place.getDestId()));
             }
             associateWordsDTO.setName(place.getPoiName() == null ? "" : place.getPoiName());
             associateWordsDTO.setAddress(place.getGoogleMapAddress() == null ? "" : place.getGoogleMapAddress());
@@ -175,6 +174,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
             associateWordsDTO.setAssociateType(AssociateType.SCENIC_SPOTS);
             if (place.getDestId() != null) {
                 associateWordsDTO.setDestId(place.getDestId());
+                associateWordsDTO.setDestDesc(Dest.findText(place.getDestId()));
             }
             associateWordsDTO.setName(place.getPoiName() == null ? "" : place.getPoiName());
             associateWordsDTO.setAddress(place.getGoogleMapAddress() == null ? "" : place.getGoogleMapAddress());
@@ -208,6 +208,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
                     associateWordsDTO.setLocId(locall.get(i).getLocid());
                 }
                 associateWordsDTO.setDestId(locall.get(i).getDestId());
+                associateWordsDTO.setDestDesc(Dest.findText(locall.get(i).getDestId()));
                 associateWordsDTO.setName(locall.get(i).getTypeName() == null ? "" : loc.get(i).getTypeName());
                 associateWords.add(associateWordsDTO);
             }
@@ -230,6 +231,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
                 associateWordsDTO.setAssociateType(AssociateType.BUSINESS_AREA);
                 if (place.getDestId() != null) {
                     associateWordsDTO.setDestId(place.getDestId());
+                    associateWordsDTO.setDestDesc(Dest.findText(place.getDestId()));
                 }
                 associateWordsDTO.setName(place.getPoiName() == null ? "" : place.getPoiName());
                 associateWordsDTO.setAddress(place.getGoogleMapAddress() == null ? "" : place.getGoogleMapAddress());
@@ -255,6 +257,7 @@ public class PlaceSolrServiceImpl extends SimpleSolrRepository<Place, Integer> i
                 associateWordsDTO.setAssociateType(AssociateType.SCENIC_SPOTS);
                 if (place.getDestId() != null) {
                     associateWordsDTO.setDestId(place.getDestId());
+                    associateWordsDTO.setDestDesc(Dest.findText(place.getDestId()));
                 }
                 associateWordsDTO.setName(place.getPoiName() == null ? "" : place.getPoiName());
                 associateWordsDTO.setAddress(place.getGoogleMapAddress() == null ? "" : place.getGoogleMapAddress());
