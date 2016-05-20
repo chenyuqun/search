@@ -31,7 +31,14 @@
 		</encoder>
 	</appender>
 
-
+  <appender name="STASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+      <remoteHost>${log.stash.host}</remoteHost>
+      <port>${log.stash.port}</port>
+      <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+  </appender>
+  
+  
+  
 	 <!-- project default level -->
     <logger name="com.ziziake" level="INFO"/>
     <logger name="org.springframework" level="WARN"/>
@@ -41,5 +48,6 @@
     <root level="${log.level}">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
+        <appender-ref ref="STASH" />
     </root>
 </configuration>

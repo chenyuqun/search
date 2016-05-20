@@ -121,10 +121,6 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-		</dependency>
 		<!-- spring start -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -205,10 +201,6 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.logback-extensions</groupId>
-			<artifactId>logback-ext-spring</artifactId>
-		</dependency>
 		<!-- 日志 -->
 		<dependency>
 			<groupId>commons-pool</groupId>
@@ -218,21 +210,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
-		<!-- solr start -->
-		<dependency>
-			<groupId>org.apache.solr</groupId>
-			<artifactId>solr-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.solr</groupId>
-			<artifactId>solr-solrj</artifactId>
-		</dependency>
-		<!-- SPRING DATA -->
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-solr</artifactId>
-		</dependency>
-		<!-- solr end -->
 		<!-- TestNG/Mockito -->
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -293,5 +270,10 @@
 			<artifactId>jedis</artifactId>
 		</dependency>
 			<!-- redis end -->
+			<!-- logstash -->
+        <dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+		</dependency>
 	</dependencies>
 </project>
