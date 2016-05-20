@@ -9,30 +9,6 @@
 
 package com.zizaike.solr.user.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Metrics;
-import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.data.solr.core.geo.Point;
-import org.springframework.data.solr.core.query.Criteria;
-import org.springframework.data.solr.core.query.FilterQuery;
-import org.springframework.data.solr.core.query.SimpleFilterQuery;
-import org.springframework.data.solr.core.query.SimpleStringCriteria;
-import org.springframework.data.solr.core.query.Query.Operator;
-import org.springframework.data.solr.core.query.SimpleQuery;
-import org.springframework.data.solr.repository.support.SimpleSolrRepository;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
@@ -44,15 +20,9 @@ import com.zizaike.core.framework.exception.ZZKServiceException;
 import com.zizaike.entity.recommend.BNBServiceSearchStatistics;
 import com.zizaike.entity.recommend.DestConfig;
 import com.zizaike.entity.recommend.SearchServiceRecommend;
-import com.zizaike.entity.solr.BNBServiceType;
-import com.zizaike.entity.solr.Place;
-import com.zizaike.entity.solr.SearchType;
-import com.zizaike.entity.solr.ServiceSearchVo;
+import com.zizaike.entity.solr.*;
 import com.zizaike.entity.solr.User;
-import com.zizaike.entity.solr.dto.AssociateType;
-import com.zizaike.entity.solr.dto.AssociateWordsDTO;
-import com.zizaike.entity.solr.dto.BNBService;
-import com.zizaike.entity.solr.dto.BNBServiceSolr;
+import com.zizaike.entity.solr.dto.*;
 import com.zizaike.entity.solr.model.SolrSearchableUserFields;
 import com.zizaike.is.recommend.CollectService;
 import com.zizaike.is.recommend.DestConfigService;
@@ -61,6 +31,24 @@ import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.UserSolrService;
 import com.zizaike.solr.bo.EventPublishService;
 import com.zizaike.solr.domain.SearchBusinessOperation;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.solr.core.geo.Point;
+import org.springframework.data.solr.core.query.*;
+import org.springframework.data.solr.core.query.Query.Operator;
+import org.springframework.data.solr.repository.support.SimpleSolrRepository;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ClassName:UserServiceImpl <br/>
@@ -151,6 +139,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_NAME);
             if(user.getDestId()!=null){
             associateWordsDTO.setDestId(user.getDestId());
+            associateWordsDTO.setDestDesc(Dest.findText(user.getDestId()));
             }
             associateWordsDTO.setName(user.getUsername()==null?"":user.getUsername());
             associateWordsDTO.setAddress(user.getAddress()==null?"":user.getAddress());
@@ -161,6 +150,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             if(user.getHsSpeedRoomI()!=null){
                 associateWordsDTO.setIsSpeedRoom(user.getHsSpeedRoomI());
             }
+
             associateWords.add(associateWordsDTO);
            }
         SimpleQuery query2 = new SimpleQuery(new Criteria(SolrSearchableUserFields.ADDRESS).is(words)); 
@@ -192,6 +182,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                 associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_ADDRESS);
                 if(user.getDestId()!=null){
                 associateWordsDTO.setDestId(user.getDestId());
+                associateWordsDTO.setDestDesc(Dest.findText(user.getDestId()));
                 }
                 associateWordsDTO.setName(user.getUsername()==null?"":user.getUsername());
                 associateWordsDTO.setAddress(user.getAddress()==null?"":user.getAddress());
@@ -204,6 +195,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                 }
                 associateWords.add(associateWordsDTO);
                 }
+
              }
         LOG.info("when call queryUserByWordsAndLoc, use: {}ms", System.currentTimeMillis() - start);
         return associateWords;
@@ -249,6 +241,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
             associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_NAME);
             if(user.getDestId()!=null){
             associateWordsDTO.setDestId(user.getDestId());
+            associateWordsDTO.setDestDesc(Dest.findText(user.getDestId()));
             }
             associateWordsDTO.setName(user.getUsername()==null?"":user.getUsername());
             associateWordsDTO.setAddress(user.getAddress()==null?"":user.getAddress());
@@ -283,6 +276,7 @@ public class UserSolrServiceImpl extends SimpleSolrRepository<User, Integer>  im
                 associateWordsDTO.setAssociateType(AssociateType.HOMESTAY_ADDRESS);
                 if(user.getDestId()!=null){
                 associateWordsDTO.setDestId(user.getDestId());
+                    associateWordsDTO.setDestDesc(Dest.findText(user.getDestId()));
                 }
                 associateWordsDTO.setName(user.getUsername()==null?"":user.getUsername());
                 associateWordsDTO.setAddress(user.getAddress()==null?"":user.getAddress());
