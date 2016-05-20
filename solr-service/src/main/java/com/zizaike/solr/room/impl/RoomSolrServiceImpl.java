@@ -209,11 +209,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         }
         //如果是景点按距离排序
         if (searchType == 2 && searchWordsVo.getOrder() == 5) {
-           // solrquery.addSort(geoSort, ORDER.asc);
-            solrquery.addSort("score", ORDER.desc);
+          solrquery.addSort(geoSort, ORDER.asc);
         } else if (searchType == 2 && searchWordsVo.getOrder() == 6) {
-            //solrquery.addSort(geoSort, ORDER.desc);
-            solrquery.addSort("score", ORDER.desc);
+          solrquery.addSort(geoSort, ORDER.desc);
         }
         
         
