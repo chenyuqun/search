@@ -202,6 +202,11 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
              * 好评优先
              */
             solrquery.addSort("hs_comments_num_i", ORDER.desc);
+        } else if (searchWordsVo.getOrder() == 7) {
+            /*
+             * 销量优先
+             */
+            solrquery.addSort("order_succ", ORDER.desc);
         }
         //如果是景点按距离排序
         if (searchType == 2 && searchWordsVo.getOrder() == 5) {
@@ -478,6 +483,11 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
              * 好评优先
              */
             groupSort.append(", hs_comments_num_i desc, ");
+        } else if (searchWordsVo.getOrder() == 4) {
+            /*
+             * 销量优先
+             */
+            groupSort.append(", order_succ desc, ");
         } else if (searchWordsVo.getOrder() == 5 || searchWordsVo.getOrder() == 6) {
             groupSort.append(", score desc, ");
         } else {
