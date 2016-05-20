@@ -209,11 +209,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         }
         //如果是景点按距离排序
         if (searchType == 2 && searchWordsVo.getOrder() == 5) {
-           // solrquery.addSort(geoSort, ORDER.asc);
-            solrquery.addSort("score", ORDER.desc);
+          solrquery.addSort(geoSort, ORDER.asc);
         } else if (searchType == 2 && searchWordsVo.getOrder() == 6) {
-            //solrquery.addSort(geoSort, ORDER.desc);
-            solrquery.addSort("score", ORDER.desc);
+          solrquery.addSort(geoSort, ORDER.desc);
         }
         
         
@@ -422,7 +420,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
             }
         } else {
             if (promotion == 1) {
-                filterQueries.append(" AND ( is_bnb_cuxiao_i:1 OR is_bnb_first_order_i:1 )");
+                filterQueries.append(" AND (discount_room_dates_ss:[0101 TO 1231] OR is_bnb_cuxiao_i:1 OR is_bnb_first_order_i:1 )");
             }
         }
         /**
