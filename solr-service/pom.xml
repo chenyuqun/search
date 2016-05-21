@@ -16,9 +16,9 @@
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
 		<project.build.finalname>solr-service</project.build.finalname>
 		<excludePropertyFiles></excludePropertyFiles>
-		<zizaike.core.version>1.0.9-SNAPSHOT</zizaike.core.version>
-		<zizaike.entity.version>1.0.17-SNAPSHOT</zizaike.entity.version>
-		<zizaike.is.version>1.0.17-SNAPSHOT</zizaike.is.version>
+		<zizaike.core.version>1.0.9-RELEASE</zizaike.core.version>
+		<zizaike.entity.version>1.0.17-RELEASE</zizaike.entity.version>
+		<zizaike.is.version>1.0.17-RELEASE</zizaike.is.version>
 		
 	</properties>
 
