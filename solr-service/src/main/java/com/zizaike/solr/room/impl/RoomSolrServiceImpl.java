@@ -8,24 +8,24 @@
 
 package com.zizaike.solr.room.impl;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
+import com.alibaba.fastjson.JSONObject;
 import com.zizaike.entity.base.ChannelType;
 import com.zizaike.entity.solr.*;
+import com.zizaike.is.open.BaseInfoService;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.beans.DocumentObjectBinder;
 import org.apache.solr.client.solrj.response.Group;
 import org.apache.solr.client.solrj.response.GroupResponse;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.GroupParams;
@@ -79,6 +79,8 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
     private EventPublishService eventPublishService;
     @Autowired
     public TeacherShareService teacherShareService;
+    @Autowired
+    private BaseInfoService baseInfoService;
     //图片地址
     private static final String IMAGE_HOST = "http://img1.zzkcdn.com";
     private static final Integer pageSize = 10;
@@ -773,5 +775,35 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         return roomSolr;
     }
 
+    @Override
+    public void updateRoomPrice(int roomTypeId) throws ZZKServiceException {
+        SolrServer server=this.getSolrOperations().getSolrServer();
+        SimpleDateFormat sdf=new SimpleDateFormat("MMdd");
+        JSONObject result=baseInfoService.getZizaikePrice(String.valueOf(roomTypeId),"","");
+        List<SolrInputDocument> docs = new ArrayList<>();
+        //for(int i=0;i<1000;i++){
+        SolrInputDocument doc = new SolrInputDocument();
+        doc.addField("id",10710);
+        long time =System.currentTimeMillis();
+        String today=sdf.format(time);
+        String anotherDaty="";
+        while(!today.equals(anotherDaty)){
 
+            time=time+86400000;
+            anotherDaty=sdf.format(time);
+            Map<String,Object> partialUpdate = new HashMap<>();
+            partialUpdate.put("set", (int) (Math.random() * 1000) + 300);
+            doc.addField(anotherDaty+"_i",partialUpdate);
+        }
+        docs.add(doc);
+        //}
+
+        try {
+            server.add(docs);
+            server.commit();
+        } catch (SolrServerException|IOException e) {
+            LOG.error("SolrServer updateRoomPrice cause Exception:{}",e.getMessage());
+        }
+        System.out.println("hello world");
+    }
 }
