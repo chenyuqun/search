@@ -10,15 +10,20 @@ package com.zizaike.solr.room.impl;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.zizaike.core.framework.exception.open.ErrorCodeFields;
 import com.zizaike.entity.base.ChannelType;
+import com.zizaike.entity.open.qunar.response.BookingResponse;
 import com.zizaike.entity.solr.*;
 import com.zizaike.is.open.BaseInfoService;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.beans.DocumentObjectBinder;
@@ -55,6 +60,7 @@ import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.RoomSolrService;
 import com.zizaike.solr.bo.EventPublishService;
 import com.zizaike.solr.domain.SearchBusinessOperation;
+import org.springframework.util.StringUtils;
 
 /**
  * ClassName: RoomSolrServiceImpl <br/>
@@ -144,7 +150,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
          */
         String geoSort = "";
         String geoFq = "";
-        String geoFl = "";
+        StringBuffer fl = new StringBuffer();
         //促销  1为促销  优惠,促销,打折 只要有一个就可以显示
         Integer promotion = 0;
         if (searchType == 2) {
@@ -160,7 +166,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                      */
                     + (searchWordsVo.getSearchRadius() != null ? searchWordsVo.getSearchRadius() : place.getSearchRadius())
                     + "}";
-            geoFl = "*, distance:geodist(latlng_p, " + place.getGoogleMapLat() + "," + place.getGoogleMapLng() + ")";
+            fl = fl.append("*, distance:geodist(latlng_p, " + place.getGoogleMapLat() + "," + place.getGoogleMapLng() + ")");
+        }else{
+            fl=fl.append("*");
         }
         if (searchWordsVo.getKeyWords() == "" || searchWordsVo.getKeyWords() == null || searchWordsVo.getKeyWords().isEmpty()) {
             searchWordsVo.setKeyWords("*:*");
@@ -178,6 +186,46 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         solrquery.set(DisMaxParams.QF, "username^20 user_address^20");
         solrquery.set("defType", "edismax");
         /*
+         * 新查询需要根据查询区间内的价格进行排序
+         */
+        String priceSort="";
+        StringBuffer priceBuffer=new StringBuffer();
+        if(StringUtils.isEmpty(searchWordsVo.getCheckInDate())||StringUtils.isEmpty(searchWordsVo.getCheckInDate())){
+            priceSort="int_price_tw";
+            fl.append(",min_price:int_price_tw");
+        }else{
+
+            try{
+                Date date1;
+                Date date2;
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                date1 = df.parse(searchWordsVo.getCheckInDate());
+                date2 = df.parse(searchWordsVo.getCheckOutDate());
+                if (date1.getTime() - date2.getTime() > 0) {
+                    Date tmp = date1;
+                    date1 = date2;
+                    date2 = tmp;
+                }
+                int s = (int) ((date2.getTime() - date1.getTime()) / (24 * 60 * 60 * 1000));
+                priceBuffer.append("min(field("+new SimpleDateFormat("MMdd").format(date1)+"_i)");
+                if (s > 1) {
+                    int i = 1;
+                    do {
+                        long todayDate = date1.getTime() + i * 24 * 60 * 60 * 1000;
+                        Date tmDate = new Date(todayDate);
+                        priceBuffer.append(" ,field(" + new SimpleDateFormat("MMdd").format(tmDate)+"_i)");
+                        i++;
+                    } while (i < s);
+
+                }
+                priceBuffer.append(")");
+            } catch (Exception e) {
+                System.out.println("转换错误");
+            }
+            priceSort=priceBuffer.toString();
+            fl.append(",min_price:"+priceBuffer);
+        }
+        /*
          * Sort Conditions
          */
         solrquery.setSort("verified_by_zzk", ORDER.desc);
@@ -193,9 +241,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
             /*
              * 价格降序 此处有坑
              */
-            solrquery.addSort("int_price", ORDER.asc);
+            solrquery.addSort(priceSort, ORDER.asc);
         } else if (searchWordsVo.getOrder() == 3) {
-            solrquery.addSort("int_price", ORDER.asc);
+            solrquery.addSort(priceSort, ORDER.asc);
             /*
              * 价格升序
              */
@@ -501,9 +549,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         /*
          * fl
          */
-        if (searchType == 2) {
-            solrquery.set(CommonParams.FL, geoFl);
-        }
+        //if (searchType == 2) {
+            solrquery.set(CommonParams.FL, fl.toString());
+        //}
 
         DocumentObjectBinder binder = new DocumentObjectBinder();
         RoomSolr roomSolr = new RoomSolr();
@@ -514,7 +562,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                /*
                 * 需要获得全部页码
                 */
-                QueryResponse qr = getSolrOperations().getSolrServer().query(solrquery);
+                QueryResponse qr = getSolrOperations().getSolrServer().query(solrquery, SolrRequest.METHOD.POST);
                 LOG.debug("solrquery:{}", solrquery);
                 GroupResponse gr = qr.getGroupResponse();
                 //匹配民宿数目
@@ -535,7 +583,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                     }
                 }
             }
-            QueryResponse qr = getSolrOperations().getSolrServer().query(solrquery);
+            QueryResponse qr = getSolrOperations().getSolrServer().query(solrquery, SolrRequest.METHOD.POST);
             GroupResponse gr = qr.getGroupResponse();
 
             //匹配房间数目
@@ -605,13 +653,16 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                     /*
                      *  最小价格 人民币/本币
                      */
-                    int minPrice = lr.get(0).getIntPrice();
-                    int minPriceTW = lr.get(0).getIntPriceTW();
+                    //int minPrice = lr.get(0).getIntPrice();
+                    /**
+                     * 2016-05-24重大修改 时间段内最低价格 打折后
+                     */
+                    int minPriceTW = (int)lr.get(0).getMinPrice();
                     List<RoomInfo> roomInfoList=new ArrayList<RoomInfo>();
                     for (int j = 1; j < lr.size(); j++) {
-                        if (lr.get(j).getIntPrice() < minPrice) {
-                            minPrice = lr.get(j).getIntPrice();
-                        }
+//                        if (lr.get(j).getIntPrice() < minPrice) {
+//                            minPrice = lr.get(j).getIntPrice();
+//                        }
                         if (lr.get(j).getIntPriceTW() < minPriceTW) {
                             minPriceTW = lr.get(j).getIntPriceTW();
                         }
@@ -658,7 +709,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                     roomList.setHsRatingAvg(new BigDecimal(hsRatingAvgI / 20.00).setScale(1, BigDecimal.ROUND_HALF_UP).floatValue());
 
                     roomList.setIsSpeed(isSpeed);
-                    roomList.setMinPrice(minPrice);
+                    //roomList.setMinPrice(minPrice);
                     roomList.setUsername(username);
 
                     if (discountRoomDataList != null && discountRoomDataList.remove("placeholder") && dataList != null && ((dataList.size() != 0 && discountRoomDataList.containsAll(dataList)) || (dataList.size() == 0 && discountRoomDataList.size() != 0))) {
@@ -776,34 +827,37 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
     }
 
     @Override
-    public void updateRoomPrice(int roomTypeId) throws ZZKServiceException {
+    public Boolean updateRoomPrice(int roomTypeId) throws ZZKServiceException {
+        try {
+        long start =System.currentTimeMillis();
         SolrServer server=this.getSolrOperations().getSolrServer();
         SimpleDateFormat sdf=new SimpleDateFormat("MMdd");
+        SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd");
         JSONObject result=baseInfoService.getZizaikePrice(String.valueOf(roomTypeId),"","");
-        List<SolrInputDocument> docs = new ArrayList<>();
-        //for(int i=0;i<1000;i++){
-        SolrInputDocument doc = new SolrInputDocument();
-        doc.addField("id",10710);
-        long time =System.currentTimeMillis();
-        String today=sdf.format(time);
-        String anotherDaty="";
-        while(!today.equals(anotherDaty)){
-
-            time=time+86400000;
-            anotherDaty=sdf.format(time);
-            Map<String,Object> partialUpdate = new HashMap<>();
-            partialUpdate.put("set", (int) (Math.random() * 1000) + 300);
-            doc.addField(anotherDaty+"_i",partialUpdate);
-        }
-        docs.add(doc);
-        //}
-
-        try {
-            server.add(docs);
+        if (result.getString("status").equals("ok")) {
+            SolrInputDocument doc = new SolrInputDocument();
+            doc.addField("id",roomTypeId);
+            JSONArray jsonArray = result.getJSONObject("response").getJSONArray("list");
+            List<SolrInputDocument> docs = new ArrayList<>();
+            for (int i = 0; i < jsonArray.size(); i++) {
+                int price =jsonArray.getJSONObject(i).getIntValue("discprice");
+                String date =jsonArray.getJSONObject(i).getString("date");
+                String dateI =sdf.format(sdf1.parse(date));
+                Map<String,Object> partialUpdate = new HashMap<>();
+                partialUpdate.put("set", price);
+                doc.addField(dateI+"_i",partialUpdate);
+            }
+            docs.add(doc);
+            server.add(doc);
             server.commit();
-        } catch (SolrServerException|IOException e) {
-            LOG.error("SolrServer updateRoomPrice cause Exception:{}",e.getMessage());
+        }else{
+            throw new ZZKServiceException("","PHP接口价格获取失败");
         }
-        System.out.println("hello world");
+            LOG.info("updateRoomPrice use{}ms", System.currentTimeMillis() - start);
+            return true;
+        } catch (Exception e) {
+            LOG.error("SolrServer updateRoomPrice cause Exception:{}",e.toString());
+            return false;
+        }
     }
 }

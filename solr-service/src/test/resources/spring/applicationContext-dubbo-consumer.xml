@@ -30,5 +30,7 @@
     <dubbo:reference id="collectService" interface="com.zizaike.is.recommend.CollectService" version="1.0.0" group="${dubbo.group}"  check="false"/>
 	 <!-- 服务推荐 -->
     <dubbo:reference id="searchServiceRecommendService" interface="com.zizaike.is.recommend.SearchServiceRecommendService" version="1.0.0" group="${dubbo.group}"  check="false"/>
+    <!-- 基础信息 -->
+    <dubbo:reference id="baseInfoService" interface="com.zizaike.is.open.BaseInfoService" version="1.0.0" group="${dubbo.group}"  check="false"/>
     
 </beans>

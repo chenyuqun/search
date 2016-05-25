@@ -62,4 +62,9 @@ public class RoomTest extends AbstractSolrIntegrationTest {
         RoomSolr room = roomService.searchSolr(sv);
         Assert.assertNotNull(room, "room is null");
     }
+
+    @Test(description = "测试构建价格")
+    public void testRoomBuild() throws ZZKServiceException{
+        roomService.updateRoomPrice(949);
+    }
 }
