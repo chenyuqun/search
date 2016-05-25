@@ -845,8 +845,18 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
             JSONArray jsonArray = result.getJSONObject("response").getJSONArray("list");
             List<SolrInputDocument> docs = new ArrayList<>();
             try {
+                /**
+                 * 现在价格体系的问题 有些房间某些天数 完全没用价格 目前用solr中的int_price_tw替代
+                 */
+                SolrQuery solrQuery=new SolrQuery();
+                solrQuery.set(CommonParams.Q,"id:"+roomTypeId);
+                QueryResponse queryResponse = server.query(solrQuery, SolrRequest.METHOD.POST);
+                int defaultPrice= ((int) queryResponse.getResults().get(0).getFieldValue("int_price_tw"));
                 for (int i = 0; i < jsonArray.size(); i++) {
                     int price =jsonArray.getJSONObject(i).getIntValue("discprice");
+                    if(price==0){
+                        price=defaultPrice;
+                    }
                     String date =jsonArray.getJSONObject(i).getString("date");
                     String dateI =sdf.format(sdf1.parse(date));
                     Map<String,Object> partialUpdate = new HashMap<>();
