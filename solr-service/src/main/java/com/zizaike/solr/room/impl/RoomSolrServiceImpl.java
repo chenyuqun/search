@@ -659,7 +659,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                      */
                     int minPriceTW = (int)lr.get(0).getMinPrice();
                     List<RoomInfo> roomInfoList=new ArrayList<RoomInfo>();
-                    for (int j = 1; j < lr.size(); j++) {
+                    for (int j = 0; j < lr.size(); j++) {
 //                        if (lr.get(j).getIntPrice() < minPrice) {
 //                            minPrice = lr.get(j).getIntPrice();
 //                        }
