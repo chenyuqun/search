@@ -664,7 +664,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
 //                            minPrice = lr.get(j).getIntPrice();
 //                        }
                         if (lr.get(j).getIntPriceTW() < minPriceTW) {
-                            minPriceTW = lr.get(j).getIntPriceTW();
+                            minPriceTW = (int)lr.get(j).getMinPrice();
                         }
                         /**
                          * WEB需要返回房间信息
@@ -676,7 +676,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                             roomInfo.setRoomModel(lr.get(j).getRoomModel());
                             roomInfo.setBreakfast(lr.get(j).getBreakfast());
                             roomInfo.setIsSpeed(lr.get(j).getSpeedRoom());
-                            roomInfo.setPrice(lr.get(j).getIntPrice());
+                            roomInfo.setPrice((int)lr.get(j).getMinPrice());
                             roomInfo.setWifiI(lr.get(j).getWifiI());
                             roomInfo.setTitle(lr.get(j).getTitle());
                             roomInfoList.add(roomInfo);
@@ -796,6 +796,11 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                         //向上取整
                         roomList.setMinPrice((int) Math.ceil(minPriceAct));
                         roomList.setCurrencyCode(currencyCode);
+                        if(searchWordsVo.getChannel()==ChannelType.WEB){
+                            for(RoomInfo roomInfo:roomInfoList){
+                                roomInfo.setPrice((int)(Math.ceil((double)roomInfo.getPrice()*(rate2 / rate1))));
+                            }
+                        }
                     }
                     /**
                      * 后来web需要额外返回的字段
@@ -828,7 +833,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
 
     @Override
     public Boolean updateRoomPrice(int roomTypeId) throws ZZKServiceException {
-        try {
+
         long start =System.currentTimeMillis();
         SolrServer server=this.getSolrOperations().getSolrServer();
         SimpleDateFormat sdf=new SimpleDateFormat("MMdd");
@@ -839,25 +844,27 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
             doc.addField("id",roomTypeId);
             JSONArray jsonArray = result.getJSONObject("response").getJSONArray("list");
             List<SolrInputDocument> docs = new ArrayList<>();
-            for (int i = 0; i < jsonArray.size(); i++) {
-                int price =jsonArray.getJSONObject(i).getIntValue("discprice");
-                String date =jsonArray.getJSONObject(i).getString("date");
-                String dateI =sdf.format(sdf1.parse(date));
-                Map<String,Object> partialUpdate = new HashMap<>();
-                partialUpdate.put("set", price);
-                doc.addField(dateI+"_i",partialUpdate);
+            try {
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    int price =jsonArray.getJSONObject(i).getIntValue("discprice");
+                    String date =jsonArray.getJSONObject(i).getString("date");
+                    String dateI =sdf.format(sdf1.parse(date));
+                    Map<String,Object> partialUpdate = new HashMap<>();
+                    partialUpdate.put("set", price);
+                    doc.addField(dateI+"_i",partialUpdate);
+                }
+                docs.add(doc);
+                server.add(doc);
+                server.commit();
+            } catch (ParseException|SolrServerException|IOException e) {
+                LOG.error("SolrServer updateRoomPrice cause Exception:{}",e.toString());
+                throw new ZZKServiceException("1002","Solr服务错误");
             }
-            docs.add(doc);
-            server.add(doc);
-            server.commit();
         }else{
-            throw new ZZKServiceException("","PHP接口价格获取失败");
+            throw new ZZKServiceException("1001","PHP接口价格获取失败");
         }
             LOG.info("updateRoomPrice use{}ms", System.currentTimeMillis() - start);
             return true;
-        } catch (Exception e) {
-            LOG.error("SolrServer updateRoomPrice cause Exception:{}",e.toString());
-            return false;
-        }
+
     }
 }
