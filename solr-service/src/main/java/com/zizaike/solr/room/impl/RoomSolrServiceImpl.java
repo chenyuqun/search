@@ -8,24 +8,29 @@
 
 package com.zizaike.solr.room.impl;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.zizaike.core.framework.exception.open.ErrorCodeFields;
 import com.zizaike.entity.base.ChannelType;
+import com.zizaike.entity.open.qunar.response.BookingResponse;
 import com.zizaike.entity.solr.*;
+import com.zizaike.is.open.BaseInfoService;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.SolrRequest;
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.beans.DocumentObjectBinder;
 import org.apache.solr.client.solrj.response.Group;
 import org.apache.solr.client.solrj.response.GroupResponse;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.DisMaxParams;
 import org.apache.solr.common.params.GroupParams;
@@ -55,6 +60,7 @@ import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.RoomSolrService;
 import com.zizaike.solr.bo.EventPublishService;
 import com.zizaike.solr.domain.SearchBusinessOperation;
+import org.springframework.util.StringUtils;
 
 /**
  * ClassName: RoomSolrServiceImpl <br/>
@@ -79,6 +85,8 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
     private EventPublishService eventPublishService;
     @Autowired
     public TeacherShareService teacherShareService;
+    @Autowired
+    private BaseInfoService baseInfoService;
     //图片地址
     private static final String IMAGE_HOST = "http://img1.zzkcdn.com";
     private static final Integer pageSize = 10;
@@ -366,7 +374,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
              * 普通话
              */
             if (map.get("translation") != null && map.get("translation") != "" && map.get("translation").equals("1")) {
-                filterQueries.append(" AND follow_language_s:普通*");
+                filterQueries.append(" AND (follow_language_s:*中文* OR follow_language_s:*普通话* OR follow_language_s:*普通話*)");
             }
             /**
              * 户外
@@ -773,5 +781,50 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         return roomSolr;
     }
 
+    @Override
+    public Boolean updateRoomPrice(int roomTypeId) throws ZZKServiceException {
 
+        long start =System.currentTimeMillis();
+        SolrServer server=this.getSolrOperations().getSolrServer();
+        SimpleDateFormat sdf=new SimpleDateFormat("MMdd");
+        SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd");
+        JSONObject result=baseInfoService.getZizaikePrice(String.valueOf(roomTypeId),"","");
+        if (result.getString("status").equals("ok")) {
+            SolrInputDocument doc = new SolrInputDocument();
+            doc.addField("id",roomTypeId);
+            JSONArray jsonArray = result.getJSONObject("response").getJSONArray("list");
+            List<SolrInputDocument> docs = new ArrayList<>();
+            try {
+                /**
+                 * 现在价格体系的问题 有些房间某些天数 完全没用价格 目前用solr中的int_price_tw替代
+                 */
+                SolrQuery solrQuery=new SolrQuery();
+                solrQuery.set(CommonParams.Q,"id:"+roomTypeId);
+                QueryResponse queryResponse = server.query(solrQuery, SolrRequest.METHOD.POST);
+                int defaultPrice= ((int) queryResponse.getResults().get(0).getFieldValue("int_price_tw"));
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    int price =jsonArray.getJSONObject(i).getIntValue("discprice");
+                    if(price==0){
+                        price=defaultPrice;
+                    }
+                    String date =jsonArray.getJSONObject(i).getString("date");
+                    String dateI =sdf.format(sdf1.parse(date));
+                    Map<String,Object> partialUpdate = new HashMap<>();
+                    partialUpdate.put("set", price);
+                    doc.addField(dateI+"_i",partialUpdate);
+                }
+                docs.add(doc);
+                server.add(doc);
+                server.commit();
+            } catch (ParseException|SolrServerException|IOException e) {
+                LOG.error("SolrServer updateRoomPrice cause Exception:{}",e.toString());
+                throw new ZZKServiceException("1002","Solr服务错误");
+            }
+        }else{
+            throw new ZZKServiceException("1001","PHP接口价格获取失败");
+        }
+            LOG.info("updateRoomPrice use{}ms", System.currentTimeMillis() - start);
+            return true;
+
+    }
 }
