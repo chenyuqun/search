@@ -374,7 +374,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
              * 普通话
              */
             if (map.get("translation") != null && map.get("translation") != "" && map.get("translation").equals("1")) {
-                filterQueries.append(" AND follow_language_s:普通*");
+                filterQueries.append(" AND (follow_language_s:*中文* OR follow_language_s:*普通话* OR follow_language_s:*普通話*)");
             }
             /**
              * 户外
