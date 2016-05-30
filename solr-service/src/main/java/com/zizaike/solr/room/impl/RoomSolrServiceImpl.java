@@ -12,15 +12,14 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.zizaike.core.framework.exception.open.ErrorCodeFields;
-import com.zizaike.entity.base.ChannelType;
-import com.zizaike.entity.open.qunar.response.BookingResponse;
-import com.zizaike.entity.solr.*;
-import com.zizaike.is.open.BaseInfoService;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrRequest;
@@ -43,24 +42,33 @@ import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.zizaike.core.framework.event.BusinessOperationBeforeEvent;
 import com.zizaike.core.framework.event.BusinessOperationCompletedEvent;
-import com.zizaike.core.framework.event.BusinessOperationFailedEvent;
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
+import com.zizaike.entity.base.ChannelType;
 import com.zizaike.entity.recommend.DestConfig;
 import com.zizaike.entity.recommend.SearchStatistics;
 import com.zizaike.entity.recommend.TeacherShare;
+import com.zizaike.entity.solr.Place;
+import com.zizaike.entity.solr.Room;
+import com.zizaike.entity.solr.RoomInfo;
+import com.zizaike.entity.solr.RoomList;
+import com.zizaike.entity.solr.RoomSolr;
+import com.zizaike.entity.solr.SearchType;
+import com.zizaike.entity.solr.SearchWordsVo;
 import com.zizaike.entity.solr.model.SolrSearchableRoomFields;
 import com.zizaike.is.common.HanLPService;
+import com.zizaike.is.open.BaseInfoService;
 import com.zizaike.is.recommend.DestConfigService;
 import com.zizaike.is.recommend.TeacherShareService;
 import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.RoomSolrService;
 import com.zizaike.solr.bo.EventPublishService;
 import com.zizaike.solr.domain.SearchBusinessOperation;
-import org.springframework.util.StringUtils;
 
 /**
  * ClassName: RoomSolrServiceImpl <br/>
@@ -236,6 +244,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         } else {
             solrquery.addSort("score_f", ORDER.desc);
         }
+        //订单成交量
+        solrquery.addSort("order_succ", ORDER.desc);
+        //最后量新时间 
         solrquery.addSort("changed", ORDER.desc);
         /*
          * Page Conditions
