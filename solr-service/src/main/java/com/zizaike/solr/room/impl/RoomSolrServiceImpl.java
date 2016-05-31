@@ -649,7 +649,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                             roomInfoList.add(roomInfo);
                         }
                     }
-                    if(lr.get(0).getOtherServiceI()==1 || lr.get(0).getHuwaiServiceI()==1 ||lr.get(0).getZaocanServiceI()==1 ||lr.get(0).getDaidingServiceI() ==1 || lr.get(0).getJiesongServiceI() ==1 || lr.get(0).getBaocheServiceI()==1){
+                    if(lr.get(0).getOtherServiceI()==1){
                         roomList.setOtherServiceI(1);
                     }else{
                         roomList.setOtherServiceI(0);
