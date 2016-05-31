@@ -285,12 +285,13 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
             filterQueries.append(" AND room_model:[4 TO *]");
         }else if (searchWordsVo.getRoomModel() == 5) {
             filterQueries.append(" AND room_model:[5 TO *]");
-        }else if (searchWordsVo.getRoomModel() == 0) {
-            /*
-             * 默认值
-             */
-            filterQueries.append(" AND room_model:[0 TO *]");
         }
+//        else if (searchWordsVo.getRoomModel() == 0) {
+//            /*
+//             * 默认值
+//             */
+//            filterQueries.append(" AND room_model:[0 TO *]");
+//        }
         /*
          * 价格
          */
