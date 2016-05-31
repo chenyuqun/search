@@ -12,15 +12,14 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.zizaike.core.framework.exception.open.ErrorCodeFields;
-import com.zizaike.entity.base.ChannelType;
-import com.zizaike.entity.open.qunar.response.BookingResponse;
-import com.zizaike.entity.solr.*;
-import com.zizaike.is.open.BaseInfoService;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrRequest;
@@ -43,17 +42,27 @@ import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.repository.support.SimpleSolrRepository;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.zizaike.core.framework.event.BusinessOperationBeforeEvent;
 import com.zizaike.core.framework.event.BusinessOperationCompletedEvent;
-import com.zizaike.core.framework.event.BusinessOperationFailedEvent;
 import com.zizaike.core.framework.exception.IllegalParamterException;
 import com.zizaike.core.framework.exception.ZZKServiceException;
+import com.zizaike.entity.base.ChannelType;
 import com.zizaike.entity.recommend.DestConfig;
 import com.zizaike.entity.recommend.SearchStatistics;
 import com.zizaike.entity.recommend.TeacherShare;
+import com.zizaike.entity.solr.Place;
+import com.zizaike.entity.solr.Room;
+import com.zizaike.entity.solr.RoomInfo;
+import com.zizaike.entity.solr.RoomList;
+import com.zizaike.entity.solr.RoomSolr;
+import com.zizaike.entity.solr.SearchType;
+import com.zizaike.entity.solr.SearchWordsVo;
 import com.zizaike.entity.solr.model.SolrSearchableRoomFields;
 import com.zizaike.is.common.HanLPService;
+import com.zizaike.is.open.BaseInfoService;
 import com.zizaike.is.recommend.DestConfigService;
 import com.zizaike.is.recommend.TeacherShareService;
 import com.zizaike.is.solr.PlaceSolrService;
@@ -150,7 +159,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
          */
         String geoSort = "";
         String geoFq = "";
-        String geoFl = "";
+        StringBuffer fl = new StringBuffer();
         //促销  1为促销  优惠,促销,打折 只要有一个就可以显示
         Integer promotion = 0;
         if (searchType == 2) {
@@ -166,7 +175,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                      */
                     + (searchWordsVo.getSearchRadius() != null ? searchWordsVo.getSearchRadius() : place.getSearchRadius())
                     + "}";
-            geoFl = "*, distance:geodist(latlng_p, " + place.getGoogleMapLat() + "," + place.getGoogleMapLng() + ")";
+            fl = fl.append("*, distance:geodist(latlng_p, " + place.getGoogleMapLat() + "," + place.getGoogleMapLng() + ")");
+        }else{
+            fl=fl.append("*");
         }
         if (searchWordsVo.getKeyWords() == "" || searchWordsVo.getKeyWords() == null || searchWordsVo.getKeyWords().isEmpty()) {
             searchWordsVo.setKeyWords("*:*");
@@ -184,6 +195,46 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         solrquery.set(DisMaxParams.QF, "username^20 user_address^20");
         solrquery.set("defType", "edismax");
         /*
+         * 新查询需要根据查询区间内的价格进行排序
+         */
+        String priceSort="";
+        StringBuffer priceBuffer=new StringBuffer();
+        if(StringUtils.isEmpty(searchWordsVo.getCheckInDate())||StringUtils.isEmpty(searchWordsVo.getCheckInDate())){
+            priceSort="int_price_tw";
+            fl.append(",min_price:int_price_tw");
+        }else{
+
+            try{
+                Date date1;
+                Date date2;
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                date1 = df.parse(searchWordsVo.getCheckInDate());
+                date2 = df.parse(searchWordsVo.getCheckOutDate());
+                if (date1.getTime() - date2.getTime() > 0) {
+                    Date tmp = date1;
+                    date1 = date2;
+                    date2 = tmp;
+                }
+                int s = (int) ((date2.getTime() - date1.getTime()) / (24 * 60 * 60 * 1000));
+                priceBuffer.append("min(field("+new SimpleDateFormat("MMdd").format(date1)+"_i)");
+                if (s > 1) {
+                    int i = 1;
+                    do {
+                        long todayDate = date1.getTime() + i * 24 * 60 * 60 * 1000;
+                        Date tmDate = new Date(todayDate);
+                        priceBuffer.append(" ,field(" + new SimpleDateFormat("MMdd").format(tmDate)+"_i)");
+                        i++;
+                    } while (i < s);
+
+                }
+                priceBuffer.append(")");
+            } catch (Exception e) {
+                System.out.println("转换错误");
+            }
+            priceSort=priceBuffer.toString();
+            fl.append(",min_price:"+priceBuffer);
+        }
+        /*
          * Sort Conditions
          */
         solrquery.setSort("verified_by_zzk", ORDER.desc);
@@ -199,9 +250,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
             /*
              * 价格降序 此处有坑
              */
-            solrquery.addSort("int_price", ORDER.asc);
+            solrquery.addSort(priceSort, ORDER.asc);
         } else if (searchWordsVo.getOrder() == 3) {
-            solrquery.addSort("int_price", ORDER.asc);
+            solrquery.addSort(priceSort, ORDER.asc);
             /*
              * 价格升序
              */
@@ -236,6 +287,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         } else {
             solrquery.addSort("score_f", ORDER.desc);
         }
+        //订单成交量
+        solrquery.addSort("order_succ", ORDER.desc);
+        //最后量新时间
         solrquery.addSort("changed", ORDER.desc);
         /*
          * Page Conditions
@@ -274,12 +328,13 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
             filterQueries.append(" AND room_model:[4 TO *]");
         }else if (searchWordsVo.getRoomModel() == 5) {
             filterQueries.append(" AND room_model:[5 TO *]");
-        }else if (searchWordsVo.getRoomModel() == 0) {
-            /*
-             * 默认值
-             */
-            filterQueries.append(" AND room_model:[0 TO *]");
         }
+//        else if (searchWordsVo.getRoomModel() == 0) {
+//            /*
+//             * 默认值
+//             */
+//            filterQueries.append(" AND room_model:[0 TO *]");
+//        }
         /*
          * 价格
          */
@@ -507,9 +562,9 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         /*
          * fl
          */
-        if (searchType == 2) {
-            solrquery.set(CommonParams.FL, geoFl);
-        }
+        //if (searchType == 2) {
+            solrquery.set(CommonParams.FL, fl.toString());
+        //}
 
         DocumentObjectBinder binder = new DocumentObjectBinder();
         RoomSolr roomSolr = new RoomSolr();
@@ -520,7 +575,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                /*
                 * 需要获得全部页码
                 */
-                QueryResponse qr = getSolrOperations().getSolrServer().query(solrquery);
+                QueryResponse qr = getSolrOperations().getSolrServer().query(solrquery, SolrRequest.METHOD.POST);
                 LOG.debug("solrquery:{}", solrquery);
                 GroupResponse gr = qr.getGroupResponse();
                 //匹配民宿数目
@@ -541,7 +596,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                     }
                 }
             }
-            QueryResponse qr = getSolrOperations().getSolrServer().query(solrquery);
+            QueryResponse qr = getSolrOperations().getSolrServer().query(solrquery, SolrRequest.METHOD.POST);
             GroupResponse gr = qr.getGroupResponse();
 
             //匹配房间数目
@@ -611,15 +666,18 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                     /*
                      *  最小价格 人民币/本币
                      */
-                    int minPrice = lr.get(0).getIntPrice();
-                    int minPriceTW = lr.get(0).getIntPriceTW();
+                    //int minPrice = lr.get(0).getIntPrice();
+                    /**
+                     * 2016-05-24重大修改 时间段内最低价格 打折后
+                     */
+                    int minPriceTW = (int)lr.get(0).getMinPrice();
                     List<RoomInfo> roomInfoList=new ArrayList<RoomInfo>();
-                    for (int j = 1; j < lr.size(); j++) {
-                        if (lr.get(j).getIntPrice() < minPrice) {
-                            minPrice = lr.get(j).getIntPrice();
-                        }
+                    for (int j = 0; j < lr.size(); j++) {
+//                        if (lr.get(j).getIntPrice() < minPrice) {
+//                            minPrice = lr.get(j).getIntPrice();
+//                        }
                         if (lr.get(j).getIntPriceTW() < minPriceTW) {
-                            minPriceTW = lr.get(j).getIntPriceTW();
+                            minPriceTW = (int)lr.get(j).getMinPrice();
                         }
                         /**
                          * WEB需要返回房间信息
@@ -631,13 +689,13 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                             roomInfo.setRoomModel(lr.get(j).getRoomModel());
                             roomInfo.setBreakfast(lr.get(j).getBreakfast());
                             roomInfo.setIsSpeed(lr.get(j).getSpeedRoom());
-                            roomInfo.setPrice(lr.get(j).getIntPrice());
+                            roomInfo.setPrice((int)lr.get(j).getMinPrice());
                             roomInfo.setWifiI(lr.get(j).getWifiI());
                             roomInfo.setTitle(lr.get(j).getTitle());
                             roomInfoList.add(roomInfo);
                         }
                     }
-                    if(lr.get(0).getOtherServiceI()==1 || lr.get(0).getHuwaiServiceI()==1 ||lr.get(0).getZaocanServiceI()==1 ||lr.get(0).getDaidingServiceI() ==1 || lr.get(0).getJiesongServiceI() ==1 || lr.get(0).getBaocheServiceI()==1){
+                    if(lr.get(0).getOtherServiceI()==1){
                         roomList.setOtherServiceI(1);
                     }else{
                         roomList.setOtherServiceI(0);
@@ -664,7 +722,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                     roomList.setHsRatingAvg(new BigDecimal(hsRatingAvgI / 20.00).setScale(1, BigDecimal.ROUND_HALF_UP).floatValue());
 
                     roomList.setIsSpeed(isSpeed);
-                    roomList.setMinPrice(minPrice);
+                    //roomList.setMinPrice(minPrice);
                     roomList.setUsername(username);
 
                     if (discountRoomDataList != null && discountRoomDataList.remove("placeholder") && dataList != null && ((dataList.size() != 0 && discountRoomDataList.containsAll(dataList)) || (dataList.size() == 0 && discountRoomDataList.size() != 0))) {
@@ -751,6 +809,11 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                         //向上取整
                         roomList.setMinPrice((int) Math.ceil(minPriceAct));
                         roomList.setCurrencyCode(currencyCode);
+                        if(searchWordsVo.getChannel()==ChannelType.WEB){
+                            for(RoomInfo roomInfo:roomInfoList){
+                                roomInfo.setPrice((int)(Math.ceil((double)roomInfo.getPrice()*(rate2 / rate1))));
+                            }
+                        }
                     }
                     /**
                      * 后来web需要额外返回的字段
