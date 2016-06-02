@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrRequest;
@@ -69,7 +70,6 @@ import com.zizaike.is.solr.PlaceSolrService;
 import com.zizaike.is.solr.RoomSolrService;
 import com.zizaike.solr.bo.EventPublishService;
 import com.zizaike.solr.domain.SearchBusinessOperation;
-import org.springframework.util.StringUtils;
 
 /**
  * ClassName: RoomSolrServiceImpl <br/>
@@ -289,7 +289,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
         }
         //订单成交量
         solrquery.addSort("order_succ", ORDER.desc);
-        //最后量新时间
+        //最后量新时间 
         solrquery.addSort("changed", ORDER.desc);
         /*
          * Page Conditions
