@@ -676,7 +676,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
 //                        if (lr.get(j).getIntPrice() < minPrice) {
 //                            minPrice = lr.get(j).getIntPrice();
 //                        }
-                        if (lr.get(j).getIntPriceTW() < minPriceTW) {
+                        if ((int)lr.get(j).getMinPrice() < minPriceTW) {
                             minPriceTW = (int)lr.get(j).getMinPrice();
                         }
                         /**
