@@ -807,7 +807,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                         String currencyCode = target.getCurrencyCode();
                         Double minPriceAct = ((double) minPriceTW) * (rate2 / rate1);
                         //向上取整
-                        roomList.setMinPrice((int) Math.ceil(minPriceAct));
+                        roomList.setMinPrice((int) Math.round(minPriceAct));
                         roomList.setCurrencyCode(currencyCode);
                         if(searchWordsVo.getChannel()==ChannelType.WEB){
                             for(RoomInfo roomInfo:roomInfoList){
