@@ -811,7 +811,7 @@ public class RoomSolrServiceImpl extends SimpleSolrRepository<Room, Integer> imp
                         roomList.setCurrencyCode(currencyCode);
                         if(searchWordsVo.getChannel()==ChannelType.WEB){
                             for(RoomInfo roomInfo:roomInfoList){
-                                roomInfo.setPrice((int)(Math.ceil((double)roomInfo.getPrice()*(rate2 / rate1))));
+                                roomInfo.setPrice((int)(Math.round((double)roomInfo.getPrice()*(rate2 / rate1))));
                             }
                         }
                     }
