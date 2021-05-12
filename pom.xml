@@ -39,7 +39,7 @@
 		<!-- mysql -->
 		<mysql.version>5.1.26</mysql.version>
 		<!-- solr -->
-		<solr.version>4.7.0</solr.version>
+		<solr.version>8.8.2</solr.version>
 		<spring.data.solr.version>1.5.0.RELEASE</spring.data.solr.version>
 		<springdata.commons>1.11.1.BUILD-SNAPSHOT</springdata.commons>
 		<!-- redis -->
