@@ -28,7 +28,7 @@
 		<maven.surefire.version>2.12</maven.surefire.version>
 		<maven.findbugs.version>2.5.2</maven.findbugs.version>
 		<!-- Spring -->
-		<org.springframework.version>4.0.2.RELEASE</org.springframework.version>
+		<org.springframework.version>6.0.0</org.springframework.version>
 		<org.springframework.security.version>3.2.3.RELEASE</org.springframework.security.version>
 		<!-- TestNG/Mockito -->
 		<testng.version>6.8.5</testng.version>
